@@ -1,0 +1,92 @@
+schedule:
+  - week: 1
+    lecturer: Emi
+    topic: "Advanced Reproducible Practices"
+    tools: "`rmarkdown`, `bookdown`"
+    readings: "[R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/)"
+  - week: 2
+    lecturer: Emi
+    tools: "`HTML/CSS/JS`, `htmlwidgets`, `crosstalk`"
+    topic: "Introduction to Web and Data Technologies"
+    readings: "[Introduction to Data Technologies Ch 2-8](https://www.stat.auckland.ac.nz/~paul/ItDT/itdt-2010-11-01.pdf)"
+  - week: 3
+    lecturer: Emi
+    tools: "`broom`, `kableExtra`, `knitr`, `DT`, `formattable`"
+    topic: "Fashionable Model Output and Data Tables"
+    readings: "[Ten Guidelines for Better Tables](https://www.cambridge.org/core/journals/journal-of-benefit-cost-analysis/article/ten-guidelines-for-better-tables/74C6FD9FEB12038A52A95B9FBCA05A12)"
+  - week: 4
+    lecturer: Emi
+    tools: "`rmarkdown`, `distill`, git & github"
+    topic: "Data Storytelling on the Web"
+    readings: "[Distill for R Markdown](https://rstudio.github.io/distill/)"
+  - week: 5
+    lecturer: Emi
+    topic: "Communicating Data with Interactive Web Apps"
+    tools: "`shiny`, `plotly`"
+    assessment: "24 hour take home assessment **due Tue 24 Aug 7PM**"
+    readings: "[Mastering Shiny (WIP)](https://mastering-shiny.org/)"
+  - week: 6
+    lecturer: Emi
+    topic: "Effective Data Visualisation"
+    tools: "`ggplot`, `colorspace`"
+    assessment: "Blog entry 1 **due Fri 3 Sep 11:55 PM**"
+    readings: "[colorspace: A Toolbox for Manipulating and Assessing Colors and Palettes](https://arxiv.org/pdf/1903.06490.pdf), [Fundamentals of Data Visualization](https://serialmentor.com/dataviz/)"
+  - week: 7
+    lecturer: Stuart
+    topic: "Interactive data visualisation"
+    tools: "`plotly`"
+    assessment: "Video group discussion 1 **due Fri 10 Sep 11:55 PM**"
+    readings: "[Interactive web-based data visualization with R, plotly, and shiny](https://plotly-r.com/)"
+  - week: 8
+    lecturer: Stuart
+    topic: Data Dashboard
+    tools: "`flexdashboard`, `shinydashboard`"
+    assessment: "Blog entry 2 **due Fri 17 Sep 11:55 PM**"
+    readings: "[Avoid Dashboard Fatigue](https://rstudio.com/resources/webinars/avoid-dashboard-fatigue/)"
+  - week: 9
+    lecturer: Stuart
+    topic: Captivating Statistical Presentations
+    tools: "`xaringan`"
+    assessment: "48 hour assessment **due Fri 24 Sep 11:55 PM**"
+    readings: ""
+  - week: 10
+    lecturer: Stuart
+    topic: Clearly Communicating with Code
+    tools: "`devtools`, `usethis`, `testthat`, `roxygen2`, `pkgdown`"
+    assessment: "Video group discussion 2 **due Fri 8 Oct 11:55 PM**"
+    readings: "[R Packages](https://r-pkgs.org/)"
+  - week: 11
+    lecturer: Stuart
+    topic: Stylishly Communicating with Code
+    tools: "`devtools`, `usethis`, `testthat`, `roxygen2`, `pkgdown`"
+    assessment: "Video group presentation **due Fri 15 Oct 11:55 PM**"
+    readings: "[R Packages](https://r-pkgs.org/)"
+  - week: 12
+    lecturer: Stuart
+    topic: Reproducible Research Tools & Analysis Workflow
+    tools: "`drake`"
+    reading: ""
+    assessment: "48 hour assessment  **due Fri 22 Oct 11:55 PM**"
+team:
+  - name: Emi Tanaka (Chief Examiner)
+    role: lecturer
+    consult: Thu 6.00-7.00pm (Wk 1-6)
+  - name: Stuart Lee
+    role: lecturer
+    consult: Thu 6.00-7.00pm (Wk 7-12)
+  - name: Mitchell O'Hara-Wild
+    role: tutor
+    consult: Tue 2.30-3.15pm (Wk 2-12)
+  - name: Fan Cheng
+    role: tutor
+    consult: Wed 2.30-4.00pm (Wk 2-12)
+  - name: R Help Desk
+    role: help
+    consult: Tue 6-8pm and Fri 11-12pm by Mitchell O'Hara Wild
+timetable:
+  lecture: Wed 6.00-8.00pm
+  tutorial:
+   - Thu 6.00-7.30pm Online (DNP)
+   - Thu 7.30-9.00pm Online
+   - Fri 6.00-7.30pm F2F
+
