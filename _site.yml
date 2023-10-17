@@ -1,0 +1,22 @@
+name: "ETC5523: Communicating with Data"
+output_dir: "docs"
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate
+    css: site/styles.css
+navbar:
+  title: "ETC5523: Communicating with Data"
+  left:
+    - text: "Home"
+      icon: fa-home
+      href: index.html
+    - text: "Moodle"
+      icon: fa-archive
+      href: https://lms.monash.edu/course/view.php?id=163486
+    - text: "Unit Guide"
+      icon: fa-book
+      href: https://handbook.monash.edu/2023/units/ETC5523
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/numbats/cwd

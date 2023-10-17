@@ -1,0 +1,69 @@
+<!-- Quarto document -->
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 2 Supp"
+author: "Michael Lydeamore"
+date: "Week 2"
+output:
+    html
+---
+
+```{css, echo = FALSE}
+.title, .subtitle {
+  text-transform: uppercase;
+  font-family: copperplate;
+}
+.author {
+  font-family: cursive;
+}
+.date {
+  font-family: papyrus;
+}
+body {
+  background-color: black;
+  color: white;
+  font-size: 20px;
+}
+strong {
+  color: pink;
+}
+.border {
+  border: 5px solid yellow !important;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: white;
+}
+```
+
+```{r setup}
+#| include: false
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(tidycovid19)
+df <- download_merged_data(cached = TRUE, silent = TRUE)
+
+```
+
+```{r crunch-numbers}
+ausdf <- df %>% 
+  filter(country=="Australia") %>%
+  filter(!is.na(confirmed))
+
+last_date <- ausdf %>% 
+  pull(date) %>% 
+  max()
+
+last_cases <- ausdf %>% 
+  filter(date %in% c(last_date - 1, last_date)) %>% 
+  pull(confirmed) %>% 
+  diff()
+```
+There was **`r last_cases`** confirmed cases reported in Australia on **`r last_date`**.
+
+
+```{r covid-stripes, out.extra = "class='border'"}
+plot_covid19_stripes(df, 
+                     countries = c("AUS", "CHN", "IND",
+                                   "JPN", "SGP", "USA"), 
+                     type = "confirmed")
+```
