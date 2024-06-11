@@ -1,0 +1,87 @@
+schedule:
+  - week: 0
+    lecturer: Michael
+    topic: "Information"
+  - week: 1
+    lecturer: Michael
+    topic: "Basic communication theory and practice"
+    tools: ""
+    readings: "[Why storytelling is so powerful in the digital era.](https://www.youtube.com/watch?v=mSi0kmqOBu4) [Why storytelling is more trustworthy than presenting data.](https://www.youtube.com/watch?v=Ez5yS4Q5ASA) [Making data mean more through storytelling.](https://www.youtube.com/watch?v=6xsvGYIxJok)"
+  - week: 2
+    lecturer: Michael
+    tools: "`HTML/CSS/JS`, `htmlwidgets`"
+    topic: "Introduction to web technologies"
+    readings: "[Introduction to Data Technologies Ch 2-4](https://www.stat.auckland.ac.nz/~paul/ItDT/itdt-2010-11-01.pdf)"
+  - week: 3
+    lecturer: Michael
+    topic: "Communicating data with interactive web apps"
+    tools: "`shiny`, `plotly`"
+    readings: "[Mastering Shiny](https://mastering-shiny.org/)"
+  - week: 4
+    lecturer: Michael
+    tools: "`rmarkdown`, `distill`, git & github"
+    topic: "Data storytelling on the web "
+    readings: "[Quarto Guide](https://quarto.org/docs/guide/)"
+  - week: 5
+    lecturer: Michael
+    tools: "`broom`, `kableExtra`, `knitr`, `DT`, `formattable`"
+    topic: "Statistical model outputs and data tables"
+    assessment: "Assessment 1 **due Fri 25 Aug 11:55 PM**"
+    readings: ""
+  - week: 6
+    lecturer: Michael
+    topic: "Effective data visualisation"
+    tools: "`ggplot2`"
+    readings: "[Fundamentals of Data Visualization](https://serialmentor.com/dataviz/)"
+  - week: 7
+    lecturer: Michael
+    topic: Captivating statistical presentations
+    tools: ""
+    readings: "[Better Presentations](https://ebookcentral.proquest.com/lib/monash/detail.action?docID=4723060&pq-origsite=primo) (Sign in with Monash login)"
+    assessment: "Blog entry **due Tue 5 Sep 11:55 PM**"
+  - week: 8
+    lecturer: Michael
+    topic: Clearly communicating with code
+    tools: "`devtools`, `usethis`, `testthat`, `roxygen2`, `pkgdown`"
+    readings: "[R Packages](https://r-pkgs.org/)"
+    assessment: "Video group discussion **due Fri 15 Sep 11:55 PM**"
+  - week: 9
+    lecturer: Michael
+    topic: Stylishly communicating with code
+    tools: "`devtools`, `usethis`, `testthat`, `roxygen2`, `pkgdown`"
+    readings: "[R Packages](https://r-pkgs.org/)"
+  - week: 10
+    lecturer: Michael
+    topic: Case study
+    tools: ""
+    reading: ""
+    assessment: "Assessment 2 **due Fri 6 Oct 11:55 PM**"
+    readings: "[Spencer (2022, Feb. 17). Data in Wonderland. Section 1.](https://ssp3nc3r.github.io/data_in_wonderland/)"
+  - week: 11
+    lecturer: Kate
+    topic: Guest lecture
+    tools: ""
+    readings: ""
+  - week: 12
+    lecturer: Michael
+    topic: Course recap
+    tools: ""
+    readings: ""
+    assessment: "Oral exam **Mon 24 or Tue 25 Oct**"
+
+team:
+  - name: Michael Lydeamore (Chief Examiner)
+    role: lecturer
+    consult: Wed 4.00-5.00pm (in-person & online)
+  - name: Cynthia Huang
+    role: tutor
+    consult:
+      - Fri 5.00-5.45pm (in-person)
+  - name: Janith Wanniarachchi
+    role: tutor
+    consult: Thu 6.00-6.45pm (in-person)
+timetable:
+  lecture: Wed 6.00-8.00pm
+  tutorial:
+    - Thu 7.30-9.00pm
+    - Fri 6.00-7.30pm
