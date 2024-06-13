@@ -1,0 +1,42 @@
+project:
+  type: website
+  render:
+  - "*.qmd"
+  - "*.md"
+
+website:
+  title: "ETCXXXX Advanced Bean Counting"
+  site-url: "https://abc.numbat.space"
+  navbar:
+    background: "#006dae"
+    left:
+      - href: index.qmd
+        text: Home
+        icon: house-fill
+      - text: Discussion
+        icon: chat-fill
+        href: "https://learning.monash.edu/mod/forum/view.php?id=111111"
+      - text: Moodle
+        icon: mortarboard-fill
+        href: "https://learning.monash.edu/course/view.php?id=22222&section=1"
+    right:
+      - icon: github
+        href: https://github.com/numbats/unit_template
+
+date-format: "D MMMM YYYY"
+
+format:
+  html:
+    theme: [cosmo, numbat.scss]
+    highlight: textmate
+    toc: true
+    mainfont: "Fira Sans"
+    html-math-method: katex
+    include-in-header:
+      file: header.html
+
+
+execute:
+  echo: false
+  warning: false
+  message: false
