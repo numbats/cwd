@@ -42,7 +42,7 @@ week <- as.integer(1 + ((Sys.Date() - as_date(start_semester))/7))
 ## Consultation
 
 * Michael Lydeamore:
-* Janith Wanniarachchi:
+* Janith Wanniarachchi: Friday 2.30pm-4pm (Except weeks 3-5)
 
 ```{r}
 #| label: schedule2

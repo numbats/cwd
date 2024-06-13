@@ -1,0 +1,54 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Oral Presentations"
+author: "Michael Lydeamore"
+date: today
+format:
+    html:
+        embed-resources: true
+---
+
+```{r}
+#| echo: false
+
+total_marks <- 0
+
+add_marks <- function(amount) {
+    total_marks <<- total_marks + amount
+
+    amount
+}
+
+```
+
+```{r, echo = FALSE, eval = file.exists("tutorial.css")}
+htmltools::includeCSS("tutorial.css")
+```
+
+## `r emo::ji("target")` Objectives
+
+-   Practice your verbal communication skills to your peers
+
+::: callout-important
+This is an **individual** assignment.
+
+The final PDF report can not have more than 5 pages (not including the appendix).
+
+You cannot use a dataset that has been used for another assignment.
+:::
+
+## Topics
+
+| Week | Topic 1                                              | Topic 2                                         | Topic 3                                                               |
+|---------------|------------------|----------------|------------------------|
+| 2    | Describe the art of rhetorics                        | Demonstrate how to ask a good question, and why | The differences between linear and transactional communication models |
+| 3    |                                                      |                                                 |                                                                       |
+| 4    | Different narrative structures for different reports | Richard Mayer's learning principles             |                                                                       |
+| 5    | Quarto vs RMarkdown: Key differences                 | Writing Markdown for reports and slides         | Web directories and servers                                           |
+| 6    | Which statistics should you present?                 | Key elements of a good table                    |                                                                       |
+| 7    |                                                      |                                                 |                                                                       |
+| 8    |                                                      |                                                 |                                                                       |
+| 9    |                                                      |                                                 |                                                                       |
+| 10   |                                                      |                                                 |                                                                       |
+| 11   |                                                      |                                                 |                                                                       |
+| 12   |                                                      |                                                 |                                                                       |

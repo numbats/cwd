@@ -5,8 +5,8 @@ project:
   - "*.md"
 
 website:
-  title: "ETCXXXX Advanced Bean Counting"
-  site-url: "https://abc.numbat.space"
+  title: "ETC5523 Communicating With Data"
+  site-url: "https://cwd.numbat.space"
   navbar:
     background: "#006dae"
     left:
@@ -21,7 +21,7 @@ website:
         href: "https://learning.monash.edu/course/view.php?id=22222&section=1"
     right:
       - icon: github
-        href: https://github.com/numbats/unit_template
+        href: https://github.com/numbats/cwd
 
 date-format: "D MMMM YYYY"
 
