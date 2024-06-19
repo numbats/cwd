@@ -35,7 +35,6 @@ In Week 1, your tutor will have a sign-up sheet for presentations. **Please only
 If you miss your tutorial, then you can either:
 
 -   Pick another topic that hasn't already been signed up for or,
-
 -   Schedule your presentation to be performed within 7 days with the Chief Examiner. Please email the [Chief Examiner](mailto:michael.lydeamore@monash.edu) to set up this time.
 :::
 
@@ -44,15 +43,13 @@ This assignment makes up 5% of your final grade for the unit.
 ## Presentation format
 
 -   Maximum time: 5 minutes
-
 -   **No slides**
-
 -   Concise and clear communication will be rewarded.
 
 ## Topics
 
 | Week | Topic 1                                              | Topic 2                                         | Topic 3                                                               |
-|-----------------|-----------------|-----------------|----------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | 2    | Describe the art of rhetorics                        | Demonstrate how to ask a good question, and why | The differences between linear and transactional communication models |
 | 3    |                                                      |                                                 |                                                                       |
 | 4    | Different narrative structures for different reports | Richard Mayer's learning principles             |                                                                       |
