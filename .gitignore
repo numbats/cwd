@@ -1,3 +1,4 @@
 /.quarto/
 _site/
 /images/*
+site_libs/
