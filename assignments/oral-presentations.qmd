@@ -30,17 +30,27 @@ htmltools::includeCSS("tutorial.css")
 -   Practice your verbal communication skills to your peers
 
 ::: callout-important
-This is an **individual** assignment.
+In Week 1, your tutor will have a sign-up sheet for presentations. **Please only sign up to a tutorial you can attend!**
 
-The final PDF report can not have more than 5 pages (not including the appendix).
+If you miss your tutorial, then you can either:
 
-You cannot use a dataset that has been used for another assignment.
+-   Pick another topic that hasn't already been signed up for or,
+
+-   Schedule your presentation to be performed within 7 days with the Chief Examiner. Please email the [Chief Examiner](mailto:michael.lydeamore@monash.edu) to set up this time.
 :::
+
+## Presentation format
+
+-   Maximum time: 5 minutes
+
+-   **No slides**
+
+-   Concise and clear communication will be rewarded.
 
 ## Topics
 
 | Week | Topic 1                                              | Topic 2                                         | Topic 3                                                               |
-|---------------|------------------|----------------|------------------------|
+|-----------------|-----------------|-----------------|----------------------|
 | 2    | Describe the art of rhetorics                        | Demonstrate how to ask a good question, and why | The differences between linear and transactional communication models |
 | 3    |                                                      |                                                 |                                                                       |
 | 4    | Different narrative structures for different reports | Richard Mayer's learning principles             |                                                                       |
@@ -52,3 +62,16 @@ You cannot use a dataset that has been used for another assignment.
 | 10   |                                                      |                                                 |                                                                       |
 | 11   |                                                      |                                                 |                                                                       |
 | 12   |                                                      |                                                 |                                                                       |
+
+## Marking Rubric
+
+**Maximum grade:** 5 marks
+
+0.  No presentation, or completely incorrect information
+1.  Presentation has clearly incorrect elements with little to no understanding
+2.  Presentation shows limited understanding, insufficient detail provided
+3.  Presentation shows some understanding, with some detail
+4.  Presentation gives good accompanying details, and a strong understanding of the topic
+5.  Presentation is complete and comprehensive without being verbose. Demonstrated clear understanding of the topic and has explained the details clearly.
+
+1 mark deduced per 30 seconds over 5 minutes.
