@@ -77,11 +77,13 @@ You are only looking to identify the structural elements of the communication pi
 -   [World, 15 Million Tweets Later (Robert Lesser)](https://observablehq.com/@rlesser/wordle-twitter-exploration)
 -   [The Welch-Berlekamp Algorithm for Correcting Errors in Data (Jeremy Kun)](https://www.jeremykun.com/2015/09/07/welch-berlekamp/)
 -   [How does ChatGPT Work? (Gergely Orosz)](https://blog.pragmaticengineer.com/how-does-chatgpt-work/)
+-   [How Many People Can You Remember? (Mona Chalabi)](https://fivethirtyeight.com/features/whats-the-most-common-name-in-america/)
 
 #### List C (Presentations/Video):
 
 -   [We analysed 4,678,387 NBA Shots (Matt Parker)](https://www.youtube.com/watch?v=yh5c3duQQ1w)
 -   [Why I fell in love with monster prime numbers (Adam Spencer)](https://www.youtube.com/watch?v=B4xOFsygwr4)
+-   [How did Australia's housing market get so bad, and is it all negative gearing's fault? (The Guardian)](https://youtu.be/iqUFERBJwoY?si=8tvE7JGZISegy9CK)
 
 ## Marking Rubric
 
