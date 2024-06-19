@@ -1,0 +1,38 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Assignment 1: Example breakdown of article"
+author: "Michael Lydeamore"
+date: today
+format:
+    html:
+        embed-resources: true
+toc: false
+---
+
+This short report serves as an example of how to break down a communication piece, including what type of piece it is and how that is effective.
+
+# How a referendum works --- and what it means for the Voice
+
+The article studied here is from ABC News, titled "How a referendum works — and what it means for the Voice", available online via the [ABC News Website](https://www.abc.net.au/news/2023-10-13/voice-vote-how-referendums-work/102952584). 
+
+This is a "print media" article. This is despite the article only being available online. It is classified as print media as it is produced by a traditional media outlet, using trained journalists and standard journalistic practices. [Providing additional context about the article will help to explain your thought processes]{.aside}
+
+The article summarises how voting works in an Australian referendum, and provides insights into why _most_ referendums fail to be passed in Australia. The difficulty in passing referendums is due to the two-stage counting process, where more than 50% of voters overall must vote for the changes, and a majority of states must also separately vote for the change. [Summary of the article and what it means for the reader]{.aside}
+
+The first two paragraphs are background ifnromation on referendums. They include why we should care about them, and why understanding this information might be helpful. The article was published one day before the first referendum in 24 years, and so it is expected that a large amount of readership would not have experienced a referendum before. [Make sure you explain what the background is and why it is relevant for the article. It is **not** enough to just say "the background is here"]{.aside}
+
+The lede in this article is actually in the title: "what it means for the Voice". This is unusual for traditional media, where the lede would normally be in the first couple of sentences, but is becoming more common for "online-only" articles where outlets are competing for clicks based solely on the headline. [This paragraph is great for explaining what is "unexpected" about the article, and highlights your understanding of how these communication pieces are typically written]{.aside}
+
+The summary of the story is in the middle of the scrollable article: [Including quotes from the written article makes it easy to verify your claims]{.aside}
+
+> A lot of it comes down to what the opposition does when a referendum is called, not the government. If an opposition decides to oppose a referendum, then history shows it pretty much sinks it.
+>
+> Only referendums with bipartisan support have ever passed.
+
+This is telling the reader that it is very unlikely for referendums to pass. It is expected the reader would know the wider context of this story (that being the referendum was not supported by the opposition), and so that information is omitted for conciseness.
+
+The main result of the story is in the third to last paragraph of the article:
+
+> Polling indicates the result of the Voice referendum is likely to be closer to the no vote of the republic in 1999 rather than the resounding yes of 1967.
+
+The main result is very close to the end of the article, in an attempt to have it remain in the readers mind after they have finished reading. [Like background, make sure to include _what_ the result is, and _why_ it is where it is. You don't need to explain the result, just state broadly what it is.]{.aside}

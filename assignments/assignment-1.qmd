@@ -63,14 +63,16 @@ You don't need to understand the precise technical details of the pieces. Rememb
 You are only looking to identify the structural elements of the communication piece, not to explain what the piece means.
 :::
 
+You can see an example article breakdown (using a List A article) [here](example-narrative.html)
+
 ### Article lists
 
 #### List A (Print media):
 
 -   [Mapping Australia's Childcare Blackspots (ABC News)](https://www.abc.net.au/news/2022-03-22/mapping-australia-s-childcare-blackspots/100894808)
 -   [How wealth buys shade in a warming world (The Green Divide)](https://interactives.stuff.co.nz/2022/03/urban-heat-island-tree-cover/)
--   [Are Amazon delivery hubs making neighbourhoods less healthy and more dangerous?](https://www.theguardian.com/technology/2022/nov/20/amazon-warehouse-new-york-brooklyn-red-hook)
--   [Australians say AI shouldn’t produce political news, but it’s OK for sport](https://theconversation.com/australians-say-ai-shouldnt-produce-political-news-but-its-ok-for-sport-new-research-231369)
+-   [Are Amazon delivery hubs making neighbourhoods less healthy and more dangerous? (The Guardian)](https://www.theguardian.com/technology/2022/nov/20/amazon-warehouse-new-york-brooklyn-red-hook)
+-   [Australians say AI shouldn’t produce political news, but it’s OK for sport (The Conversation)](https://theconversation.com/australians-say-ai-shouldnt-produce-political-news-but-its-ok-for-sport-new-research-231369)
 
 #### List B (Blog posts):
 
@@ -78,6 +80,7 @@ You are only looking to identify the structural elements of the communication pi
 -   [The Welch-Berlekamp Algorithm for Correcting Errors in Data (Jeremy Kun)](https://www.jeremykun.com/2015/09/07/welch-berlekamp/)
 -   [How does ChatGPT Work? (Gergely Orosz)](https://blog.pragmaticengineer.com/how-does-chatgpt-work/)
 -   [How Many People Can You Remember? (Mona Chalabi)](https://fivethirtyeight.com/features/whats-the-most-common-name-in-america/)
+-   [What's the most common name in America? (Mona Chalabi)](https://fivethirtyeight.com/features/whats-the-most-common-name-in-america/)
 
 #### List C (Presentations/Video):
 
