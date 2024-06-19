@@ -81,7 +81,180 @@ Lecturer: *`r rmarkdown::metadata$author`*
 </ul>
 
 <br>
+
 :::
+
+## 👩🏻‍🏫 ETC5523 Teaching Team
+
+::: flex
+
+::: w-50
+
+<img class="circle-img" src="images/michael-lydeamore.jpg" height = "200px"/>
+
+Dr. Michael Lydeamore
+
+*Lecturer & Chief Examiner*
+
+
+:::
+
+::: w-50
+
+<img  class="circle-img" src="images/janith-wanniarachchi.jpg" height = "200px"/>
+
+Janith Wanniarachchi
+
+*Tutor*
+
+:::
+
+:::
+
+::: w-80
+::: callout-note
+
+## Contacting the teaching team
+
+* For private matters, contact [michael.lydeamore@monash.edu](mailto:michael.lydeamore@monash.edu) using your Monash student email and citing the unit name.
+* For non-private matters, you should post this in the Moodle discussion board. 
+
+:::
+:::
+
+```{css, echo = FALSE}
+.circle-img {
+  border-radius: 50%;
+}
+```
+
+## 👩🏻‍🏫 ETC5523 Teaching Team
+
+Most material in this course was developed by 
+
+::: center 
+
+<img class="circle-img" src="https://emitanaka.org/images/avatar.jpg" height="200px" />
+
+[Dr. Emi Tanaka](https://emitanaka.org)
+
+:::
+
+<br />
+
+Emi is a guru of data communication, and I highly recommend checking out her website content and academic work.
+
+
+## 🎯 ETC5523 Learning Objectives
+
+
+::: callout-important
+
+## Learning objectives
+
+1. Effectively communicate data analysis, using a blog, reports and presentation.
+2. Learn how to build a web app to provide an interactive data analysis.
+3. Learn to construct a data story.
+
+:::
+
+::: fragment
+
+::: {.callout-note }
+
+## Specific outcomes
+
+After this unit, you should be able to:
+
+* understand and apply the elements of effective communication,
+* **host R Markdown HTML outputs online** for blogging, reports or other purposes,
+* be more confident with web technologies (**HTML/CSS**),
+* make a **Shiny web app**
+
+:::
+
+:::
+
+## 🏛️ ETC5523 unit structure 
+
+* **2 hour lectures** are *interactive sessions*:
+  - during the lecture we *demonstrate*, *discuss* and  *complete tasks* in small groups
+* **1.5 hour tutorial** → only go to the one you are assigned to!
+
+## 🪵 Materials
+
+::: callout-note
+
+## Unit website 
+
+<center>
+[[<i class="fa-solid fa-link"></i> cwd.numbat.space](https://cwd.numbat.space/)]{.f1}
+</center>
+
+:::
+
+* Lecture slides and tutorial materials are available on the unit website
+* Lecture videos and assessments will be available on Moodle
+
+::: callout-note
+
+Materials are designed to develop your **hard and soft skills**.
+
+:::
+
+
+## ✋ Consultation hours
+
+* A total of **2 hours of consultation _each week_** 
+
+* See Moodle announcement for the Zoom links for the consultations
+  
+* _Seek help early and often_!
+
+* For coding issues, check out [this guide](https://learnr.numbat.space/chapter3)^[We will be going through this shortly] to make it easier for others to help you
+
+
+
+## 💯 Course assessments
+
+
+
+* **Week 4**: *Assessment 1* (25%) Breaking down key communication concepts in articles
+* **Week 7**: *Assessment 2* (25%) Writing your first communication piece
+* **Week 10**: *Assessment 3* (20%) Creating your own blog, styling and adding content
+* **Week 10**: *Assessment 4* (25%) Turning your findings into a dashbaord
+* *Oral Presentations* (5%) Starting in Week 2, each week up to three people present in tutorial
+
+
+## 🏁 Expectations [Part 1]{.f4}
+
+::: incremental
+
+* Attend lectures and assigned tutorials
+* **_Minimum_** total expected workload is 144 hours, that's 12 hours each week or **8.5 hours of self study per week**
+* Check the [unit homepage](https://cwd.numbat.space/) and [unit Moodle page](https://learning.monash.edu/course/view.php?id=18866) often
+* ETC5513 (or equivalent) is a prerequisite → you need to catch up _fast_ if you're not confident
+* Install the latest [R](https://cloud.r-project.org/) and [RStudio IDE](https://www.rstudio.com/products/rstudio/download/) (or your chosen IDE that has the ability to run R code)
+* For the in-person tutorials, bring your own laptops
+
+:::
+
+## 🏁 Expectations [Part 2]{.f4}
+
+
+[<i class="fas fa-running"></i> Be an active learner!]{.f1}
+
+::: blockquote 
+
+An **active learner** asks questions, considers alternatives, questions assumptions, and even questions the trustworthiness of the author or speaker. An active learner tries to generalize specific examples, and devise specific examples for generalities.
+
+An active learner doesn’t passively sponge up information — that doesn’t work! — but **uses the readings and lecturer’s argument as a springboard for critical thought and deep understanding**.
+
+[-- Spencer (2022) Data in Wonderland]{.fr}
+
+:::
+
+# Communication time
 
 
 ## {#aim}
