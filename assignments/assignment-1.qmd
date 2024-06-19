@@ -1,0 +1,100 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Assignment 1: Breaking down articles"
+author: "Michael Lydeamore"
+date: today
+format:
+    html:
+        embed-resources: true
+---
+
+```{r}
+#| echo: false
+
+total_marks <- 0
+
+add_marks <- function(amount) {
+    total_marks <<- total_marks + amount
+
+    amount
+}
+
+```
+
+```{r, echo = FALSE, eval = file.exists("tutorial.css")}
+htmltools::includeCSS("tutorial.css")
+```
+
+## `r emo::ji("target")` Objectives
+
+-   Understand the components of a piece of communication
+-   Identify differences in style of communication in different settings
+
+::: callout-important
+This is an **individual assignment**.
+:::
+
+## Output format
+
+-   Maximum length:
+
+-   Please upload the completed PDF to Moodle
+
+## Instructions
+
+In this assessment, you will be breaking down published communication pieces in various forms, to identify the key components of what makes them a successful piece of communication.
+
+Choose **one** piece from each of the three lists below (for a total of three pieces). For **each** piece:
+
+-   Maximum two sentence summary of the topic
+-   Highlight which sections of the material are:
+    -   Background
+    -   Lede (if any)
+    -   Summary
+    -   Main result
+
+If you are dissecting a video, you can use timestamps to identify the sections.
+
+Compare and contrast the differences between the articles, including why different types of media might have different formats, and how those formats can be effective. If you notice anything unusual in the formats of the pieces, make sure to include that too.
+
+::: callout-tip
+You don't need to understand the precise technical details of the pieces. Remember, a good piece of communication will bring you along with minimal knowledge if possible.
+
+You are only looking to identify the structural elements of the communication piece, not to explain what the piece means.
+:::
+
+### Article lists
+
+#### List A (Print media):
+
+-   [Mapping Australia's Childcare Blackspots (ABC News)](https://www.abc.net.au/news/2022-03-22/mapping-australia-s-childcare-blackspots/100894808)
+-   [How wealth buys shade in a warming world (The Green Divide)](https://interactives.stuff.co.nz/2022/03/urban-heat-island-tree-cover/)
+-   [Are Amazon delivery hubs making neighbourhoods less healthy and more dangerous?](https://www.theguardian.com/technology/2022/nov/20/amazon-warehouse-new-york-brooklyn-red-hook)
+-   [Australians say AI shouldn’t produce political news, but it’s OK for sport](https://theconversation.com/australians-say-ai-shouldnt-produce-political-news-but-its-ok-for-sport-new-research-231369)
+
+#### List B (Blog posts):
+
+-   [World, 15 Million Tweets Later (Robert Lesser)](https://observablehq.com/@rlesser/wordle-twitter-exploration)
+-   [The Welch-Berlekamp Algorithm for Correcting Errors in Data (Jeremy Kun)](https://www.jeremykun.com/2015/09/07/welch-berlekamp/)
+-   [How does ChatGPT Work? (Gergely Orosz)](https://blog.pragmaticengineer.com/how-does-chatgpt-work/)
+
+#### List C (Presentations/Video):
+
+-   [We analysed 4,678,387 NBA Shots (Matt Parker)](https://www.youtube.com/watch?v=yh5c3duQQ1w)
+-   [Why I fell in love with monster prime numbers (Adam Spencer)](https://www.youtube.com/watch?v=B4xOFsygwr4)
+
+## Marking Rubric
+
+**Maximum grade:** 20 marks
+
+5 marks per article:
+
+-   Accurate summary (1 mark)
+-   Correctly identified sections (1 mark per section)
+
+5 marks for combined reflection:
+
+-   Compared and contrasted differences
+-   Highlighted reasons for differences
+
+Up to 3 marks will be deducted for spelling and grammatical errors.
