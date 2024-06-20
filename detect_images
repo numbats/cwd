@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Tutorials:
+for i in {1..11}; do
+weeknum=${i}
+if [[ ${#i} < 2 ]] 
+then
+    i="0${i}"
+    i="${i: -2}"
+fi
+    images=$(grep -oE '!\[\]\(\.\./images/[^)]+\)' week${weeknum}/tutorial/tutorial-${i}.qmd | sed -E 's/!\[\]\(\.\.\/images\/([^)]+)\)/\1/')
+    mkdir -p week${i}/images
+    for image in $images; do
+        echo "Processing image: $image"
+        # Use the cp command to copy the file to the new location
+        cp "images/"$image week${i}/images/
+    done
+done
+
+echo "Processing lecture images"
+
+# Lectures:
+for i in {1..11}; do
+    weeknum=${i}
+    if [[ ${#i} < 2 ]] 
+    then
+        i="0${i}"
+        i="${i: -2}"
+    fi
+    echo "Lecture ${i}"
+    images=$(grep -oE '!\[\]\(images/[^)]+\)' week${weeknum}/index.qmd | sed -E 's/!\[\]\(images\/([^)]+)\)/\1/')
+    mkdir -p week${weeknum}/images
+    for image in $images; do
+        echo "Processing image: $image"
+        # Use the cp command to copy the file to the new location
+        cp "images/lecture-"${i}"/"$image week${weeknum}/images/
+    done
+done

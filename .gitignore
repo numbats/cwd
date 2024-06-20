@@ -2,3 +2,4 @@
 _site/
 /images/*
 site_libs/
+.DS_STORE
