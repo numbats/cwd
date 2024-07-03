@@ -1,0 +1,109 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Assignment 2: Creating an article"
+author: "Michael Lydeamore"
+date: today
+format:
+    html:
+        embed-resources: true
+---
+
+```{r}
+#| echo: false
+
+total_marks <- 0
+
+add_marks <- function(amount) {
+    total_marks <<- total_marks + amount
+
+    amount
+}
+
+```
+
+```{r, echo = FALSE, eval = file.exists("tutorial.css")}
+htmltools::includeCSS("tutorial.css")
+```
+
+## `r emo::ji("target")` Objectives
+
+-   Create a piece of plain-language communication
+
+::: callout-important
+This is an **individual assignment**.
+:::
+
+## Output format
+
+-   Maximum length:
+
+-   Please upload the completed PDF to Moodle
+
+## Instructions
+
+In this assessment, you will be writing a report from scratch, on a topic of your choosing. You will then perform a detailed analysis of your own article to identify potential improvements.
+
+### Part A: Writing the article
+
+Imagine you are an analyst working in a research company. You're working in a field you are passionate about, and want to make your work noticed and heard. The first step to doing that is to write a technical report for your manager.
+
+Your manager is competent, and reasonably technical. They are time-poor, and so clear communication will help make your point the fastest. Your report will need to include:
+
+* An executive summary
+* An introduction to the problem
+* Key results, including a figure
+* **Brief** methods, including:
+    * Data source
+    * Data dictionary (maximum two sentences per variable)
+* Conclusion
+
+Your report also needs:
+
+* At least one reference to an academic article
+* Working cross-references to figure(s), table(s) if included, and sections where required
+
+#### Where to find data
+
+You are free to find data on your problem from wherever you choose. However, keep in mind the time required to clean dirty data, and to find the message you want to convey in your article.
+
+For a list of reasonably clean pre-prepared datasets, the [TidyTuesday](https://github.com/rfordatascience/tidytuesday/tree/master) repository is a good place to start. I highly recommend sticking to datasets from the last two years.
+
+::: {.callout-tip}
+If you are not sure about your data, _please_ come to consultation where I am more than happy to discuss options with you.
+:::
+
+You are welcome to seek feedback at _any_ time on the key points of your report, or on queries about your data analysis and exploration.
+
+### Part B: Article analysis
+
+Perform a similar analysis to in [Assignment 1](assignment-1.html) but this time for your own article. You must include:
+
+-   Maximum two sentence summary of the topic
+-   Highlight which sections of the material are:
+    -   Background
+    -   Lede (if any)
+    -   Summary
+    -   Main result
+
+If you notice anything unusual in the formats of the pieces, make sure to include that too.
+
+## Marking Rubric
+
+Part A (15 marks):
+
+- Structure clearly adhered to (1 mark)
+- Executive summary summarises the work (3 marks)
+- Report is clear and easy to understand (3 marks)
+- Report is written at the correct level (1 mark)
+- Results include a figure, with a clear caption, and a cross-reference in text (2 marks)
+- Methods includes data source, data dictionary, and details of work done (4 marks)
+- References included (1 mark)
+
+Part B (5 marks): 
+
+-   Accurate summary (1 mark)
+-   Correctly identified sections (1 mark per section)
+
+**Maximum grade:** 20 marks
+
+Up to 3 marks will be deducted for spelling and grammatical errors.
