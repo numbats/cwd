@@ -48,19 +48,19 @@ This assignment makes up 5% of your final grade for the unit.
 
 ## Topics
 
-| Week | Topic 1                                              | Topic 2                                         | Topic 3                                                               |
-|-----------------|-----------------|-----------------|---------------------|
-| 2    | Describe the art of rhetorics                        | Demonstrate how to ask a good question, and why | The differences between linear and transactional communication models |
-| 3    |                                                      |                                                 |                                                                       |
-| 4    | Different narrative structures for different reports | Richard Mayer's learning principles             |                                                                       |
-| 5    | Quarto vs RMarkdown: Key differences                 | Writing Markdown for reports and slides         | Web directories and servers                                           |
-| 6    | Which statistics should you present?                 | Key elements of a good table                    |                                                                       |
-| 7    |                                                      |                                                 |                                                                       |
-| 8    |                                                      |                                                 |                                                                       |
-| 9    |                                                      |                                                 |                                                                       |
-| 10   |                                                      |                                                 |                                                                       |
-| 11   |                                                      |                                                 |                                                                       |
-| 12   |                                                      |                                                 |                                                                       |
+| Week | Topic 1                                              | Topic 2                                          | Topic 3                                                               |
+|------------------|------------------|------------------|--------------------|
+| 2    | The art of rhetorics                                 | Demonstrate how to ask a good question, and why  | The differences between linear and transactional communication models |
+| 3    | Best practices when including data in your narrative | What are the elements of a good story?           | How to capture an audience                                            |
+| 4    | Different narrative structures for different reports | Richard Mayer's learning principles              | Key elements for presenting data in a presentation                    |
+| 5    | Quarto vs RMarkdown: Key differences                 | Writing Markdown for reports and slides          | Web directories and servers                                           |
+| 6    | Which statistics should you present?                 | Key elements of a good table                     |                                                                       |
+| 7    | Choices of plots for different purposes              | Importance of unifying visual elements in a plot | Different graphics libraries for producing plots                      |
+| 8    | How are web pages styled?                            | Writing in HTML vs PDF vs docx                   | Benefits of using Quarto for scientific writing                       |
+| 9    | Basic elements of good function documentation        | Key roxygen elements and their purpose           | R Package structure                                                   |
+| 10   | Why should we use a dashboard?                       | Reactive programming and shiny                   | Deploying web applications                                            |
+| 11   | Communicating with code: Key concepts                | Workflows for deploying package documentation    | How is code documentation part of communication?                      |
+| 12   | How do we ensure we can find information quickly?    | Challenges of data governance when communicating | What are our responsibilities when publishing mass communication?     |
 
 ## Marking Rubric
 
