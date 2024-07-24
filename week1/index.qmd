@@ -58,11 +58,11 @@ Lecturer: *`r rmarkdown::metadata$author`*
 ::: tl
 <br>
 
-<ul class="fa-ul">
+<ul class="fa-ul" style="list-style-type: none;">
 
 <li>
 
-[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`
+<i class="fa-li fas fa-envelope"></i>`r rmarkdown::metadata$email`
 
 </li>
 
@@ -74,7 +74,7 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 <li>
 
-[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
+[<i class="fas fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
 
 </li>
 
@@ -86,32 +86,28 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 ## 👩🏻‍🏫 ETC5523 Teaching Team
 
-::: flex
-
-::: w-50
-
-<img class="circle-img" src="images/michael-lydeamore.jpg" height = "200px"/>
+::: {.columns}
+::: {.column width='50%'}
+<center><img class="circle-img" src="images/michael-lydeamore.jpg" height = "200px"/>
 
 Dr. Michael Lydeamore
 
 *Lecturer & Chief Examiner*
-
+</center>
 
 :::
-
-::: w-50
-
-<img  class="circle-img" src="images/janith-wanniarachchi.jpg" height = "200px"/>
+::: {.column width='50%'}
+<center><img  class="circle-img" src="images/janith-wanniarachchi.jpg" height = "200px"/>
 
 Janith Wanniarachchi
 
 *Tutor*
+</center>
 
 :::
-
 :::
 
-::: w-80
+
 ::: callout-note
 
 ## Contacting the teaching team
@@ -120,7 +116,7 @@ Janith Wanniarachchi
 * For non-private matters, you should post this in the Moodle discussion board. 
 
 :::
-:::
+
 
 ```{css, echo = FALSE}
 .circle-img {
@@ -188,7 +184,7 @@ After this unit, you should be able to:
 ## Unit website 
 
 <center>
-[[<i class="fa-solid fa-link"></i> cwd.numbat.space](https://cwd.numbat.space/)]{.f1}
+[[<i class="fas fa-solid fa-link"></i> cwd.numbat.space](https://cwd.numbat.space/)]{.f1}
 </center>
 
 :::
