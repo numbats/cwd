@@ -1,0 +1,105 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 3"
+author: "Michael Lydeamore"
+date: "Week 3"
+format:
+    unilur-html:
+        output-file: index.html
+        embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
+---
+
+
+```{r setup, include = FALSE, eval = file.exists("setup.R")}
+source("setup.R")
+library(tidyverse)
+knitr::opts_chunk$set(fig.path = "images/tutorial-03-")
+```
+
+```{r, echo = FALSE, eval = file.exists("tutorial.css")}
+htmltools::includeCSS("tutorial.css")
+```
+
+
+
+
+## 🎯 Objectives
+
+- design slides that are fit for data storytelling
+- write slides with Quarto revealjs
+
+::: {.callout-note collapse="true"}
+
+## Preparation
+
+1. Install the latest Quarto and RStudio IDE
+2. `install.packages("readabs")`
+:::
+
+
+Break into small groups and for each of the following data stories:
+
+* Sketch out your ideas as a group,
+* Write your presentation slides using Quarto revealjs,
+* Present your slides to your peers.
+
+
+## Exercise 7A
+
+**Australian Labor Market**
+
+[**News source**: Australia’s jobless rate is only 3.4% – so what’s holding wage growth back?](https://www.theguardian.com/business/2022/aug/18/australias-jobless-rate-is-only-34-so-whats-holding-wage-growth-back)
+
+* The Australian Bureau of Statistics reported another disappointing increase in the wage price index with the June quarter rise of 2.6% lagging consumer price gains of 6.1% by a record amount.
+* The jobless rate in July fell to 3.4%, the lowest since August 1974.
+* Economists believe unemployment will shrink further, particularly once the winter bane of influenza and Covid recedes, easing disruptions inflicted by 750,000 afflicted workers in July.
+* Such strength in labour demand, though, makes it more surprising – and perhaps galling for staff – that wages aren’t rising faster.
+* Separate ABS figures released reveal average weekly earnings for full-time work actually grew more slowly in the year to May, at 1.9%, compared with the 2.1% pace reported in November.
+* The ABS reckons growth in average weekly earnings has held back an increase in relatively low-paid restaurant and accommodation jobs as the economy bounced back from Covid lockdowns. That altered the composition of jobs, as did the rise in youth employment.
+
+You can get some of the relevant ABS data easily using the `readabs` package as below. The relevant Series ID is identified in the Excel sheet at the ABS for individual catalogues on the ABS site (https://www.abs.gov.au/statistics). 
+
+```r
+library(readabs)
+# 15-24 years Unemployment
+youth_unemploy <- read_abs(series_id = "A84591889X") 
+# All Unemployment
+unemploy <- read_abs(series_id = "A84591917W")
+# Average weekly earning of full-time working adults
+fulltime_earnings <- read_abs(series_id = "A85002151A")
+# Consumer Price Index
+CPI <- read_abs(series_id = "A2325846C") 
+# Wage Price Index
+WPI <- read_abs(series_id = "A2603609J") 
+```
+
+
+
+```{r, box.title = "Example Answer", results = "asis"}
+#| unilur-solution: true
+#| echo: false
+knitr::include_url("tutorial-03-solA.html")
+cat("<br><br>Download the source file <a download href='tutorial-03-solA.qmd'  style='color:yellow!important;'>here</a>.")
+```
+
+
+
+## Exercise 7B
+
+**Prices of Food and Carbon Dioxide**
+
+[**News source**: Food producer warns of ‘price shock’ as carbon dioxide price quadruples](https://www.theguardian.com/business/2022/sep/02/food-producer-warns-of-price-shock-as-carbon-dioxide-price-quadruples)
+
+* One of the UK’s biggest chicken producers has warned food security could be under threat and shoppers exposed to a “price shock” after a more than threefold surge in the price of carbon dioxide (CO2).
+* Pig farmers, soft drink producers, brewers and bakeries are also being hit by the increase in the cost of the gas, which is used to stun animals before slaughter, as well as in packaging and as an ingredient.
+* Industry insiders said prices had risen to as much as £4,500 a tonne, up from about £1,000 last week and just £200 last year as two major suppliers temporarily close their facilities maintenance. That comes after a third site prepares for permanent closure having temporarily shut in September last year.
+* The costs surge is likely to add to pressure on food prices, which rose by more than 9% last month, according to the latest data from the British Retail Consortium.
+
+```{r, solution = TRUE, echo = FALSE, box.title = "Example Answer", results = "asis"}
+#| unilur-solution: true
+knitr::include_url("tutorial-03-solB.html")
+cat("<br><br>Download the source file <a download href='tutorial-03-solB.qmd'  style='color:yellow!important;'>here</a>.")
+```

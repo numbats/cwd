@@ -1,0 +1,77 @@
+---
+pagetitle: "Food price shock coming as carbon dioxide becomes expensive"
+author: "Michael Lydeamore"
+footer: "ETC5523 Tutorial 3B Example Answer"
+format: 
+  revealjs:
+    slide-number: true
+    show-slide-number: all
+    width: 1280
+    height: 720
+execute:
+  echo: false
+---
+
+# [`r rmarkdown::metadata$pagetitle`]{style="color:white;"} {#title-slide background-color="rgb(143, 188, 143)" }
+
+[`r rmarkdown::metadata$author`]{style="color:white;"}
+
+```{r setup}
+library(tidyverse)
+knitr::opts_chunk$set(dev = "svg")
+```
+
+
+
+# Food producers need CO<sub>2</sub>
+
+::: notes
+
+* Pig farmers use it to stun animals before slaughter
+* Soft drink producers need it to produce packaging
+* Brewers use it for ingredient, etc.
+
+:::
+
+
+## CO<sub>2</sub> price is out of control!
+
+
+```{r}
+data.frame(time = fct_inorder(c("Last year", "Last week", "Now")),
+           cost = c(200, 1000, 4500)) %>% 
+  ggplot(aes(time, cost)) +
+  geom_col() + 
+  geom_col(data = ~filter(.x, time=="Now"),
+           fill = "darkseagreen") + 
+  geom_text(aes(label = scales::dollar(cost, prefix = "£")),
+            size = 12, nudge_y = 500) +
+  scale_y_continuous(labels = scales::dollar_format(prefix = "£")) +
+  theme_void(base_size = 18) +
+  theme(axis.text.x = element_text(color = "black", size = 30))
+```
+
+
+
+## {background-color="rgb(143, 188, 143)"}
+
+<br><br>
+
+<center style="font-size:3em; color: white; font-weight:bold;">
+
+Brace yourself ... food price is going to go up.
+
+</center>
+
+. . . 
+
+<center>
+[Based on the report by Sarah Butler, "Food producer warns of ‘price shock’ as carbon dioxide price quadruples" at The Guardian ](https://www.theguardian.com/business/2022/sep/02/food-producer-warns-of-price-shock-as-carbon-dioxide-price-quadruples)
+</center>
+
+```{css, echo = FALSE}
+a {
+  color: #e3e3e3!important;
+}
+```
+
