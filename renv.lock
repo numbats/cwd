@@ -493,6 +493,16 @@
       "Repository": "CRAN",
       "Hash": "f7736a18de97dea803bde0a2daaafb27"
     },
+    "fastmatch": {
+      "Package": "fastmatch",
+      "Version": "1.1-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "8c406b7284bbaef08e01c6687367f195"
+    },
     "fontawesome": {
       "Package": "fontawesome",
       "Version": "0.5.1",
@@ -531,6 +541,29 @@
         "methods"
       ],
       "Hash": "94af08e0aa9675a16fadbb3aaaa90d2a"
+    },
+    "fst": {
+      "Package": "fst",
+      "Version": "0.9.8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "fstcore"
+      ],
+      "Hash": "34637e000c63c3de8d8aafceb82fd082"
+    },
+    "fstcore": {
+      "Package": "fstcore",
+      "Version": "0.9.18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp"
+      ],
+      "Hash": "4c33c7202fcfe741cdea205570305630"
     },
     "gargle": {
       "Package": "gargle",
@@ -589,6 +622,22 @@
         "withr"
       ],
       "Hash": "3a147ee02e85a8941aad9909f1b43b7b"
+    },
+    "ggrepel": {
+      "Package": "ggrepel",
+      "Version": "0.9.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "ggplot2",
+        "grid",
+        "rlang",
+        "scales",
+        "withr"
+      ],
+      "Hash": "cc3361e234c4a5050e29697d675764aa"
     },
     "glue": {
       "Package": "glue",
@@ -772,6 +821,22 @@
       ],
       "Hash": "f6844033201269bec3ca0097bc6c97b3"
     },
+    "hutils": {
+      "Package": "hutils",
+      "Version": "1.8.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "data.table",
+        "fastmatch",
+        "grDevices",
+        "magrittr",
+        "stats",
+        "utils"
+      ],
+      "Hash": "69344d4b60a7e4b57d5121e31204a06f"
+    },
     "ids": {
       "Package": "ids",
       "Version": "1.0.1",
@@ -865,6 +930,24 @@
         "stats"
       ],
       "Hash": "3d5108641f47470611a32d0bdf357a72"
+    },
+    "labelled": {
+      "Package": "labelled",
+      "Version": "2.13.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "dplyr",
+        "haven",
+        "lifecycle",
+        "rlang",
+        "stringr",
+        "tidyr",
+        "tidyselect",
+        "vctrs"
+      ],
+      "Hash": "ad4b6d757624221aec6220b8c78defeb"
     },
     "later": {
       "Package": "later",
@@ -1183,6 +1266,30 @@
       ],
       "Hash": "5e3c5dc0b071b21fa128676560dbe94d"
     },
+    "readabs": {
+      "Package": "readabs",
+      "Version": "0.4.16",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "dplyr",
+        "fst",
+        "glue",
+        "httr",
+        "hutils",
+        "labelled",
+        "purrr",
+        "readxl",
+        "rlang",
+        "rvest",
+        "stringi",
+        "tidyr",
+        "tools",
+        "xml2"
+      ],
+      "Hash": "71aa30400ea6ca894e9adc78f53040ae"
+    },
     "readr": {
       "Package": "readr",
       "Version": "2.1.4",
@@ -1399,6 +1506,20 @@
         "utils"
       ],
       "Hash": "3f9796a8d0a0e8c6eb49a4b029359d1f"
+    },
+    "slider": {
+      "Package": "slider",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "rlang",
+        "vctrs",
+        "warp"
+      ],
+      "Hash": "a584625e2b9e4fad4be135c8ea5c99aa"
     },
     "stringi": {
       "Package": "stringi",
@@ -1671,6 +1792,16 @@
         "withr"
       ],
       "Hash": "8318e64ffb3a70e652494017ec455561"
+    },
+    "warp": {
+      "Package": "warp",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "fea474d578b1cbcb696ae6ac8bdcc439"
     },
     "withr": {
       "Package": "withr",
