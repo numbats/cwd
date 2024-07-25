@@ -218,7 +218,7 @@ Materials are designed to develop your **hard and soft skills**.
 * **Week 4**: *Assessment 1* (25%) Breaking down key communication concepts in articles
 * **Week 7**: *Assessment 2* (25%) Writing your first communication piece
 * **Week 10**: *Assessment 3* (20%) Creating your own blog, styling and adding content
-* **Week 10**: *Assessment 4* (25%) Turning your findings into a dashbaord
+* **Week 13**: *Assessment 4* (25%) Turning your findings into a dashbaord
 * *Oral Presentations* (5%) Starting in Week 2, each week up to three people present in tutorial
 
 
