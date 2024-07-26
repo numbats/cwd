@@ -28,9 +28,12 @@ htmltools::includeCSS("tutorial.css")
 
 ## Preparation
 
-* Install the R-packages below:  
+* Install the R-packages below:
+
 ```{r}
 #| eval: false
+#| echo: true
+
 install.packages(c("rmarkdown", "tidyverse", "reprex"))
 ```
 
