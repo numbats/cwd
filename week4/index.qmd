@@ -19,7 +19,7 @@ format:
     width: 1280
     height: 720
     css: [assets/tachyons-addon.css, assets/custom.css]
-    include-after-body: "assets/after-body.html"
+    include-after-body: "../assets/after-body.html"
 execute:
   echo: true
 ---
