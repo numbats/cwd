@@ -237,15 +237,7 @@ sessioninfo::session_info()
 
 :::
 
-## 👥 Exercise 1C
-
-**Join the GitHub Classroom**
-
-1. Go to your Moodle course page and find the invite link to the GitHub Classroom. 
-2. Make sure to *select your name from identifier*! (Let the teaching team know if you cannot find it)
-2. Join the GitHub Classroom before the end of **Tue 2nd August 11.55pm**.
-    
-## 👥️ Exercise 1D
+## 👥️ Exercise 1C
 
 **Classify the types of communication**
 
@@ -278,7 +270,7 @@ Reflect on your own communication style for intrapersonal, interpersonal, small 
 
 :::
 
-## 👥️ Exercise 1E
+## 👥️ Exercise 1D
 
 **Effective communciation**
 
