@@ -119,17 +119,13 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 ## R Markdown system
 
-::: flex
+::: {.columns}
+::: {.column}
 
-::: w-50
-<center>
-<img src="images/drawn/rmd-system.png">
-</center>
+![](images/rmd-system.png)
+
 :::
-
-::: w-50
-
-**Benefits**
+::: {.column}
 
 ::: incremental 
 
@@ -139,38 +135,21 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 :::
 
-
 :::
 
 :::
-
-
-
 
 # `r fa_file("qmd")` Quarto
 
 (multi-language, next generation version of R Markdown)
 
-::: f3
+## Quarto system {.smaller}
 
-Note: this is developed by RStudio (or [Posit](https://www.rstudio.com/blog/rstudio-is-becoming-posit/) from October 2022) team.
-
+::: {.columns}
+::: {.column}
+![](images/qmd-system.png)
 :::
-
-## Quarto system
-
-::: flex
-
-::: w-50
-
-<center>
-<img src="images/drawn/qmd-system.png">
-</center>
-
-:::
-
-::: {.w-50 .f2}
-
+::: {.column}
 
 **Changes**
 
@@ -182,16 +161,13 @@ Note: this is developed by RStudio (or [Posit](https://www.rstudio.com/blog/rstu
 * Some specifications for YAML and chunk options
 
 :::
-
 :::
-
 :::
 
 ## Overall syntax comparison
 
-::: flex
-
-::: {.w-50 .pr1}
+::: {.columns}
+::: {.column}
 
 Rmd 
 
@@ -213,8 +189,7 @@ library(tidyverse)
 ````
 
 :::
-
-::: {.w-50 .pl1}
+::: {.column}
 
 Qmd 
 
@@ -242,9 +217,6 @@ library(tidyverse)
 :::
 
 :::
-
-
-
 
 ## Do we use Rmd or Qmd?
 
@@ -307,9 +279,7 @@ What is the difference?
 
 ::: w-50
 
-<center>
-<img src="images/drawn/webpage-vs-website.png">
-</center>
+![](images/webpage-vs-website.png){fig-align="center"}
 
 :::
 
@@ -375,10 +345,7 @@ This creates a basic file structure in the `myblog` directory.
 :::
 
 
-## Quarto blog template
-
-<iframe src="myblog/index.html" width="100%" height="600px" class="ba"></iframe>
-
+# Quarto blog template (demo)
 
 ## Quarto blog structure 
 
@@ -475,15 +442,10 @@ title-block-banner: true
 
 ## Web hosting
 
-<center>
-<img src="images/drawn/web-pub-system.png">
-</center>
+![](images/web-pub-system.png){fig-align="center"}
 
 
-
-
-
-## <img src="images/quarto.png" style="vertical-align:middle"> Sharing on the web with Quarto Pub
+## Sharing on the web with Quarto Pub
 
 * Go to [https://quartopub.com/](https://quartopub.com/) and log in
 * In the terminal, run 
@@ -528,9 +490,8 @@ quarto publish gh-pages
 1. Go to [https://app.netlify.com](https://app.netlify.com) and log in
 2. Drag and drop your site folder which contains the `index.html` to:
 
-<center>
-<img src="images/lecture-04/netlify-dropoff.png" width = "800px">
-</center>
+![](images/netlify-dropoff.png){fig-align="center"}
+
 
 3. Do go to `Site settings > Change site name` for a more sensible domain name. 
 

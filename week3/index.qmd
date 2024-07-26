@@ -139,7 +139,7 @@ Schwabish (2017) Better Presentations: A Guide for Scholars, Researchers, and Wo
 
 ## For Presentations
 
-![](images/presentation-hourclass.csv){fig-align="center"}
+![](images/presentation-hourclass.svg){fig-align="center"}
 
 [Aim for the [hourglass structure]{.monash-blue}!]{.f1}
 

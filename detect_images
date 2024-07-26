@@ -33,6 +33,6 @@ for i in {1..11}; do
     for image in $images; do
         echo "Processing image: $image"
         # Use the cp command to copy the file to the new location
-        cp "images/lecture-"${i}"/"$image week${weeknum}/images/
+        cp "images/"$image week${weeknum}/images/
     done
 done
