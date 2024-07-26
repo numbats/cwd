@@ -1,0 +1,89 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 4"
+author: "Michael Lydeamore"
+date: "Week 4"
+format:
+    unilur-html:
+        output-file: index.html
+        embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
+---
+
+
+```{r setup, include = FALSE, eval = file.exists("setup.R")}
+source("setup.R")
+```
+
+```{r}
+#| echo: false
+#| eval: !expr file.exists("tutorial.css")
+htmltools::includeCSS("tutorial.css")
+```
+
+```{r}
+#| include: false
+checkbox <- function(text) {
+  paste0('<label class="checkbox-container"><input type="checkbox"> ', text, '<span class="checkmark"></span>
+</label>')
+}
+```
+
+## 🎯 Objectives
+
+* use Quarto for creating reproducible documents
+* make blog websites using Quarto
+* share webpage and websites on public domains with Quarto Pubs, GitHub Pages or Netlify
+
+::: {.callout-note collapse="true"}
+
+# Preparation
+
+1. Install the [latest RStudio IDE](https://www.rstudio.com/products/rstudio/download/)
+2. Install the [latest Quarto CLI](https://quarto.org/docs/get-started/)
+3. (Optional) Make a (free) account at [https://quartopub.com/](https://quartopub.com/) if you want to share your website via Quarto Pub.
+4. (Optional) Make a (free) account at [https://www.netlify.com/](https://www.netlify.com/) if you want to share your website via Netlify. 
+
+:::
+
+Note: there will be no tutorial solution this week as the task is about getting you set up for making a website using Quarto. 
+
+
+## 🌐️ Exercise 4A
+
+**Construct a data story using Quarto**
+
+Convert your assignment 1 into a Quarto document. The YAML below may be helpful:
+
+``` yaml
+---
+title: "My story title"
+author: "Your name"
+format: html
+---
+```
+
+`r checkbox("Write this story in a qmd file with a HTML output")`    
+`r checkbox("Render this qmd file")`  
+
+
+## 🌐️ Exercise 4B
+
+**Make a blog website using Quarto**
+
+Create a blog website with Quarto, as shown in lecture recording. Add the data story you constructed in Exercise 4A as a blog post. 
+
+`r checkbox("Make a Quarto blog website")`  
+`r checkbox("Add one blog post")`  
+
+
+## 🌐️ Exercise 4C
+
+**Publish your blog website**
+
+Publish your blog website constructed in Exercise 4B using either Quarto Pub, GitHub Pages or Netlify.
+
+`r checkbox("Upload this to a GitHub repo")`  
+`r checkbox("Publish this on the web")`
