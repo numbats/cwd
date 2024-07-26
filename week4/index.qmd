@@ -12,7 +12,7 @@ format:
     logo: images/monash-one-line-black-rgb.png
     slide-number: true
     multiplex: false
-    theme: assets/monash.scss
+    theme: ../assets/monash.scss
     show-slide-number: all
     show-notes: false
     controls: true
