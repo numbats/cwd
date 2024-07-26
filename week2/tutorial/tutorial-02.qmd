@@ -1,0 +1,144 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 2"
+author: "Michael Lydeamore"
+date: "Week 2"
+format:
+    unilur-html:
+        output-file: index.html
+        embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
+---
+
+
+```{r, echo = FALSE, eval = file.exists("tutorial.css")}
+htmltools::includeCSS("tutorial.css")
+```
+
+
+## `r emo::ji("target")` Objectives
+
+- Understand structure of journalism articles
+- Add data to a story to improve the impact
+
+## Introduction 
+
+You will be analysing an article from BBC World News about Japan's ageing population. The article is available online on the BBC website [here](https://www.bbc.com/news/world-asia-66850943).
+
+Form small groups (3-5 people) for these exercises.
+
+## 👥 Exercise 1
+
+a. In the article, highlight each section of the "inverted pyramid" model. Note that not all parts of the inverted pyramid may be present in the article.
+
+::: {.unilur-solution}
+**Main facts:** First two paragraphs include the main facts
+
+**More detail:** Followed by details of _why_ this may be the case.
+
+**Quote::** From Japanese Prime MInister Fumio Kishida.
+
+There's no bio, and little additional detail, likely because this is a very short article and so there was no space to include the extra information.
+:::
+
+
+b. Is this article a news feature or a news story? Why?
+
+::: {.unilur-solution}
+This is a news story: It is quoting sources and repeating information. There is no inclusion of characters in the story.
+:::
+
+c. Try and write a new headline for the article that conveys a similar message. Remember the principles of concise writing when developing your new headline.
+
+::: {.unilur-solution}
+There are lots of potential approaches to this. Here is one:
+
+Japan's ageing population: Now the oldest in the world
+:::
+
+
+## Exercise 2
+
+With a good understanding of the content of the article, in your groups, you are tasked with finding some data to enrich this story, and producing a graphic to add to the article.
+
+You will need to:
+
+a. Locate a suitable data source,
+
+b. Write code to load in the data and manipulate it into a format appropriate for visualisation,
+
+c. Create a clear, concise graphic that supports the message of the story.
+
+::: {.unilur-solution}
+You could pick a few aspects of the story to look at data from. I've chosen the population data, which I've sourced from [Our World in Data](https://ourworldindata.org/population-growth).
+
+```{r}
+#| echo: true
+#| fig-height: 6
+
+library(tidyverse)
+library(viridisLite)
+library(ggtext)
+
+population_data <- read_csv("population-and-demography.csv")
+
+plot_data <- population_data |>
+    # The article mentions Italy, Finland and Japan
+    filter(Code %in% c("ITA", "FIN", "JPN")) |>
+    select(!Code) |>
+    pivot_longer(!c(Entity, Year)) |>
+    group_by(Entity, Year) |>
+    # The populations of these countries are very different, so we should normalised them to put them on the same scale
+    mutate(normalised_value = value / sum(value)) |>
+    ungroup() |>
+    # We don't want them in alphabetical order: Japan is the takeaway country
+    mutate(Entity = factor(Entity, levels = c("Japan", "Italy", "Finland"))) |>
+    # Only old populations
+    filter(name == "65+ years") |>
+    filter(Year >= 1980)
+
+# One trick is to use text labels instead of a legend to draw the reader to a key part of the plot.
+# This puts the labels on the right hand side (max(year)) and at the correct height.
+labels <- plot_data |>
+    group_by(Entity) |>
+    summarise(max_year = max(Year), y_pos = normalised_value[which.max(Year)])
+
+colors <- c("#2600ff", "#a38687", "#a38687")
+
+ggplot(plot_data, aes(x=Year, y = normalised_value*100, colour = Entity)) +
+    geom_line() +
+    geom_point() +
+    geom_text(aes(label = Entity, x = max_year+1, y = y_pos*100), data = labels, hjust = 0) +
+    labs(x = "Year", y = "Percentage of population", title = "<span style ='color:#2600ff;'>Japan</span> has the world's oldest population") + 
+    guides(colour = "none") +
+    # Space for labels
+    expand_limits(x = 2030) +
+    # We are only colouring one line - the one we want people to look at!
+    scale_color_manual(values = colors) +
+    cowplot::theme_cowplot() +
+    theme(plot.title = element_markdown()) +
+    annotate(geom = "text", x = 2030, y = -4, label = "Data source: Our World in Data", size = 2, hjust = 1) +
+    coord_cartesian(ylim = c(0, 30), clip = "off")
+```
+:::
+
+
+## Exercise 3
+
+Present your visualisation to the class. Explain why you chose a particular data source, and what the audience can learn from the visualisation.
+
+::: {.callout-tip}
+Try to ensure your graphic _adds_ to the story. You want the visualisation to give extra information to the audience.
+:::
+
+::: {.unilur-solution}
+This visualisation shows people how the age of Japan's population has _changed_ over time, which is not otherwise present in the article. It also shows the scale of the difference between Japan and two other European countries.
+
+It could be improved: There are too many years on the x-axis, the y-axis labels should probably have % signs on them, and the title could be better.
+
+For the data source annotation, best practice would be to include a link, although this isn't generally possible inside `ggplot`, so we instead include a plain text reference to the website.
+:::
+
+
