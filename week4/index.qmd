@@ -12,14 +12,14 @@ format:
     logo: images/monash-one-line-black-rgb.png
     slide-number: true
     multiplex: false
-    theme: assets/monash.scss
+    theme: ../assets/monash.scss
     show-slide-number: all
     show-notes: false
     controls: true
     width: 1280
     height: 720
-    css: [assets/tachyons-addon.css, assets/custom.css]
-    include-after-body: "assets/after-body.html"
+    css: [../assets/tachyons-addon.css, ../assets/custom.css]
+    include-after-body: "../assets/after-body.html"
 execute:
   echo: true
 ---
