@@ -118,17 +118,6 @@ Lecturer: *`r rmarkdown::metadata$author`*
 :::
 :::
 
-# Structure {background-color=#006DAE}
-
-
-::: {.monash-gray10 .f4 .footnote}
-
-<br><br><br>
-
-Schwabish (2017) Better Presentations: A Guide for Scholars, Researchers, and Wonks
-
-:::
-
 ## Typical Structure for Reports or Articles
 
 ![](images/paper-pyramid.svg){fig-align="center"}
@@ -144,7 +133,7 @@ Schwabish (2017) Better Presentations: A Guide for Scholars, Researchers, and Wo
 [Aim for the [hourglass structure]{.monash-blue}!]{.f1}
 
 
-# Planning {background-color=#006DAE}
+# Planning
 
 ## Type and length of presentation?
 
@@ -210,7 +199,7 @@ Plan[, Plan]{.fragment}[, Plan]{.fragment}
 :::
 
 
-# Applying [Cognitive Psychology]{.monash-gray10} to Presentations {background-color="#006DAE"}
+# Applying Cognitive Psychology to Presentations
 
 ## Keep it simple
 
@@ -511,7 +500,7 @@ The message should be effectively processed in 3 seconds
 
 [Don't take it as an absolute rule!]{.monash-red2}
 
-# The technical nitty gritty {background="#006DAE"}
+# The technical nitty gritty
 
 
 ## Technical set-ups and tools
