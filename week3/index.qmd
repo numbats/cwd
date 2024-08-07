@@ -128,7 +128,7 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 ## For Presentations
 
-![](images/presentation-hourclass.svg){fig-align="center"}
+![](images/presentation-hourglass.svg){fig-align="center"}
 
 [Aim for the [hourglass structure]{.monash-blue}!]{.f1}
 
