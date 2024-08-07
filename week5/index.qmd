@@ -30,6 +30,8 @@ basename <- gsub(".[Rq]md$", "", current_file)
 library(knitr)
 library(kableExtra)
 library(janitor)
+library(broom)
+library(broom.helpers)
 knitr::opts_chunk$set(
   fig.path = sprintf("images/%s/", basename),
   fig.width = 6,

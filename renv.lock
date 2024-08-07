@@ -237,6 +237,27 @@
       ],
       "Hash": "a4652c36d1f8abfc3ddf4774f768c934"
     },
+    "broom.helpers": {
+      "Package": "broom.helpers",
+      "Version": "1.15.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "broom",
+        "cli",
+        "dplyr",
+        "labelled",
+        "lifecycle",
+        "purrr",
+        "rlang",
+        "stats",
+        "stringr",
+        "tibble",
+        "tidyr"
+      ],
+      "Hash": "768cae43c3da698d6b11763777301e43"
+    },
     "bslib": {
       "Package": "bslib",
       "Version": "0.5.0",
