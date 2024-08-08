@@ -47,7 +47,7 @@ Break into small groups and for each of the following data stories:
 * Present your slides to your peers.
 
 
-## Exercise 7A
+## Exercise A
 
 **Australian Labor Market**
 
@@ -87,7 +87,7 @@ cat("<br><br>Download the source file <a download href='tutorial-03-solA.qmd'  s
 
 
 
-## Exercise 7B
+## Exercise B
 
 **Prices of Food and Carbon Dioxide**
 
