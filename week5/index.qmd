@@ -91,7 +91,6 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 * Extract information from model objects  
 * Understand and create functions in R
-* Understand and apply S3 object-oriented programming in R
 
 :::
 

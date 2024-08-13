@@ -1,0 +1,211 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 5"
+author: "Michael Lydeamore"
+date: "Week 5"
+format:
+    unilur-html:
+        output-file: index.html
+        embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
+---
+
+
+
+```{r setup}
+#| include: false
+#| eval: !expr file.exists("setup.R")
+source("setup.R")
+knitr::opts_chunk$set(fig.path = "images/tutorial-05-")
+```
+
+```{r}
+#| echo: false
+#| eval: !expr file.exists("tutorial.css")
+htmltools::includeCSS("tutorial.css")
+```
+
+
+
+
+## 🎯 Objectives
+
+* create new functions and generic methods
+* understand and follow guidelines for best way to communicate with tables
+* construct regression, descriptive, and interactive tables with R Markdown
+* deconstruct and manipulate "novel" model objects
+* modify the look of *HTML tables* produced by R Markdown or Quarto
+
+
+::: {.callout-note collapse="true"}
+
+# Preparation
+
+Install the R-packages
+
+``` r
+install.packages(c("broom", "DT", "kableExtra", "palmerpenguins", "modelsummary", "gtsummary"))
+```
+
+:::
+
+
+## 👥 Exercise 5A
+
+**Reporting regression tables**
+
+Create regression tables, respecting the standard guidelines of presentation for tables, with models `lm1` and `rlm1` below using `modelsummary`, `gtsummary` or otherwise. 
+
+```{r}
+library(palmerpenguins)
+lm1 <- lm(bill_length_mm ~ species + bill_depth_mm + flipper_length_mm + body_mass_g + sex, data = penguins)
+rlm1 <- rlm(bill_length_mm ~ . , data = penguins)
+```
+
+::: unilur-solution
+
+```{r}
+lm1 <- lm(bill_length_mm ~ species + bill_depth_mm + flipper_length_mm + body_mass_g + sex, data = penguins)
+rlm1 <- rlm(bill_length_mm ~ . , data = penguins)
+modelsummary::modelsummary(models = list(lm1, rlm1))
+```
+
+:::
+
+
+## 🛠️ Exercise 5B
+
+**Interactive data tables**
+
+Produce the same table that you find below using `DT` using the `penguins` data in the `palmerpenguins` package.
+
+```{r}
+#| echo: false
+
+library(palmerpenguins)
+library(tidyverse)
+library(DT)
+
+penguins %>% 
+  group_by(species) %>% 
+  summarise(
+    fivenum = list(setNames(as.vector(summary(na.omit(bill_length_mm))),
+                   c("Min", "Q1", "Median", "Mean", "Q3", "Max")))) %>% 
+  unnest_wider(fivenum) %>% 
+  datatable(escape = FALSE,
+            options = list(paging = FALSE,
+                           dom = "t")) %>% 
+  formatRound(columns = c("Min", "Q1", "Mean", "Median", "Q3", "Max"), digits = 2)
+```
+
+::: unilur-solution
+
+```{r}
+#| eval: false
+
+
+library(palmerpenguins)
+library(tidyverse)
+library(DT)
+
+penguins %>% 
+  group_by(species) %>% 
+  summarise(
+    fivenum = list(setNames(as.vector(summary(na.omit(bill_length_mm))),
+                   c("Min", "Q1", "Median", "Mean", "Q3", "Max")))) %>% 
+  unnest_wider(fivenum) %>% 
+  datatable(escape = FALSE,
+            options = list(paging = FALSE,
+                           dom = "t")) %>% 
+  formatRound(columns = c("Min", "Q1", "Mean", "Median", "Q3", "Max"), digits = 2)
+```
+
+:::
+
+## 👥 Exercise 5C - Challenge
+
+**Working with robust linear models**
+
+Consider the artificial data in the object `df`. There are two obvious outliers. Which observations are the outliers?
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+library(broom)
+library(palmerpenguins)
+library(MASS) # needed for rlm
+df <- tibble(x = 1:20, y = c(1:18, 49:50))
+ggplot(df, aes(x, y)) + 
+  geom_point(size = 2) + theme_bw(base_size = 12)
+```
+
+A simple linear model where parameters are estimated using least squares estimate are not robust to outliers. Below we fit two models: 
+
+1. a linear model with least square estimates contained in `fit_lm` and 
+2. a robust linear model contained in `fit_rlm`. 
+
+To explain briefly, a robust linear model down-weights the contribution of the observations that are outlying observations to estimate parameters.
+
+```{r}
+fit_lm <- lm(y ~ x, data = df) 
+fit_rlm <- rlm(y ~ x, data = df) 
+```
+
+Below is a modification to the `augment` method from the `broom` package to extract some model-related values and the weights from the iterated re-weighted least squares.
+
+```{r}
+augment.rlm <- function(fit, ...) {
+   broom:::augment.rlm(fit) %>% 
+    mutate(w = fit$w)
+}
+
+augment(fit_rlm)
+```
+
+Here is a plot to compare the two model fits, and to give some understanding of these weights. What do you notice about the weights?
+
+Can you improve the plot to better undertstand the differences in the model and the weights?
+
+```{r, eval = FALSE}
+ggplot(augment(fit_rlm), aes(x, y, color = w)) + 
+  geom_point(size = 2) + 
+  geom_smooth(method = "lm", se = FALSE, color = "#C8008F") +
+  geom_smooth(method = "rlm", se = FALSE, color = "#027EB6") + 
+  annotate("text", x = 20.5, y = c(21, 31), 
+           label = c("rlm", "lm")) + 
+  theme_bw(base_size = 12) + 
+  labs(title = "Robust vs. non-robust linear models") + 
+  scale_color_continuous(type = "viridis")
+```
+
+::: unilur-solution
+
+We can see that the two outlier observations on the right-hand side of the plot have a much smaller weight (`w`) in the robust linear regression model.
+
+We can also see that the robust linear regression model follows the _majority_ of points much closer than the linear model.
+
+The plot highlights the differences between the linear model and the robust linear model well, but it is hard to see the value of the points (i.e. their weight). One simple improvement is to change the order the layers are drawn, and put the dots on top:
+
+```{r rlm}
+#| message: false
+#| warning: false
+
+ggplot(augment(fit_rlm), aes(x, y, color = w)) + 
+  geom_smooth(method = "lm", se = FALSE, color = "#C8008F") +
+  geom_smooth(method = "rlm", se = FALSE, color = "#027EB6") + 
+  geom_point(size = 2) + 
+  annotate("text", x = 20.5, y = c(21, 31), 
+           label = c("rlm", "lm")) + 
+  theme_bw(base_size = 12) + 
+  labs(title = "Robust vs. non-robust linear models") + 
+  scale_color_continuous(type = "viridis")
+
+```
+
+Now we can see the colours of the points much clearer.
+
+:::
+
