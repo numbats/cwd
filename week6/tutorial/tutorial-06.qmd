@@ -192,7 +192,7 @@ Recall the data stories from the lecture shown below. Using the data downloaded 
 #| fig.height: 4
 #| message: false
 #| warning: false
-df <- read_csv("data/census-birthplace.csv")
+df <- read_csv("../../data/census-birthplace.csv")
 df %>% 
   filter(census == 2021, 
          !birth %in% c("Total", "Not Stated", "Other", "Australia")) %>% 
