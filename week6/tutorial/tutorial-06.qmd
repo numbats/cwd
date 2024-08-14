@@ -15,8 +15,6 @@ format:
 
 ```{r setup}
 #| include: false
-#| eval: !expr file.exists("setup.R")
-source("setup.R")
 library(patchwork)
 library(tidyverse)
 library(colorspace)
