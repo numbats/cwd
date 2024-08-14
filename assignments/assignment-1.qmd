@@ -36,7 +36,7 @@ This is an **individual assignment**.
 
 ## Output format
 
--   Maximum length:
+-   Maximum length: Four A4 pages
 
 -   Please upload the completed PDF to Moodle
 
