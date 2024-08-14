@@ -1,0 +1,249 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 6"
+author: "Michael Lydeamore"
+date: "Week 6"
+format:
+    unilur-html:
+        output-file: index.html
+        embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
+---
+
+
+```{r setup}
+#| include: false
+#| eval: !expr file.exists("setup.R")
+source("setup.R")
+library(patchwork)
+library(tidyverse)
+library(colorspace)
+```
+
+```{r}
+#| echo: false
+#| eval: !expr file.exists("tutorial.css")
+htmltools::includeCSS("tutorial.css")
+```
+
+
+
+
+## 🎯 Objectives
+
+- appreciate how certain choices in the construction of data visualisation reveals particular structures in the data
+- given certain features in the data, create graphics that make the features more pronounced
+- (re)create data plots using `ggplot2` 
+- identify and apply cognitive concepts (e.g. preattentive processing, law of similarity, law of closure, law of proximity), elementary perceptual tasks (e.g. length, position, common scale, angle and so on) and color palettes that make the data plot effective for communicating the intended message
+
+::: {.callout-note collapse="true"}
+
+## Preparation
+
+1. Install the R-packages
+
+``` r
+install.packages(c("ggridges", "ggbeeswarm", "ggrepel"))
+```
+
+2. Download the birth place data from the 2016 and 2022 Australian Census from Moodle.
+
+:::
+
+
+## 💎️ Exercise 6A
+
+**Diamonds**
+
+
+The dataset `diamonds` in the `ggplot2` package includes attributes and price on `r scales::comma(nrow(diamonds))` diamonds. Some of the attributes, such as carat, cut, color and clarity, are known to influence the price. Figures \@ref(fig:diamonds-color) and \@ref(fig:diamonds-clarity) explain the order of classifications for color and clarity of diamonds. Use this data to answer the following questions.
+
+```{r q6Adata}
+#| message: false
+#| warning: false
+library(tidyverse)
+library(colorspace)
+data("diamonds", package = "ggplot2")
+glimpse(diamonds)
+```
+
+```{r diamonds-color}
+#| echo: false
+#| fig.cap: "Diamond color image sources from https://beyond4cs.com"
+knitr::include_graphics("https://beyond4cs.com/wp-content/uploads/2019/02/diamond-color-chart-with-example-diamonds-of-each-alphabet.jpg")
+```
+
+```{r diamonds-clarity, echo = FALSE, fig.cap = "Diamond clarity image sourced from https://www.onlinediamondbuyingadvice.com"}
+knitr::include_graphics("https://www.onlinediamondbuyingadvice.com/wp-content/uploads/2018/08/diamond-clarity-scale-whiteflash-768x219.png")
+```
+
+```{r q6A, fig.height=10, fig.cap="Density plots for carats by cut, clarity and color.", message = FALSE}
+ggplot(diamonds, aes(carat, clarity)) + 
+  ggridges::geom_density_ridges(scale = 4) +
+  facet_grid(color ~ cut)
+```
+
+
+(a) Is there anything unusual about the distribution of diamond weights (i.e. carats)? Which plot do you think shows it best? How might you explain the pattern you find?
+
+
+::: unilur-solution
+
+```{r q6Aplot}
+#| echo: true
+#| results: 'asis'
+ggplot(diamonds, aes(carat)) + 
+  geom_histogram(binwidth = 0.01, aes(y = stat(density))) + 
+  geom_density(color = "red") 
+
+ggplot(diamonds, aes(carat))  +
+  geom_boxplot() + 
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()) 
+```
+
+The distribution of the diamond weights has many frequency peaks followed by a dip in the frequency, most likely due to rounding to the higher number (i.e. applying some ceiling function). This is most noticeable from using a histogram with an appropriate bin width. Here the precision of the diamond weights are recorded in 0.01 units so using a bin width of 0.01 reveals this structure. Notice that the boxplot does not reveal this.
+
+:::
+
+(b) What about the distribution of the prices? Can you find any unexpected feature? Which graphics best shows this unexpected feature?
+
+::: unilur-solution
+
+```{r q6Aplot2}
+#| echo: true
+#| warning: false
+#| message: false
+#| results: 'asis'
+g1 <- ggplot(diamonds, aes(price)) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(labels = scales::dollar) + 
+  labs(x = "Price", y = "Frequency")
+g1
+
+g1 + xlim(1400, 1600) 
+```
+
+Plotting the histogram of prices with an appropriate binwidth reveals a noticeable gap between $1,455-1,545. Zooming into the histogram makes it easier to see this gap.
+
+:::
+
+(c) Suppose that this data are a representative sample of diamonds around the world. 
+    i. The exploratory plot in first figure shows that there are hardly any diamonds with high carats that have high level of clarity. Produce a plot to support/contradict this claim.
+    ii. A diamonds whole seller wants to convince the jewellery store owner that $5,000 for a 2 carat diamond is a bargain price. Show a graphic that supports this story.
+
+::: unilur-solution
+
+```{r q6Ac}
+#| warning: false
+#| message: false
+#| echo: true
+# this is done so the colors match up between the two plots
+cols <- sequential_hcl(n = 8)
+clarity_levels <- levels(diamonds$clarity)
+g1 <- ggplot(diamonds, aes(carat, fill = clarity)) + 
+  geom_density() + 
+  scale_fill_manual(values = rev(cols), breaks = clarity_levels) +
+  labs(x = "Carat", y = "Density") 
+g1
+
+g1 + xlim(2.5, max(diamonds$carat)) + 
+  scale_fill_manual(values = rev(cols), breaks = clarity_levels)
+
+```
+
+We are only interested on the right tail so instead of focussing on the whole range, we can just focus on diamonds of 2.5 carats or more. By zooming in, the scale is adjusted and we can see what looked previously like a flat line has some peaks. We find that there are no clarity level higher than VS1 when carat is greater than 2.5. The color palette has been chosen so that it is sequential with a single hue. The clarity variable is an ordered categorical variable and this makes it easier to associate the darker shade of blue with higher clarity.")
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: true
+diamonds %>% 
+  filter(between(carat, 2, 2.05)) %>% 
+  ggplot(aes(x = "", y = price)) + 
+  ggbeeswarm::geom_quasirandom() + 
+  geom_hline(aes(yintercept=5000)) + 
+  scale_y_continuous(labels = scales::dollar, name = "Price") +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.length.x = grid::unit(0, "mm"))
+  
+```
+
+The plot shows that there is not a single diamond that is priced less than $5,000 if it is 2-2.05 carats. Bulk of the diamonds are more than double the price which should give confidence that even after taking into account marketing and other costs, there is a substantial profit margin.
+
+:::
+
+
+## 🔧 Exercise 6B
+
+**Birth place among Australian Residents**
+
+Recall the data stories from the lecture shown below. Using the data downloaded under Preparation, recreate the data plot shown below. Explain which concepts make the data plot more effective for the intended story.
+
+<img src="../images/tutorial-06-plot1.png" style="border:2px solid black;border-radius:10px;max-width:775px;">
+
+<img src="../images/tutorial-06-plot2.png" style="border:2px solid black;border-radius:10px;max-width:775px;">
+
+
+::: unilur-solution
+
+```{r exB}
+#| fig.height: 4
+#| message: false
+#| warning: false
+df <- read_csv("data/census-birthplace.csv")
+df %>% 
+  filter(census == 2021, 
+         !birth %in% c("Total", "Not Stated", "Other", "Australia")) %>% 
+  mutate(rank = rank(-count),
+         birth = fct_reorder(birth, count)) %>% 
+  filter(rank <= 5) %>%
+  ggplot(aes(count, birth)) +
+  geom_col() +
+  geom_col(data = ~filter(.x, birth == "India"),
+           fill = "#006DAE") + 
+  geom_text(aes(label = scales::percent(percentage/100, 0.1)),
+            hjust = 0, nudge_x = -100000, color = "white") +
+  scale_x_continuous(label = scales::comma) +
+  labs(x = "Number of Australian residents",
+       y = "Birth place", 
+       caption = "Data source: Australian Census 2021",
+       title = "India now third most common place of birth of Australian residents,\ncensus results show",
+       subtitle = "Top 5 countries of birth outside Australia") +
+  theme(plot.title.position = "plot")
+```
+
+The above plot uses a common position scale, in addition to the use of proximity of the bars (law of proximity), to make it easier to compare the number of Australian residents by birth place. We percentage text is enclosed within each bar which make it easier to identify which text belongs to which birth place group (law of closure). The use of color draws attention to India (preattentive processing). 
+
+
+```{r exBii}
+#| fig.height: 4
+#| message: false
+#| warning: false
+df %>% 
+  filter(!birth %in% c("Total", "Not Stated", "Other", "Australia")) %>% 
+  group_by(census) %>% 
+  mutate(rank = rank(-count)) %>% 
+  filter(rank <= 5) %>%
+  ggplot(aes(factor(census), percentage/100, color = birth)) +
+  geom_line(aes(group = birth)) + 
+  geom_point() + 
+  ggrepel::geom_text_repel(data = ~filter(.x, census == 2021),
+                           aes(label = birth),
+                           hjust = 0, nudge_x = 0.05) + 
+  scale_y_continuous(label = scales::percent) +
+  labs(x = "Census Year",
+       y = "Percentage of\nAustralian residents", 
+       caption = "Data source: Australian Census 2021",
+       title = "India has overtaken China and New Zealand to become the\nthird largest country of birth for Australian residents,\n2021 census data has found",
+       subtitle = "Top 5 countries of birth outside Australia") +
+  theme(plot.title.position = "plot") +
+  guides(color = "none")
+```
+
+The above plot uses the same color to group the value as well as birth place category (law of similarity). The proximity of the text label to the line makes it easier to identify which country the values belong to (law of proximity). The use of common position scale makes it easier to see the rise in Indian born Australian residents from the 2016 to 2021 census. The angle is used to ascertain the rise in the percentage of Australian residents with particular birth place. As angle is not as easy to retrieve information, we could have alternatively opted to show the difference or relative difference in percentage of Australian residents by birth place from the previous census.
+
+:::
