@@ -60,6 +60,7 @@ Create regression tables, respecting the standard guidelines of presentation for
 
 ```{r}
 library(palmerpenguins)
+library(MASS)
 lm1 <- lm(bill_length_mm ~ species + bill_depth_mm + flipper_length_mm + body_mass_g + sex, data = penguins)
 rlm1 <- rlm(bill_length_mm ~ . , data = penguins)
 ```
