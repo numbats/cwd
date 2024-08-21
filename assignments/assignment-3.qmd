@@ -70,7 +70,7 @@ In the about page (`about.qmd`), make the following changes:
 
 * Add a photo of you
 * Write a short biography
-* Change the GitHub button to link to your Github, and add any other buttons of your choosing
+* Change the GitHub button to link to your GitHub, and add any other buttons of your choosing
 
 For an example about page, you can see mine [here](https://www.michaellydeamore.com/)
 
@@ -123,4 +123,22 @@ Conclusion (5 marks):
 * Includes academic citation (here or other section) (1 mark)
 * Summarises the findings (2 marks)
 
-**Maximum grade**: 4 + 3 + 18 = 25 marks
+### Part D: Technical work
+
+Publish your website using _GitHub pages_.
+
+The website must be publicly accessible from a URL - the default URL is perfectly fine.
+
+To do this, you will need to:
+
+* Set up Pages on your Classroom repository
+* Change the visibility of your repository to _Public_
+* Publish your website using either `quarto publish` or by having the site directory as part of your repo
+
+#### Marking rubric for Part D
+
+* Working link (1 mark)
+* Pages set up correctly (1 mark)
+* Website HTML files correctly on version control (1 mark)
+
+**Maximum grade**: 4 + 3 + 18 + 3 = 28 marks
