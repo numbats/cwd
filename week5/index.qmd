@@ -147,16 +147,14 @@ ggplot(mtcars, aes(wt, mpg)) +
 
 ## Fitting linear models in R
 
-::: fragment
-
 We fit the model: 
 
 $$\texttt{mpg}_i = \beta_0 + \beta_1\texttt{wt}_i + e_i$$
 
-:::
-
 ::: {.columns}
 ::: {.column width='50%'}
+
+::: {.fragment}
 
 In R we fit this as 
 ```{r}
@@ -164,6 +162,7 @@ In R we fit this as
 fit <- lm(mpg ~ wt, data = mtcars)
 ```
 
+:::
 :::
 ::: {.column width='50%'}
 
