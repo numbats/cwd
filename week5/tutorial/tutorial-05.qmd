@@ -6,29 +6,9 @@ date: "Week 5"
 format:
     unilur-html:
         output-file: index.html
-        embed-resources: true
     unilur-html+solution:
         output-file: solution.html
-        embed-resources: true
 ---
-
-
-
-```{r setup}
-#| include: false
-#| eval: !expr file.exists("setup.R")
-source("setup.R")
-knitr::opts_chunk$set(fig.path = "images/tutorial-05-")
-```
-
-```{r}
-#| echo: false
-#| eval: !expr file.exists("tutorial.css")
-htmltools::includeCSS("tutorial.css")
-```
-
-
-
 
 ## 🎯 Objectives
 
@@ -134,13 +114,15 @@ Consider the artificial data in the object `df`. There are two obvious outliers.
 ```{r}
 #| message: false
 #| warning: false
+
 library(tidyverse)
 library(broom)
 library(palmerpenguins)
-library(MASS) # needed for rlm
+library(MASS)
 df <- tibble(x = 1:20, y = c(1:18, 49:50))
 ggplot(df, aes(x, y)) + 
   geom_point(size = 2) + theme_bw(base_size = 12)
+
 ```
 
 A simple linear model where parameters are estimated using least squares estimate are not robust to outliers. Below we fit two models: 
@@ -151,6 +133,8 @@ A simple linear model where parameters are estimated using least squares estimat
 To explain briefly, a robust linear model down-weights the contribution of the observations that are outlying observations to estimate parameters.
 
 ```{r}
+#| echo: true
+
 fit_lm <- lm(y ~ x, data = df) 
 fit_rlm <- rlm(y ~ x, data = df) 
 ```
@@ -169,7 +153,10 @@ augment(fit_rlm)
 
 Here is a plot to compare the two model fits, and to give some understanding of these weights. What do you notice about the weights?
 
-Can you improve the plot to better undertstand the differences in the model and the weights?
+Can you 
+
+a) recreate this plot using the functions in this question and
+b) improve the plot to better undertstand the differences in the model and the weights?
 
 ```{r}
 ggplot(augment(fit_rlm), aes(x, y, color = w)) + 
@@ -194,6 +181,7 @@ The plot highlights the differences between the linear model and the robust line
 ```{r rlm}
 #| message: false
 #| warning: false
+#| echo: true
 
 ggplot(augment(fit_rlm), aes(x, y, color = w)) + 
   geom_smooth(method = "lm", se = FALSE, color = "#C8008F") +
