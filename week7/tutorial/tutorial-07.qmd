@@ -1,0 +1,383 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 7"
+author: "Michael Lydeamore"
+date: "Week 7"
+format:
+    unilur-html:
+        output-file: index.html
+        embed-resources: true
+        css: webex.css
+        include-after-body: webex.js
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
+        css: webex.css
+        include-after-body: webex.js
+---
+
+
+## 🎯 Objectives
+
+- interpret and apply HTML/CSS to customise the look of web documents
+- modify the look of HTML documents produced by R Markdown
+
+::: {.callout-note collapse="true"}
+
+## Preparation
+
+1. You should do 2A as much as possible _before the tutorial_.
+   
+1. Download <a href="tutorial-07-supp.qmd" download>`tutorial-07-supp.qmd`</a>.
+
+1. Install R-package
+```{r}
+#| eval: false
+remotes::install_github("joachim-gassen/tidycovid19")
+```
+
+:::
+
+
+
+## 🛠️ Exercise 1
+
+**HTML/CSS basics**
+
+Go through the:
+
+* HTML tutorials:
+  * [Introduction](https://www.w3schools.com/html/html_intro.asp)
+  * [Basic](https://www.w3schools.com/html/html_basic.asp)
+  * [Elements](https://www.w3schools.com/html/html_elements.asp)
+  * [Attributes](https://www.w3schools.com/html/html_attributes.asp)
+  * [Links](https://www.w3schools.com/html/html_links.asp)
+  * [Images](https://www.w3schools.com/html/html_images.asp)
+  * [Table](https://www.w3schools.com/html/html_tables.asp)
+  * [Class](https://www.w3schools.com/html/html_classes.asp)
+  * [Id](https://www.w3schools.com/html/html_id.asp)
+  * [Input types](https://www.w3schools.com/html/html_form_input_types.asp)
+  
+* CSS tutorials: 
+  * [Introduction](https://www.w3schools.com/css/css_intro.asp)
+  * [Syntax](https://www.w3schools.com/css/css_syntax.asp)
+  * [Selectors](https://www.w3schools.com/css/css_selectors.asp)
+  * [Color](https://www.w3schools.com/css/css_colors.asp)
+  * [Borders](https://www.w3schools.com/css/css_border.asp)
+  * [Margins](https://www.w3schools.com/css/css_margin.asp)
+  * [Paddings](https://www.w3schools.com/css/css_padding.asp)
+  * [Text](https://www.w3schools.com/css/css_text.asp)
+  * [Table](https://www.w3schools.com/css/css_table.asp)
+  * [Align](https://www.w3schools.com/css/css_align.asp)
+
+and the exercises therein. Note: you do not need to click on the "Next >" button as that progresses to the next tutorial. We've selected the 10 most important tutorials from the HTML and CSS sections. If time permits, feel free to go through other tutorials.
+
+
+## 🛠️ Exercise 2
+
+**Test your knowledge in HTML/CSS**
+
+This quiz is not assessed, it is only for your own learning.
+
+::: {.webex-check .webex-box}
+
+```{r}
+#| echo: false
+#| results: asis
+
+library(webexercises)
+cat(
+    "1. What does HTML stand for?",
+    longmcq(c(
+        "Hyperlinks and Text Markup Language",
+        "Home Tool Markup Language",
+        answer = "Hyper Text Markup Language"
+    ))
+)
+
+cat(
+    "2. Who governs the standards for CSS?",
+    longmcq(c(
+        "Mozilla",
+        "Google",
+        answer = "World Wide Web Consortium",
+        "Microsoft",
+        "Apple"
+    ))
+)
+
+cat(
+    "3. Which is the correct HTML element for the largest heading?",
+    longmcq(c(
+        answer = "`<h1>`",
+        "`<h6>`",
+        "`<head>`",
+        "`<heading>`"
+    ))
+)
+
+cat(
+    "4. Which of the following is the correct HTML for adding a background color?",
+    longmcq(c(
+        "`<body bg=\"yellow\">`",
+        answer = "`<body style=\"background-color:yellow;\">`",
+        "`<background>yellow</background>`"
+    ))
+)
+
+cat(
+    "5. What is the correct HTML for creating a hyperlink?",
+    longmcq(c(
+        "`<a url=\"http://www.w3schools.com\">W3Schools.com</a>`",
+        "`<a>http://www.w3schools.com</a>`",
+        "`<a name=\"http://www.w3schools.com\">W3Schools.com</a>`",
+        answer = "`<a href=\"http://www.w3schools.com\">W3Schools</a>`"
+    ))
+)
+
+cat(
+    "6. Inline elements are normally displayed without starting a new line.",
+    longmcq(c(
+        answer = "True",
+        "False"
+    ))
+)
+
+cat(
+    "7. How can you make a bulleted list?",
+    longmcq(c(
+        answer = "`<ul>`",
+        "`<dl>`",
+        "`<list>`",
+        "`<ol>`"
+    ))
+)
+
+cat(
+    "8. What is the correct HTML for making a checkbox?",
+    longmcq(c(
+        "`<checkbox>`",
+        "`<input type=\"check\">`",
+        answer = "`<input type=\"checkbox\">`",
+        "`<check>`"
+    ))
+)
+
+cat(
+    "9. What is the correct HTML for making a drop-down list?",
+    longmcq(c(
+        "`<input type=\"dropdown\">`",
+        answer = "`<select>`",
+        "`<input type=\"list\">`",
+        "`<list>`"
+    ))
+)
+
+cat(
+    "10. Which of the following is the correct HTML for inserting an image?",
+    longmcq(c(
+        answer = "`<img src=\"image.gif\" alt=\"MyImage\">`",
+        "`<img alt=\"MyImage\">image.gif</img>`",
+        "`<image src=\"image.gif\" alt=\"MyImage\">`",
+        "`<img href=\"image.gif\" alt=\"MyImage\">`"
+    ))
+)
+
+cat(
+    "11. An `<iframe>` is used to display a web page within a web page",
+    longmcq(c(
+        answer = "True",
+        "False"
+    ))
+)
+
+cat(
+    "12. HTML comments start with `<!--` and end with `-->`",
+    longmcq(c(
+        answer = "True",
+        "False"
+    ))
+)
+
+cat(
+    "13. Which HTML element defines navigation links?",
+    longmcq(c(
+        "`<navigation>`",
+        "`<navigate>`",
+        answer = "`<nav>`"
+    ))
+)
+
+cat(
+    "14. Which HTML element is used to specify a header for a document or section?",
+    longmcq(c(
+        "`<head>`",
+        answer = "`<header>`",
+        "`<section>`"
+    ))
+)
+
+cat(
+    "15. What does CSS stand for?",
+    longmcq(c(
+        "Computer Style Sheets",
+        answer = "Cascading Style Sheets",
+        "Colorful Style Sheets",
+        "Creative Style Sheets"
+    ))
+)
+
+cat(
+    "16. What is the correct HTML for referring to an external style sheet?",
+    longmcq(c(
+        answer = "`<link rel=\"stylesheet\" type=\"text/css\" href=\"mystyle.css\">`",
+        "`<stylesheet>mystyle.css</stylesheet>`",
+        "`<style src=\"mystyle.css\">`"
+    ))
+)
+
+cat(
+    "17. Which HTML tag is used to define an internal stylesheet?",
+    longmcq(c(
+        answer = "`<style>`",
+        "`<script>`",
+        "`<css>`"
+    ))
+)
+
+cat(
+    "18. Which HTML attribute is used to define inline styles?",
+    longmcq(c(
+        "styles",
+        answer = "style",
+        "class",
+        "font"
+    ))
+)
+
+cat(
+    "19. Which one of the following is correct CSS syntax?",
+    longmcq(c(
+        "`{body;color:black;}`",
+        "`{body:color=black;}`",
+        "`body:color=black;`",
+        answer = "`body {color: black;}`"
+    ))
+)
+
+cat(
+    "20. How do you insert a comment in a CSS file?",
+    longmcq(c(
+        "// this is a comment",
+        answer = "/* this is a comment */",
+        "# this is a comment",
+        "// this is a comment //"
+    ))
+)
+
+cat(
+    "21. Which property is used to change the background color?",
+    longmcq(c(
+        answer = "background-color",
+        "color",
+        "bgcolor"
+    ))
+)
+
+cat(
+    "22. How do you add a background color for all `<h1>` elements?",
+    longmcq(c(
+        "`all.h1 {background-color:#FFFFFF;}`",
+        "`h1.all {background-color:#FFFFFF;}`",
+        answer = "`h1 {background-color:#FFFFFF;}`"
+    ))
+)
+
+cat(
+    "23. Which CSS property is used to change the text color of an element?",
+    longmcq(c(
+        "fgcolor",
+        "text-color",
+        answer = "color"
+    ))
+)
+
+cat(
+    "24. Which CSS property controls the text size?",
+    longmcq(c(
+        "text-style",
+        "text-size",
+        answer = "font-size",
+        "font-style"
+    ))
+)
+
+cat(
+    "25. What is the correct CSS syntax for making all the <p> elements bold?",
+    longmcq(c(
+        "`<p style=\"font-size:bold;\">`",
+        "`<p style=\"font-weight:bold;\">`",
+        answer = "`p {font-weight:bold;}`",
+        "`p {font-style:bold;}`"
+    ))
+)
+
+cat(
+    "26. How do you select an element with id 'demo'?",
+    longmcq(c(
+        "`*demo`",
+        "`.demo`",
+        answer = "`#demo`",
+        "`demo`"
+    ))
+)
+
+cat(
+    "27. How do you select elements with class name 'test'?",
+    longmcq(c(
+        "`#test`",
+        answer = "`.test`",
+        "`*test`",
+        "`test`"
+    ))
+)
+
+cat(
+    "28. How do you select all `p` elements inside a `div` element?",
+    longmcq(c(
+        answer = "`div p`",
+        "`div + p`",
+        "`div.p`"
+    ))
+)
+
+cat(
+    "29. Which of the following would be used to create an ID called header which has a width of 750px, a height of 30px and the color of the text is black?",
+    longmcq(c(
+        "`.header { width: 750px; height: 30px; color: \"black\"; }`",
+        "`.header { width: 750px; height: 30px; text-color: \"black\"; }`",
+        answer = "`#header { width: 750px; height: 30px; color: \"black\"; }`",
+        "`#header { width: 750px; height: 30px; text-color: \"black\"; }`"
+    ))
+)
+
+```
+
+:::
+
+## 🛠️ Exercise 3
+
+**Modify the look of your qmd HTML documents**
+
+1. Open <a href='tutorial-07-supp.qmd'>`tutorial-07-supp.qmd`</a> and render. Inspect the HTML output. 
+2. Modify the qmd file that when you knit, the HTML output looks like below:
+
+
+![](../images/tutorial-07-supp-screenshot.png){fig-align="center"}
+
+::: unilur-solution
+
+Here is the solution file: <a href="tutorial-07-supp-solution.qmd">`tutorial-07-supp-solution.qmd`</a>.
+
+:::
+
