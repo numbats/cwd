@@ -192,7 +192,7 @@ From here this all got too confusing and so now we have "living standards"
 ::: {.column width='50%'}
 `r seetext`
 
-```{.html code-line-numbers="|1,13|2,12|3|4|5-7|8|9-11|"}
+```{code-line-numbers="|1,13|2,12|3|4|5-7|8|9-11|"}
 <html>
 <body>
 <h1>ETC5523: Communicating with Data</h1>
@@ -217,31 +217,9 @@ From here this all got too confusing and so now we have "living standards"
 :::
 :::
 
-## Test
-
-`r seetext`
-
-```{.html code-line-numbers="|1,13|2,12|3|4|5-7|8|9-11|"}
-<html>
-<body>
-<h1>ETC5523: Communicating with Data</h1>
-<h2>Lecturer</h2>
-<ul>
-<li>Michael Lydeamore (Chief Examiner)</li>
-</ul>
-<h2>Tutors</h2>
-<ul>
-<li>Janith Wanniarachchi</li>
-<li>Cynthia Huang</li>
-</ul>
-</body>
-</html>
-```
-
-
 ## <span class="fa-layers fa-fw"> <i class="fas fa-square monash-white" data-fa-transform="shrink-5"></i><i class="fab fa-html5 monash-orange2"></i></span> HTML Structure
 
-```{.html code-line-numbers="|3-8|10-14|"}
+```
 <html>
 <!--This is a comment and ignored by web client.-->
 <head>
@@ -265,17 +243,15 @@ From here this all got too confusing and so now we have "living standards"
 
 `r seetext` 
 
-``` html
+```
 <span style="color:blue;">Author content</span>
 ```
 
 `r seehtml` <span style="color:blue;">Author content</span>
 
-::: fragment
+## Breaking down this syntax
 
 The breakdown of this HTML syntax:
-
-:::
 
 <table style="width:100%;font-size:0.8em;" >
 <tr class="fragment">
@@ -422,11 +398,9 @@ h1 { color: blue; }
 
 :::
 
-::: fragment
+## Breaking down CSS syntax
 
 The breakdown of the CSS syntax:
-
-:::
 
 <table style="font-size:0.9em;">
 <tr class="fragment">
@@ -621,22 +595,16 @@ h1 {
 :::
 
 
-# HTML outputs with <br>[Rmd documents]{.monash-blue}
+# HTML outputs with <br>[qmd documents]{.monash-blue}
 
 ``` yaml
 ---
-output: html_document
----
-```
-
-``` yaml
----
-output: bookdown::html_document2
+format: html
 ---
 ```
 
 
-## `r css` Inserting CSS in Rmd documents [Part 1]{.f4}
+## `r css` Inserting CSS in qmd documents [Part 1]{.f4}
 
 
 * There is a `css` engine:
@@ -661,32 +629,19 @@ h1 { color: red; }
 
 * If the output is a HTML document then the defined styles will apply to the output document.
 
-## `r css` Inserting CSS in Rmd documents [Part 2]{.f4}
+## `r css` Inserting CSS in qmd documents [Part 2]{.f4}
 
 * If you have an external file, say `styles.css`, that you define the styles, then most HTML outputs will support this with YAML argument `css`
 
 ```{.yaml code-line-numbers=|4}
 ---
-output: 
-  html_document: 
+format: 
+  html: 
     css: ["styles.css"]
 ---
 ```
 
-or say 
-
-```{.yaml code-line-numbers=|4}
----
-output: 
-  bookdown::html_document2: 
-    css: ["styles.css", "custom.css"]
----
-```
-
-
-
-
-## `r js` Inserting JS into Rmd documents [Part 1]{.f4}
+## `r js` Inserting JS into qmd documents [Part 1]{.f4}
 
 
 * There is a `js` engine:
@@ -719,18 +674,17 @@ document.getElementById("p1").innerHTML = "content";
 
 :::
 
-## `r js` Inserting JS into Rmd documents [Part 2]{.f4}
+## `r js` Inserting JS into qmd documents [Part 2]{.f4}
 
 If you need to insert at a specific location within the document then you can use `includes`:
 
 ``` yaml
 ---
-output:
-  html_document:
-    includes: 
-      in_header: ["header.html"]
-      before_body: ["before_body.html"]
-      after_body: ["after_body.html"]
+format:
+  html:
+    includes-in-header: "header.html"
+    include-before-body: "before_body.html"
+    include-after-body: "after_body.html"
 ---
 ```
 
@@ -761,9 +715,7 @@ document.getElementById("p1").innerHTML = "content";
 functions as the communicator in the Web 
 * HTTPS is the secure version of HTTP where communications are encrypted
 
-<center>
-<img src="images/lecture-02/client-server.png" class="bg-white" width ="650px">
-</center>
+![](images/client-server.png){fig-align="center"}
 
 ::: fragment
 
@@ -789,32 +741,26 @@ Different clients may work differently! E.g. Internet Explorer and Chrome may re
 :::
 
 
-## 📜 MDN Web Docs [LIVE DEMO]{.f4}
+## 📜 MDN Web Docs
 
 [[https://developer.mozilla.org/](https://developer.mozilla.org/)]{.f2}
 
-::: {.f2}
-
 * Documentation of web standards maintained by the community.
 * Includes status of use:
-<center>
-<img src="images/lecture-02/obsolete.png"/>
-</center>
-* As well as its compatibility with web clients:
-<center>
-<img src="images/lecture-02/browser-compatibility.png" width ="450px"/>
-</center>
 
-:::
+![](images/obsolete.png){fig-align="center"}
+
+## 📜 MDN Web Docs
+
+* As well as its compatibility with web clients:
+
+![](images/browser-compatibility.png){fig-align="center"}
 
 ## Writing HTML {#htmltidy}
 
 [You can play at [https://htmltidy.net/](https://htmltidy.net/)]{.f2}
 
-<center>
-<img class="ba" src="images/lecture-02/htmltidy.gif" width = "900px">
-</center>
-
+![](images/htmltidy.gif){fig-align="center"}
 
 
 # 📝 Interactive Cheatsheets {#cheatsheets}
@@ -840,12 +786,9 @@ Different clients may work differently! E.g. Internet Explorer and Chrome may re
 
 Below GIF shows interactive use of Inspect Element^[Or called Inspect.] available from the menu in most web browsers when you right click on the web page^[Note: this is for inspection and doesn't actual make changes to the files.]:
 
-<center>
-<img class="ba" src="images/lecture-02/inspect-element.gif" width = "620px"/>
-</center>˜
+![](images/inspect-element.gif){fig-align="center" width="60%"}
 
-
-## Week 2 Lesson 
+## Week 7 Lesson 
 
 
 ::: callout-important
