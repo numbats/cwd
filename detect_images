@@ -9,11 +9,11 @@ then
     i="${i: -2}"
 fi
     images=$(grep -oE '!\[\]\(\.\./images/[^)]+\)' week${weeknum}/tutorial/tutorial-${i}.qmd | sed -E 's/!\[\]\(\.\.\/images\/([^)]+)\)/\1/')
-    mkdir -p week${i}/images
+    mkdir -p week${weeknum}/images
     for image in $images; do
         echo "Processing image: $image"
         # Use the cp command to copy the file to the new location
-        cp "images/"$image week${i}/images/
+        cp "images/"$image week${weeknum}/images/
     done
 done
 
