@@ -283,7 +283,7 @@ The breakdown of this HTML syntax:
 
 `r seetext` 
 
-``` html
+```
 <img height="200px" src="https://tinyurl.com/rlogo-svg">
 ```
 
@@ -350,15 +350,15 @@ How these are rendered to the browser depends on the **browser default style val
 * CSS files have the extension `.css` [and styles also XHTML, plain XML, SVG and XUL]{.f4}.
 * There are 3 ways to style elements in HTML:
   * **inline** by using the `style` attribute inside HTML start tag:
-``` html
+``` 
 <h1 style="color:blue;">Blue Header</h1>
 ```
   * **externally** by using the `<link>` element:
-``` html
+``` 
 <link rel="stylesheet" href="styles.css">
 ```
   * **internally** by defining within `<style>` element:<br>
-``` html
+``` 
 <style type="text/css"> h1 { color: blue; } </style>
 ```
   
@@ -378,7 +378,7 @@ How these are rendered to the browser depends on the **browser default style val
 ::: {.w-50 .pr3}
 `r seetext`
 
-```{.html}
+```
 <style type="text/css">
 h1 { color: blue; }
 </style>
@@ -576,20 +576,26 @@ h1 {
 
 ##  `r js` JavaScript (JS) {#js}
 
-::: incremental 
-
 * JS is a programming language and enable interactive components in HTML documents.
 * You can insert JS into a HTML document in two ways:
-  * **internally** by defining within `<script>` element:
-  ```html
+
+::: fragment
+  * **internally** by defining within `<script>` element:  
+  ```
   <script>
   document.getElementById("p1").innerHTML = "content";
   </script>
   ```
-  * **externally** by using the `src` attribute to refer to the external file:
-  ```html
+:::
+
+::: fragment
+  * **externally** by using the `src` attribute to refer to the external file:  
+  ```
   <script src="myjava.js"></script>
   ```
+:::
+
+::: fragment
 * You are *not* expected to be able to do any JS in this course.
 
 :::
@@ -618,7 +624,7 @@ h1 { color: red; }
 
 * This inserts the following output into the document:
 
-```{.html}
+```{}
 <style type="text/css">
 h1 { color: red; }
 </style>
@@ -656,7 +662,7 @@ document.getElementById("p1").innerHTML = "content";
 
 which inserts:
 
-``` html
+```
 <script type="text/javascript">
 document.getElementById("p1").innerHTML = "content";
 </script>
@@ -690,7 +696,7 @@ format:
 
 where `header.html`, `before_body.html`, `after_body.html` includes the JS code, e.g. 
 
-``` html
+```
 <script src="myjava.js"></script>
 <script type="text/javascript">
 document.getElementById("p1").innerHTML = "content";
