@@ -6,10 +6,8 @@ date: "Week 6"
 format:
     unilur-html:
         output-file: index.html
-        embed-resources: true
     unilur-html+solution:
         output-file: solution.html
-        embed-resources: true
 ---
 
 
@@ -56,7 +54,7 @@ install.packages(c("ggridges", "ggbeeswarm", "ggrepel"))
 **Diamonds**
 
 
-The dataset `diamonds` in the `ggplot2` package includes attributes and price on `r scales::comma(nrow(diamonds))` diamonds. Some of the attributes, such as carat, cut, color and clarity, are known to influence the price. Figures \@ref(fig:diamonds-color) and \@ref(fig:diamonds-clarity) explain the order of classifications for color and clarity of diamonds. Use this data to answer the following questions.
+The dataset `diamonds` in the `ggplot2` package includes attributes and price on `r scales::comma(nrow(diamonds))` diamonds. Some of the attributes, such as carat, cut, color and clarity, are known to influence the price. @fig-diamonds-color and @fig-diamonds-clarity explain the order of classifications for color and clarity of diamonds. Use this data to answer the following questions.
 
 ```{r q6Adata}
 #| message: false
@@ -67,13 +65,17 @@ data("diamonds", package = "ggplot2")
 glimpse(diamonds)
 ```
 
-```{r diamonds-color}
+```{r}
 #| echo: false
-#| fig.cap: "Diamond color image sources from https://beyond4cs.com"
+#| fig-cap: "Diamond color image sources from https://beyond4cs.com"
+#| label: fig-diamonds-color
 knitr::include_graphics("https://beyond4cs.com/wp-content/uploads/2019/02/diamond-color-chart-with-example-diamonds-of-each-alphabet.jpg")
 ```
 
-```{r diamonds-clarity, echo = FALSE, fig.cap = "Diamond clarity image sourced from https://www.onlinediamondbuyingadvice.com"}
+```{r}
+#| echo: false
+#| fig-cap: "Diamond clarity image sourced from https://www.onlinediamondbuyingadvice.com"
+#| label: fig-diamonds-clarity
 knitr::include_graphics("https://www.onlinediamondbuyingadvice.com/wp-content/uploads/2018/08/diamond-clarity-scale-whiteflash-768x219.png")
 ```
 
