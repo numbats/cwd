@@ -284,13 +284,13 @@ The breakdown of this HTML syntax:
 `r seetext` 
 
 ```
-<img height="200px" src="https://tinyurl.com/rlogo-svg">
+<img height="200px" src="https://tinyurl.com/rlogo-pic">
 ```
 
 <br>
 `r seehtml` 
 
-<img height="200px" src="https://tinyurl.com/rlogo-svg">
+<img height="200px" src="https://tinyurl.com/rlogo-pic">
 
 
 
