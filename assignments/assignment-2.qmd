@@ -59,7 +59,7 @@ Your manager is competent, and reasonably technical. They are time-poor, and so 
 
 Your report also needs:
 
-* At least one reference to an academic article
+* At least one reference to an article (academic, web page etc)
 * Working cross-references to figure(s), table(s) if included, and sections where required
 
 #### Where to find data
