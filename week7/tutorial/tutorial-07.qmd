@@ -28,7 +28,7 @@ format:
 
 1. You should do 2A as much as possible _before the tutorial_.
    
-1. Download <a href="tutorial-07-supp.qmd" download>`tutorial-07-supp.qmd`</a>.
+1. Download <a href="tutorial-07-supp.qmdx" download>`tutorial-07-supp.qmd`</a>.
 
 1. Install R-package
 ```{r}
@@ -369,7 +369,7 @@ cat(
 
 **Modify the look of your qmd HTML documents**
 
-1. Open <a href='tutorial-07-supp.qmd'>`tutorial-07-supp.qmd`</a> and render. Inspect the HTML output. 
+1. Open <a href='tutorial-07-supp.qmdx'>`tutorial-07-supp.qmd`</a> and render. Inspect the HTML output. 
 2. Modify the qmd file that when you knit, the HTML output looks like below:
 
 
