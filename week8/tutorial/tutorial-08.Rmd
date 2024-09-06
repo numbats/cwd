@@ -1,0 +1,174 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 8"
+author: "Michael Lydeamore"
+date: "Week 8"
+output: 
+  unilur-html:
+    output-file: index.html
+  unilur-html+solution:
+    output-file: solution.html
+---
+
+
+```{r setup, include = FALSE, eval = file.exists("setup.R")}
+library(tidyverse)
+```
+
+## 🎯 Objectives
+
+
+* make your first R package
+* make a simple R package as a container for data
+
+::: {.callout-note collapse="true"}
+
+## Preparation
+
+```{r}
+#| eval: false
+
+install.packages(c("devtools","usethis","roxygen2"))
+```
+
+:::
+
+    
+##  Exercise 8A
+
+Use the `usethis` package to create a new package called `cwdata`
+
+::: {.unilur-solution}
+
+```{r}
+#| eval: false
+library(usethis)
+
+create_package("cwdata")
+```
+
+:::
+
+
+**Edit the DESCRIPTION file** created and modify the `Authors@R` tag to include yourself as the creator and author of the package. 
+
+
+##  Exercise 8B
+
+Use the `usethis` package to create an R script called `key_crop_yields.R` in the  `data-raw` directory in your packages folder. 
+
+::: {.unilur-solution}
+
+```{r}
+#| eval: false
+use_data_raw(name = "key_crop_yields")
+```
+
+:::
+
+
+The `data-raw` directory is used to hold scripts that generate package data. We will use the data from [Our World in Data](https://ourworldindata.org/crop-yields) and sourced from [Tidy Tuesday](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-01/readme.md). This data contains agricultural yields across crop types and by entity (country or region) from 1960 to 2018. 
+
+**Edit the script** to process the data into a long form tidy representation. Here's some code to get you started:
+
+```{r data-raw}
+#| echo: true
+#| eval: false
+
+library(janitor)
+library(tidyverse)
+url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-01/key_crop_yields.csv'
+
+key_crop_yields <- read_csv(url) %>% 
+  clean_names() %>% 
+  pivot_longer(
+    cols = -___,
+    names_to = "crop", 
+    values_to = "yield",
+    names_pattern = "([^_]+)"
+  )
+```
+
+After you've finished writing your script make sure you've run it.
+
+You should now have a folder called `data` in your package,
+with a file called `key_crop_yields.rda`.
+
+
+## Exercise 8C
+
+We now need to create an R script that lives in the `R` directory
+that documents our data object `key_crop_yields`.
+
+```{r}
+#| eval: false
+use_r("key_crop_yields.R")
+```
+
+Modify the script and **document the data.**
+
+- Describe the number of rows and columns 
+- Type of object `key_crop_yields` is. 
+- What are the types of the columns?
+- What do the columns mean?
+- Where did you find it? 
+
+It is possible to use ordinary markdown syntax in documenation with `roxygen2` by running (in fact this is set by default if you used `usethis::create_package()`) 
+
+```{r}
+#| eval: false
+use_roxygen_md()
+```
+
+Once you've finished modifying run
+
+```{r}
+#| eval: false
+devtools::document()
+```
+
+at the console to build your package documentation.
+
+## Exercise 8D
+
+We now have a minimally working package that contains some data. 
+Restart your R session and then run 
+
+```{r}
+#| eval: false
+devtools::load_all()
+```
+
+Now the `key_crop_yields` data is your available to your R session.
+
+**Edit your DESCRIPTION file** to have a more appropriate title and description and version number. 
+
+After you've finished editing run:
+```{r}
+#| eval: false
+devtools::check()
+```
+
+**Do you get any errors or warnings?**
+
+Once you have passed the check, install the package locally:
+
+```{r}
+#| eval: false
+devtools::install()
+```
+
+Restart your R session and try loading your package. Check out the help page for the data.
+
+::: {.unilur-solution}
+
+```{r}
+#| eval: false
+library(cwdata)
+key_crop_yields
+?key_crop_yields
+```
+
+:::
+
+
