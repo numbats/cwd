@@ -1,0 +1,589 @@
+---
+pagetitle: "ETC5523: Communicating with Data"
+subtitle: "R Packages and documentation"
+author: "Michael Lydeamore"
+email: "michael.lydeamore@monash.edu"
+date: "Week 8"
+department: "Department of Econometrics and Business Statistics"
+unit-url: "cwd.numbat.space"
+footer: "ETC5523 Week 9"
+format: 
+  revealjs:
+    logo: images/monash-one-line-black-rgb.png
+    slide-number: c
+    multiplex: false
+    theme: ../assets/monash.scss
+    show-slide-number: all
+    show-notes: true
+    controls: true
+    width: 1280
+    height: 720
+    css: [../assets/tachyons-addon.css, ../assets/custom.css]
+    include-after-body: "../assets/after-body.html"
+    incremental: true
+execute:
+  echo: true
+  eval: true
+---
+
+```{r, include = FALSE}
+current_file <- knitr::current_input()
+basename <- gsub(".[Rq]md$", "", current_file)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 4,
+  fig.align = "center",
+  out.width = "100%",
+  fig.retina = 3,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE
+)
+```
+
+## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
+
+### `r rmarkdown::metadata$subtitle`
+
+Lecturer: *`r rmarkdown::metadata$author`*
+
+`r rmarkdown::metadata$department`
+
+::: tl
+<br>
+
+<ul class="fa-ul">
+
+<li>
+
+[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`
+
+</li>
+
+<li>
+
+[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`
+
+</li>
+
+<li>
+
+[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
+
+</li>
+
+</ul>
+
+<br>
+:::
+
+
+## {#aim}
+
+::: {.callout-important }
+
+## Aim
+
+* Document your functions
+* Create vignettes for your package
+* Implement testing framework for your package
+* Distribute your package
+
+:::
+
+::: {.callout-tip }
+
+## Why
+
+* Documentation informs users of how to use your package 
+* Adopting best practice development workflow will make package development easier 
+* Testing can increase the trust worthiness of the package
+* Distributing your package is needed for adoption of your package by others
+
+
+:::
+
+
+# Let's make a package
+
+This is a taste of ETC4500/5450 (Advanced R Programming). We will learn the bare minimum required to get to documentation.
+
+## Communicating about your [R package]{.monash-blue}
+
+- What is the [**goal**]{.monash-blue} of the package?
+- [**What**]{.monash-blue} does your function(s) do? 
+- [**How**]{.monash-blue} do we use it?
+- [**Why**]{.monash-blue} should we use it?
+- [**Where**]{.monash-blue} do we find and install it?
+
+. . . 
+
+::: {.center .f-headline}
+
+[**Documentation**]{.monash-ruby2} is vital 
+
+:::
+
+## `ausbirthplace` package
+
+It's never been easier to make a package. The `usethis` package can do all of the heavy lifting for us
+
+::: {.callout-tip}
+This means we can easily make packages that might only be just "for us"
+:::
+
+::: {.callout-note appearance="minimal"}
+
+<i class="fa-solid fa-circle-exclamation"></i> This package is for teaching demo only
+
+:::
+
+```{r}
+#| eval: false
+
+usethis::create_package("ausbirthplace")
+
+```
+
+will set up the directory structure we need for a package.
+
+## Package directory structure
+
+```
+- R/
+- .Rproj.user/
+- packagename.Rproj
+- .gitignore
+- .Rbuildignore
+- DESCRIPTION
+- NAMESPACE
+```
+
+## Functions for the package
+
+Anything in the `R/` folder will be loaded by the package.
+
+::: {.callout-tip}
+If you want the user to use it, it needs to be in `R`
+:::
+
+::: fragment
+
+Functions go in `R/`
+
+:::
+
+## Data for the package
+
+Your package could load in some data (like `palmerpenguins::penguins` for example).
+
+Exported data objects go in `data`, and the code/files to produce them goes in `data-raw`
+
+```{r}
+#| eval: false
+usethis::use_data_raw('census-birthplace')
+```
+
+This will create two new folders: `data` and `data-raw`.
+
+## Loading and testing
+
+`devtools` gives us an easy pipeline for loading and testing our package without having to install it
+
+```{r}
+#| eval: false
+
+devtools::load_all()
+censusbirthplace
+```
+
+::: {.fragment}
+You can also use the default hotkey `Ctrl+Shift+L` to load.
+:::
+
+::: {.fragment}
+You should reload often - try to avoid manually sourcing files unless you have to!
+:::
+
+## NAMESPACE, DESCRIPTION, README
+
+There are three other files that are generated in a package:
+
+::: {.incremental}
+* `NAMESPACE`: Machine generated, list of objects that are 'exported' (available to users) of the package
+* `DESCRIPTION`: Contains metadata about the package which we need to complete
+* `README`: Top-level description of your package that people will see _before_ they install the package
+:::
+
+## README
+
+[Hadley](https://r-pkgs.org/other-markdown.html#sec-readme) gives a good template for a README:
+
+1. A paragraph describing the purpose of the package
+2. An example that shows how to use the package to solve a simple problem
+3. Installation instructions that you can copy/paste straight into R
+4. An overview of the main components of the package.
+
+::: {.fragment}
+We can set up the README using
+
+```{r}
+#| eval: false
+usethis::use_readme_rmd()
+```
+
+and then edit to suit your package.
+
+:::
+
+## DESCRIPTION
+
+`usethis` sets up a template DESCRIPTION file:
+
+```
+Package: mypackage
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: What the package does (one paragraph).
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+```
+
+You should edit this for your package.
+
+## Using other packages
+
+Inevitably, you'll want to use a function from another package. Again there's a `usethis` function for that too:
+
+```{r}
+#| eval: false
+
+usethis::use_package("ggplot2")
+```
+
+You still have to reference package namespaces using `:::` or `@importFrom` (more on this one later).
+
+For example:
+
+```{r}
+#| eval: false
+
+plot_census_data <- function() {
+  censusdata |>
+    ggplot2::ggplot(ggplot2::aes(x=count, y=birth)) +
+    ggplot2::geom_col() +
+    ggplot2::labs(x="Number of residents", y="Country of birth")
+}
+```
+
+## Code commenting {auto-animate="true"}
+
+Comments in code _are communication_. There's no need to re-state very clear code, but if you are doing anything even mildly complicated, changes are you won't be able to understand the code quickly.
+
+Example:
+
+```r
+palmerpenguins::penguins |>
+  dplyr::select(species, bill_depth_mm, bill_length_mm, flipper_length_mm, island) |>
+  tidyr::pivot_longer(!c(species, island)) |>
+  dplyr::group_by(species, island) |>
+  dplyr::summarise(means = mean(value, na.rm=T)) |>
+  tidyr::pivot_wider(names_from = species, values_from = means)
+```
+
+## Code commenting {auto-animate="true"}
+
+Comments in code _are communication_. There's no need to re-state very clear code, but if you are doing anything even mildly complicated, changes are you won't be able to understand the code quickly.
+
+Example:
+
+```r
+palmerpenguins::penguins |>
+  dplyr::select(species, bill_depth_mm, bill_length_mm, flipper_length_mm, island) |>
+  # Go from wide to long, keeping species and island as keys
+  tidyr::pivot_longer(!c(species, island)) |>
+  dplyr::group_by(species, island) |>
+  # Means of all measurements by species and island (drop NAs)
+  dplyr::summarise(means = mean(value, na.rm=T)) |>
+  # Back to wide for with island as rows and species as columns
+  tidyr::pivot_wider(names_from = species, values_from = means)
+```
+
+## Code commenting
+
+It's hard to put in too many comments, so feel free to use them liberally.
+
+But, make sure you apply the principles of communication to your comments to: conciseness and clarity are key
+
+## Function documentation
+
+When we don't know how to use a function, we look up the _function documentation_ by typing `?group_by`.
+
+But where does this documentation come from?
+
+::: {.fragment}
+R gives a standard way of documenting packages: you write `.Rd` files in the `man/` directory. These files use a custom syntax, which is very similar to LaTeX.
+:::
+
+::: {.fragment}
+This separates code from comments, making it easy to forget to update a function's documentation if you change the function. `roxygen2` puts the documentation with your code, and generates `.Rd` files.
+:::
+
+## `roxygen2` skeleton
+
+```r
+#' Function title
+#' 
+#' Function description
+#' 
+#' @param param_name Parameter description
+#' @return What does the function return?
+#' @examples
+#' R code for examples goes here
+myfunction <- function(param_name) {
+  print(param_name)
+}
+```
+
+## Applying to our function from earlier {auto-animate="true"}
+
+```r
+plot_census_data <- function() {
+  censusdata |>
+    ggplot2::ggplot(ggplot2::aes(x=count, y=birth)) +
+    ggplot2::geom_col() +
+    ggplot2::labs(x="Number of residents", y="Country of birth")
+}
+```
+
+## Applying to our function from earlier {auto-animate="true"}
+
+```r
+#' Histogram of Australian census data
+#' 
+#' Plots a histogram of the Australian census data showing the
+#' country of birth of residents of Australia from the 2016
+#' and 2021 census
+#' @return `ggplot2` plot with the histogram geom
+#' @examples
+#' plot_census_data()
+#' 
+#' @export
+plot_census_data <- function() {
+  censusdata |>
+    ggplot2::ggplot(ggplot2::aes(x=count, y=birth)) +
+    ggplot2::geom_col() +
+    ggplot2::labs(x="Number of residents", y="Country of birth")
+}
+```
+
+## Generating the `.Rd` file
+
+Just writing `roxygen2` doesn't generate the man files. To get these, we have to run
+
+`devtools::document()`
+
+::: {.fragment}
+If you are in RStudio, you can press ctrl+shift+d
+:::
+
+::: {.callout-important .fragment}
+For a function to be accessible by installing your package, you need to include the `@export` tag!
+:::
+
+## Data documentation
+
+Just like functions, we have to document our data. You can put this anywhere (after all, there is no function that generates our data), but the convention is in `R/data.R`.
+
+For our data,
+
+```r
+#' Number of Australian residents by country of birth from the 2016 and 2021 census
+#' 
+#' @format ## 'censusdata'
+#' A data frame with 105 rows and 4 columns
+#' \describe{
+#'   \item{birth}{Country of birth}
+#'   \item{count}{Number of residents from that birth country}
+#'   \item{percentage}{Percentage of residents from that birth country}
+#'   \item{census}{Year of census (either 2016 or 2021)}
+#' }
+#' @source <https://www.abs.gov.au/websitedbs/censushome.nsf/home/2016>
+```
+
+## Vignettes
+
+Documentation is great to look at something specific (like a function).
+
+What if you've just installed a package and would like to know how to use it?
+
+::: {.fragment}
+Enter the Vignette
+:::
+
+## Vignettes
+
+Vignettes are "how-to" guides to packages. Perhaps they document a specific workflow, or how to solve a specific problem.
+
+Check out the [dplyr vignettes](https://dplyr.tidyverse.org/articles/)
+
+## Writing vignettes
+
+When you're writing the vignette, take the position of the reader (not the developer). Your audience is someone who might have _never_ used your package before.
+
+This is hard - you know a lot about your package - so try some techniques to help:
+
+* Ask a friend to follow the vignette
+* Give a presentation and ask people to stop you anytime they don't understand something
+
+::: {.fragment}
+Writing a vignette can also help you improve your code. If you find yourself saying "Oh this is hard to code here" then think about going back and changing the code itself.
+:::
+
+## Vignettes: How to
+
+```{r}
+#| eval: false
+
+usethis::use_vignette("packagename")
+
+```
+
+This creates a `.Rmd` file (no quarto yet) with some template options filled in
+
+# Demo
+
+## Extension: Custom print method (not assessable)
+
+What happens when you type `print(object)` in R?
+
+::: {.fragment}
+* `print` is a function
+
+```{r}
+print
+```
+:::
+
+## Methods and OOP in R
+
+This is an example of an _S3 function_.
+
+We can't cover precisely what this means here (come back in ARP for that), but we can think of this as
+
+[a different `print` function is called depending on what `object` looks like.]{.center}
+
+::: {.fragment}
+Which method is chosen is based on the _class_ of `object`.
+:::
+
+
+## Methods and OOP in R
+
+```{r}
+fit <- lm(bill_length_mm ~ bill_depth_mm, data = palmerpenguins::penguins)
+class(fit)
+```
+
+
+::: {.fragment}
+```{r}
+getAnywhere(print.lm)
+```
+
+:::
+
+## Methods and OOP in R
+
+You might notice that `class(fit)` is just a vector. We can add our _own_ class to any object we like.
+
+```{r}
+class(fit) <- "myclass"
+
+print.myclass <- function(object) {
+  "This is my special class"
+}
+
+print(fit)
+```
+
+## Custom print methods
+
+You have full control over the print method for your class, so you know exactly what the object should look like.
+
+`print` methods _are_ communication too! Which of these is better?
+
+```{r}
+#| echo: false
+
+fit <- lm(bill_length_mm ~ bill_depth_mm, data = palmerpenguins::penguins)
+```
+
+::: {.fragment}
+```{r}
+print(fit)
+```
+
+:::
+
+::: {.fragment}
+```{r}
+print.default(fit)
+```
+:::
+
+## Writing print methods
+
+All of our communication principles apply to `print` methods:
+
+* Important information first
+* Unnecessary information hidden
+* Conciseness
+* Clarity
+
+Often this will need multiple rounds of feedback (like all writing).
+
+## Including print methods in packages
+
+To include your custom print method in the package, you have to register an _S3 object_. This is out of scope for the unit, but if you are interested, you can read more in the [R packages manual](https://r-pkgs.org/dependencies-in-practice.html#imports-and-exports-related-to-s3).
+
+## Week 9 Lesson 
+
+
+::: callout-important
+
+## Summary
+
+::: nonincremental
+
+- Package documentation is important to let others know about the goal of the package, what your function does, and how to use your package.
+- Sharing your package by making it easy to install, implementing unit tests, commiting to good documentation, and making the documentation accessible helps to build trust to use your package.
+- You can make package development and distribution easy with `usethis`, `devtools`, and `roxygen2`.
+
+:::
+
+:::
+
+. . . 
+
+::: callout-tip
+
+## Resources
+
+::: nonincremental
+
+
+- [`testthat` reference](https://testthat.r-lib.org/reference/index.html) 
+- [`roxygen2` documentation tags](https://roxygen2.r-lib.org/articles/rd.html)
+- [Customising your `pkgdown` site](https://pkgdown.r-lib.org/articles/customise.html)
+
+:::
+
+:::

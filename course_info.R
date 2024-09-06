@@ -17,7 +17,7 @@ schedule <- tribble(
     5, "Statistical model outputs and data tables", "", "",
     6, "Effective data visualisation", "", "",
     7, "Introduction to web technologies and styling", "", "", # Assignment 2 due
-    8, "R package and documentation", "", "",
+    8, "R packages and documentation", "", "",
     9, "Communicating data with interactive web apps", "", "",
     10, "Automated systems for code communication", "", "", # Assignment 3 due
     11, "Guest lecture: Communicating risk in a natural disaster", "", "",
