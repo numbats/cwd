@@ -33,6 +33,9 @@ format:
 1. Install R-package
 ```{r}
 #| eval: false
+#| echo: true
+
+
 remotes::install_github("joachim-gassen/tidycovid19")
 ```
 
