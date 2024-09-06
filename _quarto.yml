@@ -1,8 +1,11 @@
 project:
   type: website
   render:
-  - "*.qmd"
-  - "*.md"
+    - "*.qmd"
+    - "!*-supp.qmd"
+    - "*.md"
+  resources:
+    - "*-supp.qmd"
 
 website:
   title: "ETC5523 Communicating With Data"
@@ -34,7 +37,6 @@ format:
     html-math-method: katex
     include-in-header:
       file: header.html
-
 
 execute:
   echo: false
