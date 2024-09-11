@@ -1,0 +1,391 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 9"
+author: "Michael Lydeamore"
+date: "Week 9"
+format: 
+  unilur-html:
+    output-file: index.html
+  unilur-html+solution:
+    output-file: solution.html
+execute:
+  echo: true
+---
+
+
+```{r setup, include = FALSE, eval = file.exists("setup.R")}
+library(tidyverse)
+```
+
+## 🎯 Objectives
+
+* Make web applications using shiny
+* Demonstrate statistical concepts using interactivity 
+* Debugging errors when coding with shiny
+
+
+
+::: {.callout-note collapse="true"}
+
+## Preparation
+
+1. Install the R-packages
+
+```{r}
+#| eval: false
+#| echo: true
+install.packages(c("shiny", "plotly"))
+```
+
+2. Make a (free) account at [shinapps.io](https://www.shinyapps.io/) if you don't have already 
+
+:::
+
+## 🌐️ Exercise 3A
+
+**Probability estimates: Coin flipping**
+
+You have a special Monash commemorative coin. To estimate the probability of getting a head from this coin, you toss the coin 100 times and counts the number of heads. You obtain this estimate by dividing the number of heads by 100. The observed number of heads is 80 so you conclude that the coin is biased and the probability of obtaining a head from this coin is 0.8. Your friend is not convinced that tossing the coin 100 times for a biased coin is enough. You want to demonstrate to your friend how well the estimate is so you make the following shiny web app.
+
+
+```{r app1}
+#| eval: false
+library(shiny)
+
+ui <- fluidPage(
+    actionButton("flip", "Flip coin 100 times"),
+    htmlOutput("estimate")
+)
+
+server <- function(input, output, session) {
+    out <- reactive({
+        sample(c("H", "T"),
+            size = 100,
+            replace = TRUE, prob = c(0.8, 0.2)
+        )
+    })
+
+    output$estimate <- renderUI({
+        if (input$flip) {
+            span(
+                strong("Estimate of the probability of getting a head:"),
+                round(mean(out() == "H"), 3)
+            )
+        }
+    })
+}
+
+shinyApp(ui, server)
+```
+
+(a) When you run push the button to flip the coin 100 times though, the probability does not change. Why is this? Can you modify the app so that a new sample and a new estimate is generated for each time you push the button?
+(b) Your friend is not convinced of the result since they cannot see the coin flip. Modify the app so that it shows the sample each time.
+(c) Can you modify the app so that the previous samples and estimates remain?
+(d) Upload your shiny app to shinyapps.io and share your shiny app url to convince your friend.
+
+````{r}
+#| unilur-solution: true
+#| eval: false
+
+library(shiny)
+
+result <- tagList()
+
+ui <- fluidPage(
+  actionButton("flip", "Flip coin 100 times"),
+  htmlOutput("estimate")
+)
+
+server <- function(input, output, session) {
+  out <- reactive({
+    if (input$flip) {
+      sample(c("H", "T"),
+        size = 100,
+        replace = TRUE, prob = c(0.8, 0.2)
+      )
+    }
+  })
+
+  output$estimate <- renderUI({
+    if (input$flip) {
+      new <- div(
+        strong("Estimate of the probability of getting a head:"),
+        round(mean(out() == "H"), 3),
+        div(paste0(out(), collapse = " "))
+      )
+      result <<- tagAppendChild(result, new)
+      result
+    }
+  })
+}
+
+shinyApp(ui, server)
+````
+
+
+## 🐧 Exercise 3B
+
+**Plotly + Debugging: Pairwise scatterplot and model diagnostics**
+
+You want to explore every pair of variables in the `mtcars` dataset by looking at a (1) scatter plot with a least squares line, (2) the residual plot from the least squares fit, and (3) the Q-Q plot of the residuals. You built the app below but there are some issues. 
+
+(a) The scatter plot doesn't show up. Why? Can you fix it so it renders?
+(b) The residual plot and Q-Q plot show the error "Error: object '.residuals' not found". How do you debug your code with shiny? Can you fix this error?
+
+```{r app2, eval = FALSE}
+#| eval: false
+library(shiny)
+library(ggplot2)
+library(plotly)
+
+ui <- fluidPage(
+    selectInput("var1", "Variable 1", choices = colnames(mtcars), selected = "mpg"),
+    selectInput("var2", "Variable 2", choices = colnames(mtcars), selected = "cyl"),
+    plotOutput("scatter_plot"),
+    plotOutput("residual_plot"),
+    plotOutput("qq_plot")
+)
+
+server <- function(input, output, session) {
+    observe({
+        updateSelectInput(session, "var2", choices = setdiff(colnames(mtcars), input$var1))
+    })
+
+    fit <- reactive({
+        form <- as.formula(paste0(input$var2, "~", input$var1))
+        broom::augment(lm(form, data = mtcars))
+    })
+
+    output$scatter_plot <- renderPlot({
+        g <- ggplot(mtcars, aes(get(input$var1), get(input$var2))) +
+            geom_point() +
+            labs(x = input$var1, y = input$var2) +
+            geom_smooth(method = "lm", se = FALSE) +
+            ggtitle("Scatter plot")
+        ggplotly(g)
+    })
+
+    output$residual_plot <- renderPlot({
+        ggplot(fit(), aes(get(input$var1), .residual)) +
+            geom_point() +
+            labs(x = input$var1, y = "Residuals") +
+            geom_hline(yintercept = 0) +
+            ggtitle("Residual plot")
+    })
+
+    output$qq_plot <- renderPlot({
+        ggplot(fit(), aes(sample = .residual)) +
+            geom_qq() +
+            geom_qq_line(color = "red") +
+            ggtitle("Q-Q plot of the residuals")
+    })
+}
+
+shinyApp(ui, server)
+```
+
+
+````{r}
+#| unilur-solution: true
+#| echo: true
+#| eval: false
+
+library(shiny)
+library(ggplot2)
+library(plotly)
+
+ui <- fluidPage(
+  selectInput("var1", "Variable 1", choices = colnames(mtcars), selected = "mpg"),
+  selectInput("var2", "Variable 2", choices = colnames(mtcars), selected = "cyl"),
+  plotlyOutput("scatter_plot"),
+  plotOutput("residual_plot"),
+  plotOutput("qq_plot")
+)
+
+server <- function(input, output, session) {
+  observe({
+    updateSelectInput(session, "var2", choices = setdiff(colnames(mtcars), input$var1))
+  })
+
+  fit <- reactive({
+    form <- as.formula(paste0(input$var2, "~", input$var1))
+    broom::augment(lm(form, data = mtcars))
+  })
+
+  output$scatter_plot <- renderPlotly({
+    g <- ggplot(mtcars, aes(get(input$var1), get(input$var2))) +
+        geom_point() + labs(x = input$var1, y = input$var2) +
+      geom_smooth(method = "lm", se = FALSE) +
+      ggtitle("Scatter plot")
+    ggplotly(g)
+  })
+
+  output$residual_plot <- renderPlot({
+    ggplot(fit(), aes(get(input$var1), .resid)) +
+      geom_point() +
+      labs(x = input$var1, y = "Residuals") +
+      geom_hline(yintercept = 0) +
+      ggtitle("Residual plot")
+  })
+
+  output$qq_plot <- renderPlot({
+    ggplot(fit(), aes(sample = .resid)) +
+      geom_qq() + geom_qq_line(color = "red") +
+      ggtitle("Q-Q plot of the residuals")
+  })
+}
+
+shinyApp(ui, server)
+
+````
+
+## 🔧 Exercise 3C
+
+**Demonstrating the concept of confidence intervals**
+
+Confidence interval proposes a range of plausible values for an unknown parameter. More specifically, a $100(1 - \alpha)\%$ confidence interval means that if you were to calculate the same level of confidence interval on the sample of the same size from the same population,  $100(1 - \alpha)\%$ would contain the population mean. The following app illustrates this concept by drawing 100 confidence intervals from user specified population mean, population standard deviation, sample size and confidence interval. 
+
+(a) The text from `output$number` is not showing. Why is that the case? Can you fix this?
+(b) The population is drawn from a normal distribution. How does this change if the population is from an exponential distribution? Change the app so you can specify the distribution to normal or exponential. Note that the exponential distribution with rate $\lambda$ has expected mean as $1/\lambda$ and variance as $1/\lambda^2$. Hint: `rexp` function generates random samples from an exponential distribution.
+(c) [EXTENSION] There are some errors related to `rnorm()` that show up when the app first opens. Have a go at fixing these. Hint: It has to do with what values are by default when the app starts.
+
+
+```{r app3}
+#| eval: false
+library(shiny)
+library(ggplot2)
+library(purrr)
+
+calculate_confint <- function(n, mean, sd, level, N = 100) {
+    map_dfr(seq(N), ~ {
+        x <- rnorm(n, mean, sd)
+        alpha <- 1 - level / 100
+        mean_est <- mean(x)
+        error_bound <- qt(1 - alpha / 2, n - 1) * sd(x) / sqrt(n)
+        data.frame(
+            sample = .x,
+            mean = mean_est,
+            lower = mean_est - error_bound,
+            upper = mean_est + error_bound
+        )
+    })
+}
+
+ui <- fluidPage(
+    numericInput("mean", "What is the population mean?", value = 0, step = 1),
+    numericInput("sd", "What is the population standard deviation?", value = 1, step = 1),
+    numericInput("n", "How many samples?", value = 30, step = 1),
+    numericInput("level", "What percentage level of confidence interval?",
+        value = 95, step = 1, min = 0, max = 100
+    ),
+    plotOutput("plot"),
+    br(),
+    renderText("number"),
+    br(),
+    dataTableOutput("table")
+)
+
+server <- function(input, output, session) {
+    df <- reactive({
+        calculate_confint(input$n, input$mean, input$sd, input$level)
+    })
+
+    output$plot <- renderPlot({
+        ggplot(df(), aes(x = mean, y = sample)) +
+            geom_point() +
+            geom_errorbarh(aes(xmin = lower, xmax = upper)) +
+            geom_vline(xintercept = input$mean, color = "red")
+    })
+
+    output$number <- renderText({
+        ntrue <- sum(input$mean <= df()$upper & input$mean >= df()$lower)
+        paste("There are ", ntrue, "out of 100 confidence intervals that contain the population mean.")
+    })
+
+    output$table <- renderDataTable({
+        df()
+    })
+}
+
+shinyApp(ui, server)
+```
+
+
+````{r}
+#| unilur-solution: true
+#| echo: true
+#| eval: false
+
+library(shiny)
+library(ggplot2)
+library(purrr)
+
+calculate_confint <- function(n, mean, sd, level, dist, N = 100) {
+  map_dfr(seq(N), ~ {
+    # draw samples
+    x <- switch(dist,
+      Normal = rnorm(n, mean, sd),
+      Exponential = rexp(n, 1 / mean)
+    )
+    alpha <- 1 - level / 100
+    mean_est <- mean(x)
+    error_bound <- qt(1 - alpha / 2, n - 1) * sd(x) / sqrt(n)
+    data.frame(
+      sample = .x,
+      mean = mean_est,
+      lower = mean_est - error_bound,
+      upper = mean_est + error_bound
+    )
+  })
+}
+
+
+ui <- fluidPage(
+  selectInput("dist", "What distribution is the population?",
+    selected = "Normal",
+    choices = c("Normal", "Exponential")
+  ),
+  numericInput("mean", "What is the population mean?", value = 1, step = 0.1),
+  uiOutput("dynamic_sd_input"), # only show if Normal distribution
+  numericInput("n", "How many samples?", value = 30, step = 1),
+  numericInput("level", "What percentage level of confidence interval?",
+    value = 95, step = 1, min = 0, max = 100
+  ),
+  plotOutput("plot"),
+  br(),
+  textOutput("number"),
+  br(),
+  dataTableOutput("table")
+)
+
+server <- function(input, output, session) {
+  df <- reactive({
+    req(input$n, input$mean, input$sd, input$level, input$dist)
+    calculate_confint(input$n, input$mean, input$sd, input$level, input$dist)
+  })
+
+  output$dynamic_sd_input <- renderUI({
+    if (input$dist == "Normal") {
+      numericInput("sd", "What is the population standard deviation?", value = 1, step = 1)
+    }
+  })
+
+  output$plot <- renderPlot({
+    ggplot(df(), aes(x = mean, y = sample)) +
+      geom_point() +
+      geom_errorbarh(aes(xmin = lower, xmax = upper)) +
+      geom_vline(xintercept = input$mean, color = "red")
+  })
+
+  output$number <- renderText({
+    ntrue <- sum(input$mean <= df()$upper & input$mean >= df()$lower)
+    paste("There are ", ntrue, "out of 100 confidence intervals that contain the population mean.")
+  })
+
+  output$table <- renderDataTable({
+    df()
+  })
+}
+
+shinyApp(ui, server)
+````
