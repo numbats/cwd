@@ -3,7 +3,7 @@ title: 'ETC5523: Communicating with Data'
 subtitle: "Tutorial 8"
 author: "Michael Lydeamore"
 date: "Week 8"
-output: 
+format: 
   unilur-html:
     output-file: index.html
   unilur-html+solution:
