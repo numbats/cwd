@@ -9,7 +9,7 @@ unit-url: "cwd.numbat.space"
 footer: "ETC5523 Week 9"
 format: 
   revealjs:
-    logo: images/monash-one-line-black-rgb.png
+    logo: ../images/monash-one-line-black-rgb.png
     slide-number: c
     multiplex: false
     theme: ../assets/monash.scss
