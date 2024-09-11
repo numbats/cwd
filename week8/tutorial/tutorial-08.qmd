@@ -102,6 +102,7 @@ that documents our data object `key_crop_yields`.
 
 ```{r}
 #| eval: false
+#| echo: true
 use_r("key_crop_yields.R")
 ```
 
@@ -117,12 +118,14 @@ It is possible to use ordinary markdown syntax in documenation with `roxygen2` b
 
 ```{r}
 #| eval: false
+#| echo: true
 use_roxygen_md()
 ```
 
 Once you've finished modifying run
 
 ```{r}
+#| echo: true
 #| eval: false
 devtools::document()
 ```
@@ -136,6 +139,7 @@ Restart your R session and then run
 
 ```{r}
 #| eval: false
+#| echo: true
 devtools::load_all()
 ```
 
@@ -146,6 +150,7 @@ Now the `key_crop_yields` data is your available to your R session.
 After you've finished editing run:
 ```{r}
 #| eval: false
+#| echo: true
 devtools::check()
 ```
 
@@ -155,6 +160,7 @@ Once you have passed the check, install the package locally:
 
 ```{r}
 #| eval: false
+#| echo: true
 devtools::install()
 ```
 
