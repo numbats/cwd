@@ -1,0 +1,97 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 10"
+author: "Michael Lydeamore"
+date: "Week 10"
+format:
+    unilur-html:
+        output-file: tutorial-10-question.html
+        embed-resources: true
+    unilur-html+solution:
+        output-file: tutorial-10-solution.html
+        embed-resources: true
+---
+
+
+## 🎯 Objectives
+
+
+* practice writing long-form documentation vignettes
+* write functions and its documentation using `usethis` and `roxygen2`
+* convert your package documentation into a website with `pkgdown`
+
+::: {.callout-note collapse="true"}
+
+## Preparation
+
+1. `install.packages(c("pkgdown"))`
+2. Clone the github repo below:
+
+```{zsh}
+git clone https://github.com/etc5523-2022/cwdata.git
+```
+
+:::
+
+
+
+##  Exercise 9A
+
+Open the `cwdata` project directory and create a new vignette via `usethis`.
+
+The name of the vignette should be "crops" and the title will be 
+"Our World in Data: Key Crop Yields".
+
+Your vignette should contain the following:
+
+- A description of the data, including it's source, and how to access it with your package.
+- Two `ggplot2` visualisations with short descriptions, giving examples of things you could learn from the `key_crop_yields` data. If you are stuck on ideas
+take a look at the [charts found on the Our World in Data website](https://ourworldindata.org/crop-yields). Remember that any external packages you use should be added to your DESCRIPTION file under Suggests.
+
+Once you have finished your vignette, create a README file via `usethis`
+that describes the intent of the package and how you could install it from your
+github.
+
+##  Exercise 9B
+
+Build a local `pkgdown` website. 
+Modify the `pkgdown` YAML file so your website has the following:
+
+- a customised theme for the website
+- the vignette is available via  "Articles" link in the navbar
+
+## Exercise 9C 
+
+Now let's create a function to help us create a "proportional stacked area chart". 
+
+The function will take a vector of numbers and convert them to proportions. Missing values should be removed from the input vector but remain in the output vector. 
+
+Here's some examples of what the output should look like:
+
+```{r}
+x <- c(10, 30, 40)
+stack_normalize(x)
+# c(0.125, 0.375, .5)
+x <- c(75, 0, 5, 20, NA)
+stack_normalise(x)
+# c(0.75, 0, 0.05, 0.2, NA)
+x <- c(NA, NA, 10)
+stack_normalize(x)
+# c(NA, NA, 1)
+```
+
+Create a new R script in your package called `stack-normalise.R` and place the function. Remember to document it and provide examples of use. 
+
+## Exercise 9D
+
+Inspect the `inst` directory. What do you see in there?
+
+How is that code being used in the package?
+
+Write a _new_ shiny app, based on the one in `inst`, that converts the current ggplot to a `plotly` output. Then, write a new function for the package that will run this app.
+
+::: unilur-solution
+
+An example package for this tutorial can be found [here](https://github.com/etc5523-2022/cwdata/tree/tut9).
+
+:::

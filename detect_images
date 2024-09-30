@@ -28,6 +28,7 @@ for i in {1..11}; do
         i="${i: -2}"
     fi
     echo "Lecture ${i}"
+    # Finds everything in ![](images/) after the slash, and only keeps the bits after the slash
     images=$(grep -oE '!\[\]\(images/[^)]+\)' week${weeknum}/index.qmd | sed -E 's/!\[\]\(images\/([^)]+)\)/\1/')
     mkdir -p week${weeknum}/images
     for image in $images; do
