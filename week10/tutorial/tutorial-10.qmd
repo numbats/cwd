@@ -28,6 +28,7 @@ format:
 2. Clone the github repo below:
 
 ```{zsh}
+#| eval: false
 git clone https://github.com/etc5523-2022/cwdata.git
 ```
 
@@ -69,6 +70,7 @@ The function will take a vector of numbers and convert them to proportions. Miss
 Here's some examples of what the output should look like:
 
 ```{r}
+#| eval: false
 x <- c(10, 30, 40)
 stack_normalize(x)
 # c(0.125, 0.375, .5)
