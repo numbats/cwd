@@ -49,7 +49,7 @@ In this assessment, you will be turning the analysis you have used for Assignmen
 
 ::: {.callout-important}
 
-You must join the GitHub classroom here: [https://classroom.github.com/a/VNotbOuM](https://classroom.github.com/a/VNotbOuM). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
+You must join the GitHub classroom here: [https://classroom.github.com/a/VW9MaxFW](https://classroom.github.com/a/VW9MaxFW). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
 
 :::
 
