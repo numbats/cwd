@@ -5,10 +5,10 @@ author: "Michael Lydeamore"
 date: "Week 10"
 format:
     unilur-html:
-        output-file: tutorial-10-question.html
+        output-file: index.html
         embed-resources: true
     unilur-html+solution:
-        output-file: tutorial-10-solution.html
+        output-file: solution.html
         embed-resources: true
 ---
 
