@@ -29,6 +29,7 @@ format:
 
 ```{zsh}
 #| eval: false
+#| echo: true
 git clone https://github.com/etc5523-2022/cwdata.git
 ```
 
