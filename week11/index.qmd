@@ -76,16 +76,29 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 <ul class="fa-ul">
 
-<li><i class="fas fa-envelope"></i>`r rmarkdown::metadata$email`</li>
+<li>
 
-<li><i class="fas fa-calendar-alt"></i> `r rmarkdown::metadata$date`</li>
+[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`
 
-<li><i class="fa-solid fa-globe"></i>\<a href="`r rmarkdown::metadata[["unit-url"]]`"\>`r rmarkdown::metadata[["unit-url"]]`</a></li>
+</li>
+
+<li>
+
+[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`
+
+</li>
+
+<li>
+
+[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
+
+</li>
 
 </ul>
 
 <br>
 :::
+
 
 ##  {#aim}
 
