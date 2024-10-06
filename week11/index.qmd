@@ -1,0 +1,744 @@
+---
+pagetitle: "ETC5523: Communicating with Data"
+subtitle: "Case Studies"
+author: "Kate Saunders"
+email: "kate.saunders@monash.edu"
+date: "Week 11"
+department: "Department of Econometrics and Business Statistics"
+unit-url: "cwd.numbat.space"
+footer: "ETC5523 Week 11"
+format: 
+  revealjs:
+    logo: images/monash-one-line-black-rgb.png
+    slide-number: c
+    multiplex: false
+    theme: ../assets/monash.scss
+    show-slide-number: all
+    show-notes: true
+    controls: true
+    width: 1280
+    height: 720
+    css: [../assets/tachyons-addon.css, ../assets/custom.css]
+    include-after-body: "../assets/after-body.html"
+    incremental: true
+execute:
+  echo: true
+  eval: true
+---
+
+```{r, include = FALSE}
+current_file <- knitr::current_input()
+basename <- gsub(".[Rq]md$", "", current_file)
+
+knitr::opts_chunk$set(
+  fig.align = "center",
+  out.width = "100%",
+  fig.retina = 3,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  cache.path = "cache/"
+)
+library(tidyverse)
+theme_set(theme_bw(base_size = 18))
+
+```
+
+```{r data, include = FALSE, cache = TRUE}
+files <- paste0("data/", dir("data/", pattern = "^tmax"))
+data <- map_dfr(files, ~ {
+    station <- read_csv(.x, n_max = 1) %>% pull("site name")
+    tmp <- read_csv(.x, skip = 2, col_names = c("date", "max_temp")) %>%
+        select(date, max_temp) %>%
+        mutate(station = station)
+}) %>%
+    mutate(station = recode(station,
+        "PERTH AIRPORT" = "Perth",
+        "ADELAIDE (WEST TERRACE / NGAYIRDAPIRA)" = "Adelaide",
+        "CAIRNS AERO" = "Cairns",
+        "BRISBANE AERO" = "Brisbane",
+        "SYDNEY (OBSERVATORY HILL)" = "Sydney",
+        "CANBERRA AIRPORT" = "Canberra",
+        "MELBOURNE (OLYMPIC PARK)" = "Melbourne"
+    ))
+```
+
+## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
+
+### `r rmarkdown::metadata$subtitle`
+
+Lecturer: *`r rmarkdown::metadata$author`*
+
+`r rmarkdown::metadata$department`
+
+::: tl
+<br>
+
+<ul class="fa-ul">
+
+<li><i class="fas fa-envelope"></i>`r rmarkdown::metadata$email`</li>
+
+<li><i class="fas fa-calendar-alt"></i> `r rmarkdown::metadata$date`</li>
+
+<li><i class="fa-solid fa-globe"></i>\<a href="`r rmarkdown::metadata[["unit-url"]]`"\>`r rmarkdown::metadata[["unit-url"]]`</a></li>
+
+</ul>
+
+<br>
+:::
+
+##  {#aim}
+
+::: callout-important
+## Aim
+
+-   Revise principles and practices for data based communication
+-   Review four different case study examples
+-   Evaluate if those case studies effectively convey intended messages to viewers
+:::
+
+# Case study {background-color="#006DAE"}
+
+Daily maximum temperature in selected Australian locations
+
+## Data from the Bureau of Meteorology
+
+Daily maximum temperature from beginning of 1910 to mid 2021 for 7 Australian location (Perth, Adelaide, Cairns, Brisbane, Sydney, Canberra, and Melbourne).
+
+```{r}
+data %>%
+    head() %>%
+    knitr::kable()
+```
+
+## Daily maximum temperature
+
+```{r plot-max-temp1}
+data %>%
+    # filter(lubridate::year(date) > 2017) %>%
+    mutate(station = fct_reorder(station, max_temp, last)) %>%
+    ggplot(aes(date, max_temp, color = station)) +
+    geom_line() +
+    colorspace::scale_color_discrete_qualitative() +
+    labs(x = "Date", y = "") +
+    scale_y_continuous(labels = scales::comma_format(suffix = "°C"))
+```
+
+::: fragment
+Very long time series... what's the intended message?
+:::
+
+## Recent maximum temperature trend
+
+```{r plot-max-temp2}
+data %>%
+    filter(date >= as.Date("2019-07-01")) %>%
+    mutate(station = fct_reorder(station, max_temp, last)) %>%
+    ggplot(aes(date, max_temp, color = station)) +
+    geom_line() +
+    colorspace::scale_color_discrete_qualitative() +
+    labs(x = "Date", y = "") +
+    scale_y_continuous(labels = scales::comma_format(suffix = "°C"))
+```
+
+::: fragment
+Lots of fluctuation in temperature... does it show the trend?
+:::
+
+## Recent maximum temperature
+
+```{r plot-max-temp3}
+data %>%
+    filter(date >= as.Date("2019-07-01")) %>%
+    mutate(station = fct_reorder(station, max_temp, last)) %>%
+    ggplot(aes(date, max_temp, color = station)) +
+    geom_smooth(se = FALSE) +
+    colorspace::scale_color_discrete_qualitative() +
+    labs(x = "Date", y = "") +
+    scale_y_continuous(labels = scales::comma_format(suffix = "°C"))
+```
+
+::: fragment
+This is showing the fit from a GAM model... but we lost understanding the underlying variation in the original data
+:::
+
+## Recent maximum temperature
+
+```{r plot-max-temp4}
+data %>%
+    filter(date >= as.Date("2019-07-01")) %>%
+    mutate(station = fct_reorder(station, max_temp, last)) %>%
+    ggplot(aes(date, max_temp, color = station)) +
+    geom_line(alpha = 0.2, size = 0.5) +
+    geom_smooth(se = FALSE) +
+    colorspace::scale_color_discrete_qualitative() +
+    labs(x = "Date", y = "") +
+    scale_y_continuous(labels = scales::comma_format(suffix = "°C"))
+```
+
+::: fragment
+Some models don't look like a good fit... let's examine individually
+:::
+
+## Recent maximum temperature
+
+```{r plot-max-temp5}
+data %>%
+    filter(date >= as.Date("2019-07-01")) %>%
+    mutate(station = fct_reorder(station, max_temp, last)) %>%
+    ggplot(aes(date, max_temp, color = station)) +
+    geom_line(alpha = 0.2, size = 0.5) +
+    geom_smooth(se = FALSE, size = 0.5) +
+    colorspace::scale_color_discrete_qualitative() +
+    labs(x = "Date", y = "") +
+    scale_y_continuous(labels = scales::comma_format(suffix = "°C")) +
+    facet_wrap(~station) +
+    theme(text = element_text(size = 10))
+```
+
+::: fragment
+The legend is redundant here... remove unnessary elements.
+:::
+
+## Recent maximum temperature
+
+```{r plot-max-temp6}
+#| output-location: column
+data %>%
+    filter(date >= as.Date("2019-07-01")) %>%
+    mutate(station = fct_reorder(station, max_temp, last)) %>%
+    ggplot(aes(date, max_temp, color = station)) +
+    geom_line(alpha = 0.2, size = 0.5) +
+    geom_smooth(
+        se = FALSE, size = 0.5,
+        method = loess,
+        method.args = list(span = 0.3)
+    ) +
+    geom_text(
+        data = ~ filter(.x, date == "2019-07-01"),
+        aes(label = station),
+        y = 40, hjust = 0
+    ) +
+    colorspace::scale_color_discrete_qualitative() +
+    labs(x = "", y = "") +
+    scale_y_continuous(labels = scales::comma_format(suffix = "°C")) +
+    facet_wrap(~station) +
+    theme(text = element_text(size = 10)) +
+    guides(color = "none") +
+    theme(
+        strip.background = element_blank(),
+        strip.text = element_blank()
+    )
+```
+
+::: fragment
+Using loess with span of 0.3 instead ... comparison across location is harder when in data shown in different panels
+:::
+
+## Recent maximum temperature
+
+```{r plot-max-temp7}
+#| output-location: column
+data %>%
+    filter(date >= as.Date("2019-07-01")) %>%
+    mutate(station = fct_reorder(station, max_temp, last)) %>%
+    ggplot(aes(date, max_temp)) +
+    geom_smooth(
+        se = FALSE, size = 0.5,
+        method = loess,
+        method.args = list(span = 0.3),
+        data = ~ rename(.x, station2 = station),
+        aes(group = station2),
+        color = "grey", alpha = 0.8
+    ) +
+    geom_line(alpha = 0.2, size = 0.5, aes(color = station)) +
+    geom_smooth(
+        se = FALSE, size = 0.5,
+        method = loess,
+        method.args = list(span = 0.3),
+        aes(color = station)
+    ) +
+    geom_text(
+        data = ~ filter(.x, date == "2019-07-01"),
+        aes(label = station, color = station),
+        y = 40, hjust = 0
+    ) +
+    colorspace::scale_color_discrete_qualitative() +
+    labs(x = "", y = "") +
+    scale_y_continuous(labels = scales::comma_format(suffix = "°C")) +
+    facet_wrap(~station) +
+    theme(text = element_text(size = 10)) +
+    guides(color = "none") +
+    theme(
+        strip.background = element_blank(),
+        strip.text = element_blank()
+    )
+```
+
+::: fragment
+Casting a shadow of the fitted model across locations in each panel makes it easier to compare ...
+:::
+
+## Recent maximum temperature
+
+```{r plot-max-temp8}
+data %>%
+    filter(date >= as.Date("2019-07-01")) %>%
+    mutate(station = fct_reorder(station, max_temp, max)) %>%
+    ggplot(aes(date, station)) +
+    geom_tile(aes(fill = max_temp)) +
+    colorspace::scale_fill_continuous_sequential(
+        labels = scales::comma_format(suffix = "°C"),
+        palette = "Reds 2", rev = TRUE
+    ) +
+    labs(x = "", y = "", fill = "")
+```
+
+::: fragment
+There were missing values in data that wasn't apparent before!
+:::
+
+## Weekly average maximum temperature
+
+```{r plot-max-temp9}
+#| output-location: column
+data %>%
+    filter(date >= as.Date("2019-07-01")) %>%
+    mutate(station = fct_reorder(station, max_temp, max)) %>%
+    mutate(
+        week = lubridate::week(date),
+        year = lubridate::year(date)
+    ) %>%
+    group_by(week, year, station) %>%
+    mutate(temp = mean(max_temp, na.rm = TRUE)) %>%
+    ggplot(aes(date, station)) +
+    geom_tile(aes(fill = temp)) +
+    colorspace::scale_fill_continuous_sequential(
+        labels = scales::comma_format(suffix = "°C"),
+        palette = "Reds 2", rev = TRUE
+    ) +
+    labs(x = "", y = "", fill = "")
+```
+
+::: fragment
+By taking weekly averages, the plot is smoother and you can focus trends in the data instead of getting distracted with daily fluctuations.
+:::
+
+## Maximum temperature by month
+
+```{r plot-max-temp10}
+#| output-location: column
+data %>%
+    filter(date >= as.Date("2019-07-01")) %>%
+    mutate(station = fct_reorder(station, max_temp, max)) %>%
+    mutate(
+        month = lubridate::month(date),
+        year = lubridate::year(date)
+    ) %>%
+    group_by(month, year) %>%
+    mutate(mdate = min(date)) %>%
+    ungroup() %>%
+    ggplot(aes(mdate, max_temp)) +
+    geom_boxplot(
+        outlier.size = 0.5,
+        aes(group = mdate, fill = station)
+    ) +
+    labs(x = "", y = "", fill = "") +
+    facet_wrap(~station) +
+    theme(
+        strip.background = element_blank(),
+        strip.text = element_blank(),
+        text = element_text(size = 12)
+    ) +
+    scale_y_continuous(labels = scales::comma_format(suffix = "°C")) +
+    guides(fill = "none", color = "none") +
+    geom_text(
+        data = ~ filter(., date == min(date)),
+        aes(label = station, color = station), y = 50,
+        hjust = 0
+    ) +
+    colorspace::scale_color_discrete_qualitative() +
+    colorspace::scale_fill_discrete_qualitative() +
+    ylim(0, 55)
+```
+
+::: fragment
+This plot makes it easier to see the monthly variation...
+:::
+
+::: fragment
+Can you think of other ways to visualise this data?
+:::
+
+# Case study {background-color="#006DAE"}
+
+Communicating Climate Change
+
+## Line Graph
+
+```{r}
+
+#| fig-width: 8 
+ 
+temp_data_average = readRDS("data/stripes_data_sydney.rds")
+
+ggplot(data = temp_data_average, aes(x = Year, y = mean_daily_temp)) + 
+  # geom_smooth() +
+  geom_line() +
+  ylab("Average daily max temp (°C)") + 
+  ggtitle("Sydney, Australia") +
+  theme_bw()
+```
+
+Is it clear the climate is changing?
+
+## Line Graph
+
+```{r}
+ 
+temp_data_average = readRDS("data/stripes_data_sydney.rds")
+
+ggplot(data = temp_data_average, aes(x = Year, y = mean_daily_temp)) + 
+  geom_smooth() +
+  geom_line() +
+  ylab("Average daily max temp (°C)") + 
+  ggtitle("Sydney, Australia") +
+  theme_bw() 
+```
+
+Let's add a geom_smooth() - Is the trend clear now?
+
+## Warming Stripes
+
+```{r}
+#| output-location: column
+vec_of_ones = rep(1, nrow(temp_data_average))
+temp_data_average <- mutate(temp_data_average, 
+                            ones = vec_of_ones)
+
+
+ggplot(temp_data_average, aes(x = Year, y = ones)) + 
+  geom_col(aes(fill = mean_daily_temp)) +
+  scale_fill_distiller("Mean Daily Temperature", palette = "RdBu") +  
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+Sydney #showyourstripes <br>
+
+<font size = "3"> Graphic by Ed Hawkins: https://showyourstripes.info/ </font size = "3">
+
+## Labelled Strips
+
+```{r}
+#| output-location: column
+ggplot(temp_data_average, aes(x = Year, y = ones)) + 
+  geom_col(aes(fill = mean_daily_temp)) +
+  scale_fill_distiller("Mean Daily Temperature", palette = "RdBu") +  
+  theme_minimal() + 
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position = "none") +
+  ggtitle("Sydney Temperature Change (1859, 2020)") 
+```
+
+Do we need to know what the exact temperature is to get the message?
+
+## Bars
+
+```{r}
+#| output-location: column
+temp_data_average <- temp_data_average %>% 
+  mutate(transformed = (mean_daily_temp  - mean(mean_daily_temp))/
+           sd(mean_daily_temp))
+
+old_mean = mean(temp_data_average %>% 
+  filter(Year > 1971 & Year < 2000) %>% 
+  pull(mean_daily_temp), na.rm =TRUE)
+
+new_mean = mean(temp_data_average %>% 
+  filter(Year >= 2000) %>% 
+  pull(mean_daily_temp), na.rm =TRUE)
+
+ggplot(temp_data_average, aes(x = Year, y = transformed)) + 
+  geom_col(aes(fill = mean_daily_temp)) +
+  scale_fill_distiller("Temp (°C)", palette = "RdBu") +  # add a legend label
+  theme_void() + 
+  theme(legend.position = "none") +
+  ggtitle(paste0("Sydney temperatures have increased by ", round(new_mean - old_mean, 2), "°C"))
+```
+
+Do bar size and summary text help convey change is happening?
+
+## Bars with scale
+
+```{r}
+#| output-location: column
+ggplot(temp_data_average, aes(x = Year, y = transformed)) + 
+  geom_col(aes(fill = mean_daily_temp)) +
+  scale_fill_distiller("Temp (°C)", palette = "RdBu") +  
+  theme_minimal() + 
+  theme(legend.position = "none", 
+        axis.title.y = element_blank()) +
+  ggtitle("Sydney Temperature Change", "Relative to 1971 - 2000 [°C]") 
+```
+
+What are the advantages / disadvantages to making this graphic more scientifically accurate?
+
+## Climate Spiral
+
+Interactive version shown at the Rio Olympics in 2016
+
+![](images/circlestripes1910.png){width="30%"} ![](images/circlestripes1985.png){width="30%"} ![](images/circlestripes2022.png){width="30%"}
+
+Does animation help convey the climate is warming? <br>
+
+<font size = "3"> https://climate.nasa.gov/climate_resources/300/video-climate-spiral-1880-2022/ </font size = "3">
+
+# Case study {background-color="#006DAE"}
+
+Brisbane Floods, February - March 2022
+
+## Predicted Extent
+
+What works and what does not work about this warning communication? <small>Source: https://www.brisbane.qld.gov.au/ (now expired)</small>
+
+![](images/20220228%20-%20Brisbane%20River%20Flood%20Forecast%20map%204_0m_AHD.png){fig-align="center"}
+
+## Zoomed In
+
+Does this map help people to understand if they will be flooded?
+
+![](images/CutDown_PredictedExtent.jpg){fig-align="center"}
+
+## Search Addresses
+
+Does using a table to display the data make it clearer?
+
+<center>![](images/BCC_Flood.png){width="80%"}</center>
+
+<small>Source: https://www.brisbane.qld.gov.au/ (now expired)</small>
+
+## Probabilistic Words
+
+::: columns
+::: {.column width="40%"}
+People interpret probabilistic words in different ways <br><br>
+
+Likely roughly corresponds to 50% - 70%.
+
+<br><br>
+
+<small> Source: https://hbr.org/2018/07/if-you-say-something-is-likely-how-likely-do-people-think-it-is </small>
+:::
+
+::: {.column width="60%"}
+<center>![](images/likely_chart.png){width="40%"}</center>
+:::
+:::
+
+## Gaps
+
+::: callout-warning
+## Unclear
+
+-   Will my home by impacted?
+
+-   Will I be isolated by flood-waters?
+
+-   Can I evacuate?
+:::
+
+::: callout-important
+## Warnings were inadequate
+
+-   Breakdown in warning communication
+
+-   But where exactly?
+
+-   Clear failed data based communication was a factor
+:::
+
+## Flow of data and information
+
+![](images/Value_chain.png)
+
+## Learning from the Brisbane Floods
+
+::: callout-note
+## Warning communication
+
+-   Needs to help people make a decision
+
+-   Encourage people to take the right actions
+:::
+
+::: callout-tip
+## Future looking
+
+-   Scope to improve how we communicate warnings with data
+
+-   This will help better support people during disasters
+:::
+
+# Case study {background-color="#006DAE"}
+
+New South Wales & Victorian Flooding, October 2022
+
+## Warning Levels
+
+<center>![](images/flood_level_warnings.png){width="35%"}</center>
+
+<small> https://hazardwatch.gov.au/ </small>
+
+## Decision making under stress
+
+Difficult to make decisions in emergency situations. <br> People don't always make good decisions under stress.
+
+<br> <br>
+
+::: callout-tip
+## Categorical Data Helps
+
+-   People are better at thinking in categories
+-   Categories are less complex than probabilities
+-   Categories can also help when communicating uncertainty
+:::
+
+## VicAlert - 2022-10-17
+
+Hazard levels and related icons
+
+<center>![](images/Hazard_map_screenshot.png){width="90%"}</center>
+
+## VicAlert - 2022-10-17
+
+Clear hazard messaging
+
+<center>![](images/warning_message.png){width="90%"}</center>
+
+## Review 
+
+How do the design elements contribute to the effectiveness of the data communication? Consider 
+
+- Colour 
+- Icons 
+- Polygons
+- Map
+- Pop Up Messages 
+- Flashing Icons
+- Interactivity 
+
+<!-- ## Silos -->
+
+<!-- ::: columns -->
+
+<!-- ::: {.column width="50%"} -->
+
+<!-- NSW Hazard Watch ![](images/nsw_hazard_watch.png){width="88%"} -->
+
+<!-- ::: -->
+
+<!-- ::: {.column width="50%"} -->
+
+<!-- Vic Alert ![](images/vic_vicalert.png){width="100%"} -->
+
+<!-- ::: -->
+
+<!-- ::: -->
+
+<!-- ## Impact Forecasts: Road closures -->
+
+<!-- <center>![](images/nsw_traffic_post_event_20221206){width="80%"}</center> -->
+
+<!-- <small>https://www.livetraffic.com/incident-details/139477</small> -->
+
+<!-- ## Criticism -->
+
+<!-- -   Road closure based apps are designed for everyday use -->
+
+<!-- -   Extreme events are system breakers (fire and floods) -->
+
+<!-- -   Data is out of date (highly local impacts) -->
+
+<!-- -   Display is crowded -->
+
+<!-- <center>![](images/Clousres_Screen_Shot_%2020221117_081212am.png){width="40%"}</center> -->
+
+<!-- ## Forbes Road closures -->
+
+<!-- Forbes was cut in three by flooding - -->
+
+<!-- <center>![](images/Forbes%20_%20Screen%20Shot%202022-11-17%20at%208.06.06%20am.png){width="80%"}</center> -->
+
+<!-- <small>https://www.livetraffic.com/incident-details/139477</small> -->
+
+<!-- ## Criticism -->
+
+<!-- App isn't purpose build for: -->
+
+<!-- -   Evacuation routing -->
+
+<!-- -   Showing isolation risk -->
+
+<!-- -   Displaying uncertainty with hazard evolution -->
+
+<!-- ## Why all this matters?? -->
+
+<!-- -   People need to know how to evacuate -->
+
+<!-- -   People need to know when their window is evacuation -->
+
+<!-- -   People need to know if they can reach essential services\ -->
+
+<!--     eg Hospitals, Police Stations, Domestic Violence Shelters -->
+
+<!-- ## Forbes Road closures -->
+
+<!-- NSW Traffic directed to a more local source of information -->
+
+<!-- <center>![](images/Message_Screen_Shot_20221117_at_080407am){width="80%"}</center> -->
+
+<!-- ## Forbes -->
+
+<!-- <center>![](images/Forbes_road_closures.png){width="80%"}</center> -->
+
+<!-- ## Safe routes -->
+
+<!-- <center>![](safe_evacuation_route.png){width="60%"}</center> -->
+
+<!-- <center>![](images/google_route.png){width="40%"}</center> -->
+
+## Week 11 Lesson
+
+::: callout-important
+## Summary
+
+-   We revised the principles and practices of data visualisation
+-   We critically evaluated different examples of data communication
+:::
+
+::: callout-tip
+## Resources
+
+-   GHCND Daily dataset, see [rnoaa package](https://github.com/ropensci/rnoaa)
+-   [#ShowYourStripes](https://showyourstripes.info/)
+-   [Brisbane City Council](https://fam.brisbane.qld.gov.au/?page=entry-resident-visitor)
+-   [NSW Hazard Watch](https://hazardwatch.gov.au/)
+-   [VicAlert](https://www.emergency.vic.gov.au/respond/)
+:::
+
+## 
+
+::: callout-note
+## Contributors
+
+
+-   Case study on Australian Temperature developed by Dr Emi Tanaka
+
+-   Warming Stripes case study developed by Dr Kate Saunders
+
+-   Natural Hazards case studies developed by Dr Kate Saunders
+
+:::
