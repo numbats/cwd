@@ -1,0 +1,72 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 11"
+author: "Michael Lydeamore"
+date: "Week 11"
+format:
+    unilur-html:
+        output-file: index.html
+        embed-resources: true
+---
+
+
+```{r setup, include = FALSE, eval = file.exists("setup.R")}
+source("setup.R")
+library(tidyverse)
+knitr::opts_chunk$set(
+    fig.path = "images/tutorial-11-",
+    eval = FALSE
+)
+
+```
+
+```{r, echo = FALSE, eval = file.exists("tutorial.css")}
+htmltools::includeCSS("tutorial.css")
+```
+
+
+
+
+
+## 🎯 Objectives
+
+
+* dissect the encoding choices for plots and its role in providing the information that supports your data story
+* discuss with peers about effective data visualisation
+
+
+
+## Exercise 11A
+
+For the following data visualisation, discuss with your peers:
+
+- What are the main information that the audiences will gain? 
+- What makes the data visualisation effective or not effective?
+- What other graphs would you construct for the same intended message?
+
+In particular, you should check the following:
+
+- **Perceptual tasks**: What visual element must the audience decode to retrieve the statistical information?
+- **Cognitive principles**: What cognitive principles are assisting the audience to "see" the information you want them to see?
+- **Aesthetic appeal**: How well is the aesthetic design integrated with the rest of the data story?
+
+### Plot #1
+
+![](../images/datavis-apple-ipo.png)
+
+### Plot #2
+
+![](../images/datavis-co2.png)
+
+### Plot #3
+
+![](../images/datavis-energy.png)
+
+
+### Plot #4
+
+![](../images/datavis-marathon.jpg)
+
+### Plot #5
+
+![](../images/datavis-shitshow.png)
