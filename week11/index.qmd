@@ -22,7 +22,7 @@ format:
     include-after-body: "../assets/after-body.html"
     incremental: true
 execute:
-  echo: true
+  echo: false
   eval: true
 ---
 
@@ -216,7 +216,6 @@ The legend is redundant here... remove unnessary elements.
 ## Recent maximum temperature
 
 ```{r plot-max-temp6}
-#| output-location: column
 data %>%
     filter(date >= as.Date("2019-07-01")) %>%
     mutate(station = fct_reorder(station, max_temp, last)) %>%
@@ -251,7 +250,6 @@ Using loess with span of 0.3 instead ... comparison across location is harder wh
 ## Recent maximum temperature
 
 ```{r plot-max-temp7}
-#| output-location: column
 data %>%
     filter(date >= as.Date("2019-07-01")) %>%
     mutate(station = fct_reorder(station, max_temp, last)) %>%
@@ -314,7 +312,6 @@ There were missing values in data that wasn't apparent before!
 ## Weekly average maximum temperature
 
 ```{r plot-max-temp9}
-#| output-location: column
 data %>%
     filter(date >= as.Date("2019-07-01")) %>%
     mutate(station = fct_reorder(station, max_temp, max)) %>%
@@ -340,7 +337,6 @@ By taking weekly averages, the plot is smoother and you can focus trends in the 
 ## Maximum temperature by month
 
 ```{r plot-max-temp10}
-#| output-location: column
 data %>%
     filter(date >= as.Date("2019-07-01")) %>%
     mutate(station = fct_reorder(station, max_temp, max)) %>%
@@ -424,7 +420,6 @@ Let's add a geom_smooth() - Is the trend clear now?
 ## Warming Stripes
 
 ```{r}
-#| output-location: column
 vec_of_ones = rep(1, nrow(temp_data_average))
 temp_data_average <- mutate(temp_data_average, 
                             ones = vec_of_ones)
@@ -444,7 +439,6 @@ Sydney #showyourstripes <br>
 ## Labelled Strips
 
 ```{r}
-#| output-location: column
 ggplot(temp_data_average, aes(x = Year, y = ones)) + 
   geom_col(aes(fill = mean_daily_temp)) +
   scale_fill_distiller("Mean Daily Temperature", palette = "RdBu") +  
@@ -461,7 +455,6 @@ Do we need to know what the exact temperature is to get the message?
 ## Bars
 
 ```{r}
-#| output-location: column
 temp_data_average <- temp_data_average %>% 
   mutate(transformed = (mean_daily_temp  - mean(mean_daily_temp))/
            sd(mean_daily_temp))
@@ -487,7 +480,6 @@ Do bar size and summary text help convey change is happening?
 ## Bars with scale
 
 ```{r}
-#| output-location: column
 ggplot(temp_data_average, aes(x = Year, y = transformed)) + 
   geom_col(aes(fill = mean_daily_temp)) +
   scale_fill_distiller("Temp (°C)", palette = "RdBu") +  
