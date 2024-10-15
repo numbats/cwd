@@ -1,0 +1,83 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 12"
+author: "Michael Lydeamore"
+date: "Week 12"
+format:
+    unilur-html:
+        output-file: index.html
+        embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
+---
+
+
+## 🎯 Objectives
+
+* revise HTML/CSS, Shiny and R package development
+
+
+In a group, pick _one_ of each sets of questions. Work on your answers for 30 minutes, then pair up with another group and check each other's knowledge.
+
+Based on the package cloned from https://github.com/etc5523-2022/cwdata, answer the following questions.
+
+
+
+## Exercise 12A
+
+
+1. For the shiny app launched by `cwdata::run_app()`, how do you change the background color of the sidebar panel to blue?
+2. Could you create another shiny app that we can select a crop and see the latest yield by country?
+3. Could you show how to change the font size of select input label in this app?
+4. Can you add a function to launch this new shiny app from the package?
+5. Could you show how you would document this function?
+6. What does the `@export` and `@param` tag do?
+
+
+## Exercise 12B
+
+
+1. For the shiny app launched by `cwdata::run_app()`, how do you change the text color of the sidebar panel to blue?
+2. Could you create a similar shiny app that instead of showing the plot, it shows the table output instead?
+3. Suppose I want to add another data with missing values removed from `cwdata::key_crop_yields` called `crop_yields`. Can you show how to create this data and add it to the package?
+4. Can you add a function called `random_year` to the package that generates a single random integer from 1961 to 2018 with a custom class "year" and "numeric"? 
+5. Could you add a custom print method for the class year so the print output from the function `random_year` has the words "Year is " before the random number?
+6. How do you change the name of the package to `mydata`?
+
+
+
+## Exercise 12C
+
+
+1. For the shiny app launched by `cwdata::run_app()`, how do you change the background color of the main panel to blue?
+2. Could you create another shiny app that when I click on a button it will show the yield across year by crop for a random country (i.e. replace country selection with an action button)?
+3. Could you show how to create a vignette for this package?
+4. Can you add a function called `random_country` to the package that generates a single random country (with equal chances of being selected) from the list of country available in `cwdata::key_crop_yields`?
+5. Could you modify the `random_country` so the output is passed to `cowsay::say()` and the resulting print is a print of cat saying the random country name? Make sure that the resulting modification will pass the package check. 
+6. What does the `@examples` and `@param` tag do?
+
+
+
+## Exercise 12D
+
+
+1. For the shiny app launched by `cwdata::run_app()`, how do you change the color of the label on top of the drop down menu to blue?
+2. Could you create another shiny app that shows a barplot of the yield of a selected country (from the drop down menu) *and* at a selected year (from a slider)?
+3. Could you add a title to the shiny app with a font size of 30px?
+4. I want a function called `aussie_yield` in the `cwdata` package that returns the latest yield of a given crop in Australia with input of a crop. Can you show me how to do this? 
+5. Could you show how you would create a test for this function?
+6. What does the `@import` and `@examples` tag do?
+
+
+
+## Exercise 12E
+
+1. For the shiny app launched by `cwdata::run_app()`, how do you add the title "Key Crop Yield App" to the app in a blue color with yellow background color?
+2. Could you create another shiny app that we can select a country and it shows the five number summary of the wheat yield?
+3. Could you show how to make a local documentation website for this package?
+4. Can you add a function that computes the sum of the yield of the last year for a particular country? Make sure that the resulting modification will pass the package check. 
+5. Could you explain how to add dependencies in this package?
+6. Could you explain the difference between `@importFrom` and `@import`?
+
+
