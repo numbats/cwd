@@ -1,6 +1,6 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Assignment 4: Turning analysis interactive"
+subtitle: "Supplementary Assignment"
 author: "Michael Lydeamore"
 date: today
 format:
