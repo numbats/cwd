@@ -99,7 +99,7 @@ Dr. Michael Lydeamore
 ::: {.column width='50%'}
 <center><img  class="circle-img" src="images/janith-wanniarachchi.jpg" height = "200px"/>
 
-Janith Wanniarachchi
+Maliny Po
 
 *Tutor*
 </center>
@@ -113,7 +113,7 @@ Janith Wanniarachchi
 ## Contacting the teaching team
 
 * For private matters, contact [michael.lydeamore@monash.edu](mailto:michael.lydeamore@monash.edu) using your Monash student email and citing the unit name.
-* For non-private matters, you should post this in the Moodle discussion board. 
+* For non-private matters, you should post this on the Ed discussion board. 
 
 :::
 
@@ -163,7 +163,7 @@ Emi is a guru of data communication, and I highly recommend checking out her web
 After this unit, you should be able to:
 
 * understand and apply the elements of effective communication,
-* **host R Markdown HTML outputs online** for blogging, reports or other purposes,
+* **host Quarto HTML outputs online** for blogging, reports or other purposes,
 * be more confident with web technologies (**HTML/CSS**),
 * make a **Shiny web app**
 
@@ -173,9 +173,9 @@ After this unit, you should be able to:
 
 ## 🏛️ ETC5523 unit structure 
 
-* **2 hour lectures** are *interactive sessions*:
-  - during the lecture we *demonstrate*, *discuss* and  *complete tasks* in small groups
-* **1.5 hour tutorial** → only go to the one you are assigned to!
+* **2 hour lectures** are *interactive sessions*
+* **1 hour workshops** → practice skills, ask questions in small groups
+* **1 hour tutorial** → only go to the one you are assigned to!
 
 ## 🪵 Materials
 
@@ -206,10 +206,6 @@ Materials are designed to develop your **hard and soft skills**.
 * See Moodle announcement for the Zoom links for the consultations
   
 * _Seek help early and often_!
-
-* For coding issues, check out [this guide](https://learnr.numbat.space/chapter3)^[We will be going through this shortly] to make it easier for others to help you
-
-
 
 ## 💯 Course assessments
 
@@ -286,6 +282,45 @@ To effectively communicate, we must realize that we are all different in the way
 [-- Anthony Robbins]{.fr}
 
 :::
+
+# Communication is a skill
+
+If you practice, it will get better.
+
+## Why should you listen to me though?
+
+I've had a lot of practice.
+
+::: {.fragment}
+To scientists:
+
+* Dozens of presentations at conferences and seminars, 
+* Broad collaborations in a wide range of fields
+:::
+
+::: {.fragment}
+To less technical audiences:
+
+* Hundreds of media interviews,
+* Probably a hundred ministerial briefings,
+* Many more high level meetings with government and industry stakeholders
+:::
+
+## Why should you listen to me though?
+
+Communication has got me a lot of where I am now.
+
+::: {.fragment .blockquote}
+
+A good economist isn't right all the time, but they are very good at explaining when they are wrong
+
+:::
+
+
+::: {.fragment}
+#### If you can do technical work _and_ tell people about it, you will be in high demand {.center}
+:::
+
 
 
 ## Communicating [with data]{.monash-blue}
@@ -471,9 +506,11 @@ Maybe stories are just data with a soul.
 
 <iframe height="80%" width="100%" src="https://www.youtube.com/embed/hVimVzgtD6w?start=148" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+## With good communication...
 
+<iframe width="100%" height="80%" src="https://www.youtube.com/embed/8S0FDjFBj8o?si=ftxOBxegx5hnTOv9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-# Communicating *your problem*
+## Communicating *your problem*
 
 ::: incremental 
 
@@ -486,23 +523,22 @@ Maybe stories are just data with a soul.
 
 ## 🆘 Asking for help [1]{.circle .monash-bg-red2 .monash-white} [Part 1]{.f4}
 
-
-* What do you think about the question below?
 <center>
 <img class="border-box" width = "900px" style="padding:0px" src="images/stackoverflow-1.png">
 </center>
+
+Exercise: Come up with a solution to this problem.
 
 
 ## 🆘 Asking for help [1]{.circle .monash-bg-red2 .monash-white} [Part 2]{.f4}
 
 
-* What do you think now?
+::: {.h6}
 
-
-
-::: {.ba .pa3}
-
+```
 I am looking to adjust the size of two separate ggplots within the same R chunk in Rmarkdown. These plots must be different when outputted as a pdf, so defining the dimensions at the beginning of the chunk doesn't work. Does anyone have any ideas? My code is below.
+```
+
 ````md
 `r ''````{r, fig.height = 3, fig.width = 3}
 ggplot(df, aes(weight, height)) +
@@ -527,11 +563,10 @@ ggplot(df, aes(height, volume)) +
 ## 🆘 Asking for help [1]{.circle .monash-bg-red2 .monash-white} [Part 3]{.f4}
 
 
-* Is this better?
-
-
-::: {.ba .pa3}
+```
 I am looking to adjust the size of two separate ggplots within the same R chunk in Rmarkdown. These plots must be different when outputted as a pdf, so defining the dimensions at the beginning of the chunk doesn't work. Does anyone have any ideas? My code is below.
+```
+
 ````md
 `r ''````{r, fig.height = 3, fig.width = 3}
 library(ggplot2)
@@ -555,12 +590,9 @@ ggplot(df, aes(height, volume)) +
 ## 🆘 Asking for help [1]{.circle .monash-bg-red2 .monash-white} [Part 4]{.f4}
 
 
-* Okay better now?
+```I am looking to adjust the size of two separate ggplots within the same R chunk in Rmarkdown. These plots must be different when outputted as a pdf, so defining the dimensions at the beginning of the chunk doesn't work. Does anyone have any ideas? My code is below.
+```
 
-
-::: {.ba .pa3}
-
-I am looking to adjust the size of two separate ggplots within the same R chunk in Rmarkdown. These plots must be different when outputted as a pdf, so defining the dimensions at the beginning of the chunk doesn't work. Does anyone have any ideas? My code is below.
 ````md
 `r ''````{r, fig.height = 3, fig.width = 3}
 library(ggplot2)
@@ -588,11 +620,10 @@ ggplot(df, aes(height, volume)) +
 ## 🆘 Asking for help [1]{.circle .monash-bg-red2 .monash-white} [Part 5]{.f4}
 
 
-* Are we done now?
-
-::: {.ba .pa3}
-
+```
 I am looking to adjust the size of two separate ggplots within the same R chunk in Rmarkdown. These plots must be different when outputted as a pdf, so defining the dimensions at the beginning of the chunk doesn't work. Does anyone have any ideas? My code is below.
+```
+
 ````md
 `r ''````{r, fig.height = 3, fig.width = 3}
 library(ggplot2)
@@ -657,36 +688,6 @@ If the **problem is based on data** ...
 <label class="checkbox-container">If the data is big, could you cull your data further to communicate or reproduce the problem?
 <input type="checkbox"><span class="checkmark"></span>
 </label>
-
-
-
-
-## 🆘 Asking for help [1]{.circle .monash-bg-red2 .monash-white} [Check]{.f4} 
-
-
-![](images/stackoverflow-1.png){fig-align="center"}
-
-
-## 🆘 Asking for help [2]{.circle .monash-bg-red2 .monash-white}
-
-::: {.columns}
-::: {.column width='30%'}
-* How about the question on the right?
-* What makes it *hard* or *easy* for people to answer this question?
-:::
-::: {.column width='70%'}
-![](images/stackoverflow-2-1.png){fig-align="center"}
-
-![](images/stackoverflow-2-2.png){fig-align="center"}
-:::
-:::
-
-
-::: notes
-
-* In this example, the author provides the data but it requires work for others to read this data in.
-
-:::
 
 
 ## Session Information 

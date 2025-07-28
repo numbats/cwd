@@ -17,7 +17,7 @@ This unit develops teamwork skills, through instruction on reproducibility and v
 ## Teachers
 
 * [**Michael Lydeamore**](https://www.michaellydeamore.com). Chief Examiner. Email: [michael.lydeamore@monash.edu](mailto:michael.lydeamore@monash.edu)
-* [**Janith Wanniarachchi**](https://janithwanni.netlify.app/). Email: [Janith.Wanniarachchi@monash.edu](mailto:Janith.Wanniarachchi@monash.edu)
+* [**Maliny Po**](https://janithwanni.netlify.app/). Email: [Janith.Wanniarachchi@monash.edu](mailto:Janith.Wanniarachchi@monash.edu)
 
 ```{r}
 #| label: load_packages
@@ -34,7 +34,8 @@ week <- as.integer(1 + ((Sys.Date() - as_date(start_semester))/7))
 
 ## Weekly schedule
 
-* 2 hour workshop, Wednesdays 4pm-6pm each week
+* 1 hour workshop, Mondays 10am-11am each week
+* 2 hour seminar, Monday 6pm-8pm each week
 * 1.5 hour tutorial, one of:
   * Friday 11am-12.30pm
   * Friday 12.30pm-2pm
@@ -42,7 +43,7 @@ week <- as.integer(1 + ((Sys.Date() - as_date(start_semester))/7))
 ## Consultation
 
 * Michael Lydeamore:
-* Janith Wanniarachchi: Friday 2.30pm-4pm (Except weeks 3-5)
+* Maliny Po: Wednesday 1pm-2.30pm (Rm 232A, Building 6)
 
 ```{r}
 #| label: schedule2

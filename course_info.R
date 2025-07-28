@@ -2,10 +2,10 @@
 library(tidyverse)
 
 # Start of semester
-start_semester <- "2024-07-22"
+start_semester <- "2025-07-28"
 
 # Week of mid-semester break
-mid_semester_break <- "2024-09-23"
+mid_semester_break <- "2025-09-29"
 
 # Schedule
 schedule <- tribble(
@@ -63,9 +63,9 @@ assignments <- read_csv(here::here("assignments.csv")) |>
         File = paste0("assignments/", File)
     )
 
-schedule <- schedule |>
-    full_join(assignments, by = "Date") |>
-    mutate(Week = if_else(is.na(Week) & Date > "2024-05-20", 13, Week))
+# schedule <- schedule |>
+#     left_join(assignments, by = "Date") |>
+#     mutate(Week = if_else(is.na(Week) & Date > "2024-05-20", 13, Week))
 
 show_assignments <- function(week) {
     ass <- schedule |>
