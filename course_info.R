@@ -63,9 +63,9 @@ assignments <- read_csv(here::here("assignments.csv")) |>
         File = paste0("assignments/", File)
     )
 
-# schedule <- schedule |>
-#     left_join(assignments, by = "Date") |>
-#     mutate(Week = if_else(is.na(Week) & Date > "2024-05-20", 13, Week))
+schedule <- schedule |>
+    left_join(assignments, by = "Date") |>
+    mutate(Week = if_else(is.na(Week) & Date > "2025-05-20", 13, Week))
 
 show_assignments <- function(week) {
     ass <- schedule |>
