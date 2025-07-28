@@ -11,9 +11,9 @@ mid_semester_break <- "2025-09-29"
 schedule <- tribble(
     ~Week, ~Topic, ~Reference, ~Reference_URL,
     1, "Basic communication theory and practice", "", "",
-    2, "Guest lecture: Narrative structure and reporting", "", "",
-    3, "Captivating statistical presentations", "", "",
-    4, "Data storytelling on the web", "", "", # Assignment 1 due
+    2, "Basic Communitcation Theory and Presentations", "", "",
+    3, "Data Storytelling on the Web", "", "",
+    4, "Writing clearly and concisely", "", "", # Assignment 1 due
     5, "Statistical model outputs and data tables", "", "",
     6, "Effective data visualisation", "", "",
     7, "Introduction to web technologies and styling", "", "", # Assignment 2 due
