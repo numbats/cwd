@@ -214,20 +214,26 @@ Materials are designed to develop your **hard and soft skills**.
 * **Week 4**: *Assessment 1* (25%) Breaking down key communication concepts in articles
 * **Week 7**: *Assessment 2* (25%) Writing your first communication piece
 * **Week 10**: *Assessment 3* (20%) Creating your own blog, styling and adding content
-* **Week 13**: *Assessment 4* (25%) Turning your findings into a dashbaord
-* *Oral Presentations* (5%) Starting in Week 2, each week up to three people present in tutorial
+* **Week 14**: *Assessment 4* (25%) Turning your findings into a dashbaord
+* *Oral Presentations* (5%) Starting in Week 2, each week up to three people present in workshop
 
+## Course assessments - Oral Presentations
+
+Everyone will give a _5 minute_ presentation in the workshop, starting in Week 2.
+
+Please sign up to a presentation topic here:
+
+![](images/gsheet-qrcode.png){fig-align="center"}
 
 ## 🏁 Expectations [Part 1]{.f4}
 
 ::: incremental
 
-* Attend lectures and assigned tutorials
+* Attend lectures, workshops and assigned tutorials
 * **_Minimum_** total expected workload is 144 hours, that's 12 hours each week or **8.5 hours of self study per week**
-* Check the [unit homepage](https://cwd.numbat.space/) and [unit Moodle page](https://learning.monash.edu/course/view.php?id=18866) often
+* Check the [unit homepage](https://cwd.numbat.space/) and unit Moodle page
 * ETC5513 (or equivalent) is a prerequisite → you need to catch up _fast_ if you're not confident
 * Install the latest [R](https://cloud.r-project.org/) and [RStudio IDE](https://www.rstudio.com/products/rstudio/download/) (or your chosen IDE that has the ability to run R code)
-* For the in-person tutorials, bring your own laptops
 
 :::
 
@@ -533,8 +539,6 @@ Exercise: Come up with a solution to this problem.
 ## 🆘 Asking for help [1]{.circle .monash-bg-red2 .monash-white} [Part 2]{.f4}
 
 
-::: {.h6}
-
 ```
 I am looking to adjust the size of two separate ggplots within the same R chunk in Rmarkdown. These plots must be different when outputted as a pdf, so defining the dimensions at the beginning of the chunk doesn't work. Does anyone have any ideas? My code is below.
 ```
@@ -548,8 +552,6 @@ ggplot(df, aes(height, volume)) +
   geom_point()
 ```
 ````
-
-:::
 
 ::: notes
 
@@ -578,8 +580,6 @@ ggplot(df, aes(height, volume)) +
 ```
 ````
 
-:::
-
 ::: notes
 
 * Data `df` is not defined!
@@ -590,7 +590,8 @@ ggplot(df, aes(height, volume)) +
 ## 🆘 Asking for help [1]{.circle .monash-bg-red2 .monash-white} [Part 4]{.f4}
 
 
-```I am looking to adjust the size of two separate ggplots within the same R chunk in Rmarkdown. These plots must be different when outputted as a pdf, so defining the dimensions at the beginning of the chunk doesn't work. Does anyone have any ideas? My code is below.
+```
+I am looking to adjust the size of two separate ggplots within the same R chunk in Rmarkdown. These plots must be different when outputted as a pdf, so defining the dimensions at the beginning of the chunk doesn't work. Does anyone have any ideas? My code is below.
 ```
 
 ````md
@@ -604,8 +605,6 @@ ggplot(df, aes(height, volume)) +
   geom_point()
 ```
 ````
-
-:::
 
 ::: notes
 
@@ -634,9 +633,6 @@ ggplot(trees, aes(Height, Volume)) +
   geom_point()
 ```
 ````
-
-:::
-
 
 ::: notes
 
