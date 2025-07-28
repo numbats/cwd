@@ -97,7 +97,7 @@ Dr. Michael Lydeamore
 
 :::
 ::: {.column width='50%'}
-<center><img  class="circle-img" src="images/janith-wanniarachchi.jpg" height = "200px"/>
+<center><img  class="circle-img" src="images/maliny-po.jpg" height = "200px"/>
 
 Maliny Po
 
@@ -215,7 +215,7 @@ Materials are designed to develop your **hard and soft skills**.
 * **Week 7**: *Assessment 2* (25%) Writing your first communication piece
 * **Week 10**: *Assessment 3* (20%) Creating your own blog, styling and adding content
 * **Week 14**: *Assessment 4* (25%) Turning your findings into a dashbaord
-* *Oral Presentations* (5%) Starting in Week 2, each week up to three people present in workshop
+* **Oral Presentations**: (5%) Starting in Week 2, each week several presentations in the workshop
 
 ## Course assessments - Oral Presentations
 
