@@ -17,7 +17,7 @@ This unit develops teamwork skills, through instruction on reproducibility and v
 ## Teachers
 
 * [**Michael Lydeamore**](https://www.michaellydeamore.com). Chief Examiner. Email: [michael.lydeamore@monash.edu](mailto:michael.lydeamore@monash.edu)
-* [**Maliny Po**](https://janithwanni.netlify.app/). Email: [Janith.Wanniarachchi@monash.edu](mailto:Janith.Wanniarachchi@monash.edu)
+* [**Maliny Po**]. Email: [maliny.po@monash.edu](mailto:maliny.po@monash.edu)
 
 ```{r}
 #| label: load_packages
@@ -37,12 +37,13 @@ week <- as.integer(1 + ((Sys.Date() - as_date(start_semester))/7))
 * 1 hour workshop, Mondays 10am-11am each week
 * 2 hour seminar, Monday 6pm-8pm each week
 * 1.5 hour tutorial, one of:
-  * Friday 11am-12.30pm
-  * Friday 12.30pm-2pm
+  * Monday 12pm-1pm
+  * Monday 1pm-2pm
+  * Monday 2pm-3pm
 
 ## Consultation
 
-* Michael Lydeamore:
+* Michael Lydeamore: Thursday 10am-11am (Rm 354, Building 6)
 * Maliny Po: Wednesday 1pm-2.30pm (Rm 232A, Building 6)
 
 ```{r}
