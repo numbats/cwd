@@ -461,7 +461,7 @@ Pathos - Audience. Appeal to the audience to listen to you. Engage them.
 Logos - Context. Audience will put things in context for them. Make sure it will make sense. (Example)
 
 :::
-
+<!-- 
 ## Rhetorical Situation 
 
 
@@ -486,7 +486,7 @@ Audience
 
 ::: {.floating .circle style="top:13%;left:84%;animation-delay:-4.2s;"}
 Context
-:::
+::: -->
 
 
 
