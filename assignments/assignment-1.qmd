@@ -79,7 +79,7 @@ You can see an example article breakdown (using a List A article) [here](example
 -   [World, 15 Million Tweets Later (Robert Lesser)](https://observablehq.com/@rlesser/wordle-twitter-exploration)
 -   [The Welch-Berlekamp Algorithm for Correcting Errors in Data (Jeremy Kun)](https://www.jeremykun.com/2015/09/07/welch-berlekamp/)
 -   [How does ChatGPT Work? (Gergely Orosz)](https://blog.pragmaticengineer.com/how-does-chatgpt-work/)
--   [How Many People Can You Remember? (Mona Chalabi)](https://fivethirtyeight.com/features/whats-the-most-common-name-in-america/)
+-   [How Many People Can You Remember? (Mona Chalabi)](https://fivethirtyeight.com/features/how-many-people-can-you-remember/)
 -   [What's the most common name in America? (Mona Chalabi)](https://fivethirtyeight.com/features/whats-the-most-common-name-in-america/)
 
 #### List C (Presentations/Video):
