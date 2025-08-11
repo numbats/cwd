@@ -7,6 +7,11 @@ date: "Week 4"
 department: "Department of Econometrics and Business Statistics"
 unit-url: "cwd.numbat.space"
 footer: "ETC5523 Week 4"
+filters:
+  - webr
+webr:
+  packages: ['palmerpenguins', 'ggplot2']
+  show-startup-message: false
 format: 
   revealjs:
     logo: images/monash-one-line-black-rgb.png
@@ -110,6 +115,11 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 
 :::
+
+---
+
+![](images/datavsbusiness.jpeg){fig-align="center"}
+
 
 
 
@@ -313,8 +323,45 @@ What is the difference?
 
 * Any other file name and folder structure requires you to append it to the domain or subdomain, e.g. [[https://cwd.numbat.space/]{.monash-bg-umber2 .monash-white .pl3}[lectures/lecture-00.html]{.monash-bg-orange2 .monash-white .pr3}](https://cwd.numbat.space/lectures/lecture-03.html)
 
+:::
 
+## Web server directory index
 
+This typically means you end up with a structure like this:  
+
+::: {.columns}
+::: {.column width='50%'}
+
+```
+    cwd.numbat.space/
+    ├── index.html
+    ├── lectures/
+    │   ├── lecture-01
+    │   |   └── index.html
+    │   ├── lecture-02
+    │   |   └── index.html
+    │   └── lecture-03
+    │       └── index.html
+    └── assignments/
+        ├── assignment-01
+        │   └── index.html
+        └── assignment-02
+            └── index.html
+```
+:::
+::: {.column width='50%'}
+::: {.fragment}
+There is a VSCode/Positron extensions that can help you identify files based on their folder:
+
+```
+"workbench.editor.labelFormat": "short"
+```
+:::
+
+::: {.fragment}
+If you're on RStudio you're on your own sorry
+:::
+:::
 :::
 
 ## Getting started with Quarto blog 
@@ -503,8 +550,185 @@ Alternatively use
 quarto publish netlify
 ```
 
+# Some cool Quarto stuff
 
+## `webR`
 
+`webR` is a web server for R that allows you to run R code in the browser
+
+[Check out the REPL](https://webr.r-wasm.org/latest/)
+
+## `webR` with Quarto
+
+* Community-developed extension to run R code in the browser
+* Works with HTML, RevealJS presentations, websites, blogs ```{python}
+
+::: {.fragment}
+* Is how the [startr.numbat.space](https://startr.numbat.space/) website works
+:::
+
+## Setup
+
+```yaml
+---
+title: "Your slide title"
+format: revealjs
+engine: knitr
+filters:
+  - webr
+webr:
+  channel-type: "post-message"
+---
+```
+
+And run:
+
+```bash
+quarto add coatless/quarto-webr
+```
+
+## An example slide:
+
+```{{webr-r}}
+#| context: interactive
+summary(lm(mpg ~ wt, data = mtcars))
+```
+
+## An example slide:
+
+```{webr-r}
+#| context: interactive
+summary(lm(mpg ~ wt, data = mtcars))
+```
+
+## Preload packages
+
+You can specify packages to install in YAML:
+
+```yaml
+webr:
+  packages: ['palmerpenguins', 'ggplot2']
+  show-startup-message: false
+```
+
+and then use them as per normal:
+
+```webr-r
+library(ggplot2)
+library(palmerpenguins)
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, colour = species)) +
+  geom_point() +
+  labs(title = "Penguin bill dimensions")
+```
+
+## Result:
+
+```{webr-r}
+#| context: interactive
+library(ggplot2)
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, colour = species)) +
+  geom_point() +
+  labs(title = "Penguin bill dimensions")
+```
+
+## Mermaid Diagrams
+
+At some poinmt you'll almost certainly need to draw a flow diagram. Quarto can do this using [Mermaid](https://mermaid.js.org/).
+
+```{{mermaid}}
+%%| echo: false
+graph LR
+    A[Data Sources] --> B[Extract]
+    B --> C[Staging Area]
+    C --> D[Clean & Transform]
+    D --> E[Data Quality Checks]
+    
+    %% Branch: some data skips transformation
+    C --> E
+    
+    E --> F[Load]
+    F --> G[Data Warehouse]
+    
+    %% Consumption paths
+    G --> H[Reports & Dashboards]
+    G --> I[Analytics & Modeling]
+    
+    %% Feedback loop from analytics to transform
+    I --> D
+```
+
+## Mermaid diagrams
+
+```{mermaid}
+%%| echo: false
+graph LR
+    A[Data Sources] --> B[Extract]
+    B --> C[Staging Area]
+    C --> D[Clean & Transform]
+    D --> E[Data Quality Checks]
+    
+    %% Branch: some data skips transformation
+    C --> E
+    
+    E --> F[Load]
+    F --> G[Data Warehouse]
+    
+    %% Consumption paths
+    G --> H[Reports & Dashboards]
+    G --> I[Analytics & Modeling]
+    
+    %% Feedback loop from analytics to transform
+    I --> D
+```
+
+## Maps
+
+```{{r}}
+library(leaflet)
+library(dplyr)
+
+# Create a data frame of locations
+locations <- tibble::tribble(
+  ~name,                           ~lat,       ~lng,
+  "Melbourne CBD",                 -37.8136,  144.9631,
+  "Monash University (Clayton)",   -37.8768,  145.0450,
+  "University of Melbourne",       -37.7964,  144.9633
+)
+
+# Make the map
+leaflet(locations) |>
+  addTiles() |>
+  addMarkers(
+    lng = ~lng,
+    lat = ~lat,
+    popup = ~name
+  )
+```
+
+## Maps
+
+```{r}
+#| echo: false
+library(leaflet)
+library(dplyr)
+
+# Create a data frame of locations
+locations <- tibble::tribble(
+  ~name,                           ~lat,       ~lng,
+  "Melbourne CBD",                 -37.8136,  144.9631,
+  "Monash University (Caulfield)", -37.8768,  145.0450,
+  "University of Melbourne",       -37.7964,  144.9633
+)
+
+# Make the map
+leaflet(locations) |>
+  addTiles() |>
+  addMarkers(
+    lng = ~lng,
+    lat = ~lat,
+    popup = ~name
+  )
+```
 
 
 ## Week 4 Lesson 
