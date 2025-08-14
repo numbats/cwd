@@ -71,3 +71,13 @@ a {
 .center h4 {
   text-align: center;
 }
+
+.statement {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #ff3b3b;
+}

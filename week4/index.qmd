@@ -1,0 +1,1019 @@
+---
+pagetitle: "ETC5523: Communicating with Data"
+subtitle: "Writing Clearly and Concisely"
+author: "Michael Lydeamore"
+email: "michael.lydeamore@monash.edu"
+date: "Week 4"
+department: "Department of Econometrics and Business Statistics"
+unit-url: "cwd.numbat.space"
+footer: "ETC5523 Week 4"
+format: 
+  revealjs:
+    logo: images/monash-one-line-black-rgb.png
+    slide-number: true
+    multiplex: false
+    theme: ../assets/monash.scss
+    show-slide-number: all
+    show-notes: false
+    controls: true
+    width: 1280
+    height: 720
+    css: [../assets/tachyons-addon.css, ../assets/custom.css]
+    include-after-body: "../assets/after-body.html"
+execute:
+  echo: true
+---
+
+```{r, include = FALSE}
+current_file <- knitr::current_input()
+basename <- gsub(".[Rq]md$", "", current_file)
+
+knitr::opts_chunk$set(
+  fig.path = sprintf("images/%s/", basename),
+  fig.width = 6,
+  fig.height = 4,
+  fig.align = "center",
+  out.width = "100%",
+  fig.retina = 3,
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE,
+  cache.path = "cache/"
+)
+
+fa_file <- function(ext) {
+  glue::glue('<span class="fa-layers fa-fw"><i class="fas fa-file"></i><span class="fa-layers-text fa-inverse" data-fa-transform="shrink-11 down-3" style="font-weight:900;color:#e3e3e3;">{ext}</span></span>')
+}
+```
+
+## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
+
+### `r rmarkdown::metadata$subtitle`
+
+Lecturer: *`r rmarkdown::metadata$author`*
+
+`r rmarkdown::metadata$department`
+
+::: tl
+<br>
+
+<ul class="fa-ul">
+
+<li>
+
+[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`
+
+</li>
+
+<li>
+
+[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`
+
+</li>
+
+<li>
+
+[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
+
+</li>
+
+</ul>
+
+<br>
+:::
+
+
+```{css}
+#| echo: false
+
+.statement {
+  text-align: center;
+  font-size: 1em;
+  font-weight: bold;
+  color: #ff3b3b;
+}
+
+```
+
+## {#aim background="white"}
+
+::: {.callout-important }
+
+## Aim
+
+* Structure a data-driven document for readability and impact
+* Write executive summaries that are concise, insight-rich and actionable
+* Apply clarity and concision principles to bdoy text, figures and captions
+* Edit for audience understanding
+
+:::
+
+## Framing
+
+::: {.statement}
+Good analysis buried in bad writing _has no impact_
+:::
+
+::: {.fragment}
+Readers will skin your report: your structure and clarity will decide whether they understand your point.
+:::
+
+## Example {.smaller}
+
+You're reporting on website traffic for Q1.
+
+::: {.columns}
+::: {.column width='50%' .fragment}
+
+#### Version 1
+
+The analysis of the web traffic data for the first quarter indicates a generally positive trend overall. While there were fluctuations in certain weeks, the average number of visits showed an upward trajectory. This could be the result of a variety of factors, including changes in marketing activity and seasonal influences. Of particular note is that in March, the weekly visits reached their highest level so far this year, which may have been partly due to the launch of the new referral program.
+
+:::
+::: {.column width='50%' .fragment}
+
+#### Version 2
+
+Website traffic grew 28% from January to March, peaking in the week of March 15 after the referral program launch. Growth was consistent despite minor weekly dips, suggesting sustained campaign impact.
+
+:::
+:::
+
+::: {.fragment .callout-tip}
+
+Which one would you rather send to the CEO?
+
+:::
+
+## Framing
+
+::: {.incremental}
+* Front-load your key metrics
+* Anchor in time and context / cause
+* Remove filler
+* Try and read in under 10 seconds
+:::
+
+## Example {.smaller}
+
+::: {.columns}
+::: {.column width='50%' .fragment}
+#### Version A
+
+Over the past year, our customer retention efforts have involved a variety of strategies aimed at improving satisfaction and engagement. We introduced a loyalty program in June, expanded our support hours in August, and ran targeted reactivation campaigns throughout Q4. While these initiatives were generally well-received, churn rates fluctuated. In Q3, churn reached a low point, but by Q4 it had risen again to, possibly due to competitive pressures and seasonal effects. Overall, the year closed with a churn rate slightly better than the year before (18% vs 22%), but with notable differences between segments.
+:::
+::: {.column width='50%' .fragment}
+#### Version B
+
+Annual churn dropped from 22% to 18%, with the biggest improvement in Q3 after launching the loyalty program. Q4 saw churn rise again, mainly in price-sensitive segments facing increased competition.
+:::
+:::
+
+## Example {.smaller}
+
+#### Version B
+
+Annual churn dropped from 22% to 18%, with the biggest improvement in Q3 after launching the loyalty program. Q4 saw churn rise again, mainly in price-sensitive segments facing increased competition.
+
+::: {.fragment .incremental}
+* Leads with outcome and number, then cause
+* Trims 60% of the words
+* Doesn't spend time on background
+:::
+
+
+## Document structure
+
+A well structured document has:
+
+::: {.incremental}
+* An executive summary
+* An introduction
+* Methods / data sources
+* Results / Findings
+* Discussion / Interpretation
+* Conclusions / Recommendations
+:::
+
+## Document structure
+
+When reading, you want to:
+
+::: {.incremental}
+* Understand the big picture from the summary
+* Trust the data because of the methods
+* See the evidence in the results
+* Know what to do next from the recommendations
+:::
+
+## Introduction
+
+* Why the analysis exists
+* Background, problem statement, audience relevance
+* Scope - what's included and excluded
+
+## Methods / Data
+
+* Where the data comes from
+* Definitions, filters, assumptions
+* Just enough detail for credibility and reproducibility
+
+## Results
+
+* Keep an order (chronological, thematic, etc.)
+* Group related findings together
+* Use figures and tables to highlight key points
+
+## Discussion
+
+* Explain _why_ results matter
+* Compare to benchmarks or historical trends
+* Address limitatiosn and confidence
+
+## Conclusion
+
+* **Direct** implications
+* Next steps and actions
+
+## Example
+
+```{css}
+#| echo: false
+
+  .scramble {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 1rem 0;
+  }
+
+  .scramble .card {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    cursor: grab;
+    user-select: none;
+    font-size: 0.5em;
+  }
+  .scramble .card:active { cursor: grabbing; }
+
+  .scramble .card.dragging {
+    opacity: 0.6;
+    border-style: dashed;
+  }
+  .scramble .card.drop-target {
+    outline: 2px dashed #60a5fa;
+    outline-offset: 2px;
+  }
+
+  .scramble-controls {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    margin-top: .5rem;
+  }
+  .scramble-controls button {
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: .4rem .7rem;
+    font-size: 0.9em;
+  }
+  .scramble-status {
+    font-weight: 600;
+  }
+  .is-correct { border-color: #22c55e !important; }
+  .is-wrong   { border-color: #ef4444 !important; }
+```
+
+```{js}
+#| echo: false
+// Utility: shuffle an array (Fisher–Yates)
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function initScramble(el) {
+  // el = .scramble container
+  const cards = Array.from(el.querySelectorAll('.card'));
+  cards.forEach(card => card.setAttribute('draggable', 'true'));
+
+  let dragSrc = null;
+
+  function handleDragStart(e) {
+    dragSrc = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    // for Firefox
+    e.dataTransfer.setData('text/plain', this.dataset.id || '');
+  }
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const target = e.target.closest('.card');
+    el.querySelectorAll('.drop-target').forEach(x => x.classList.remove('drop-target'));
+    if (target && target !== dragSrc) target.classList.add('drop-target');
+  }
+  function handleDragLeave() {
+    this.classList.remove('drop-target');
+  }
+  function handleDrop(e) {
+    e.preventDefault();
+    const target = e.target.closest('.card');
+    el.querySelectorAll('.drop-target').forEach(x => x.classList.remove('drop-target'));
+    if (!target || target === dragSrc) return;
+
+    const children = Array.from(el.children);
+    const srcIndex = children.indexOf(dragSrc);
+    const tgtIndex = children.indexOf(target);
+
+    if (srcIndex < tgtIndex) {
+      el.insertBefore(dragSrc, target.nextSibling);
+    } else {
+      el.insertBefore(dragSrc, target);
+    }
+  }
+  function handleDragEnd() {
+    this.classList.remove('dragging');
+    el.querySelectorAll('.drop-target').forEach(x => x.classList.remove('drop-target'));
+  }
+
+  el.addEventListener('dragover', handleDragOver);
+  cards.forEach(card => {
+    card.addEventListener('dragstart', handleDragStart);
+    card.addEventListener('dragleave', handleDragLeave);
+    card.addEventListener('drop', handleDrop);
+    card.addEventListener('dragend', handleDragEnd);
+  });
+
+  // Shuffle on init if data-autoshuffle="true"
+  if (el.dataset.autoshuffle === 'true') {
+    const items = Array.from(el.children);
+    shuffleArray(items).forEach(n => el.appendChild(n));
+  }
+}
+
+function checkOrder(wrapper) {
+  const container = wrapper.querySelector('.scramble');
+  const status = wrapper.querySelector('.scramble-status');
+  const correctSeq = (container.dataset.correct || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  const current = Array.from(container.querySelectorAll('.card')).map(c => c.dataset.id);
+
+  // Reset styles
+  container.querySelectorAll('.card').forEach(c => {
+    c.classList.remove('is-correct','is-wrong');
+  });
+
+  let allGood = true;
+  current.forEach((id, idx) => {
+    const card = container.querySelector(`.card[data-id="${id}"]`);
+    if (correctSeq[idx] === id) {
+      card.classList.add('is-correct');
+    } else {
+      card.classList.add('is-wrong');
+      allGood = false;
+    }
+  });
+
+  status.textContent = allGood ? '✅ Correct order!' : '❌ Not quite — adjust highlighted cards.';
+}
+
+function shuffleScramble(wrapper) {
+  const container = wrapper.querySelector('.scramble');
+  const items = Array.from(container.children);
+  shuffleArray(items).forEach(n => container.appendChild(n));
+
+  // Clear feedback
+  wrapper.querySelector('.scramble-status').textContent = '';
+  container.querySelectorAll('.card').forEach(c => c.classList.remove('is-correct','is-wrong'));
+}
+
+// Hook into Reveal lifecycle (or run immediately if not using data-state)
+function initAllScramblesIn(scope=document) {
+  scope.querySelectorAll('.scramble').forEach(initScramble);
+  // Wire buttons in the same wrapper
+  scope.querySelectorAll('.scramble-wrap').forEach(wrap => {
+    const shuffleBtn = wrap.querySelector('[data-action="shuffle"]');
+    const checkBtn   = wrap.querySelector('[data-action="check"]');
+    shuffleBtn?.addEventListener('click', () => shuffleScramble(wrap));
+    checkBtn?.addEventListener('click', () => checkOrder(wrap));
+  });
+}
+
+if (window.Reveal && Reveal.on) {
+  Reveal.on('ready', e => initAllScramblesIn(e.currentSlide || document));
+  Reveal.on('slidechanged', e => initAllScramblesIn(e.currentSlide));
+} else {
+  // Fallback if not inside Reveal
+  document.addEventListener('DOMContentLoaded', () => initAllScramblesIn(document));
+}
+```
+
+::: {.scramble-wrap}
+
+::: {.scramble data-correct="6,2,4,1,5,3" data-autoshuffle="false"}
+
+::: {.card data-id="1"}
+In Q2, average customer wait time dropped from 12 minutes to 7 minutes following the implementation of the new scheduling algorithm.
+:::
+
+::: {.card data-id="2"}
+To improve customer satisfaction and retention, we implemented a new AI-driven scheduling tool in early April.
+:::
+
+::: {.card data-id="3"}
+Next quarter, expanding the system to all regional centres is expected to reduce wait times by an additional 20%.
+:::
+
+::: {.card data-id="4"}
+Data was collected from service logs across 15 branches between January and June 2024.
+:::
+
+::: {.card data-id="5"}
+The primary driver of the improvement was the reduction of scheduling conflicts during peak hours.
+:::
+
+::: {.card data-id="6"}
+This report evaluates the impact of the scheduling tool on wait times and overall service efficiency.
+:::
+
+:::
+:::
+
+## Example {.smaller}
+
+::: {.columns}
+::: {.column width='50%'}
+
+::: {.fragment}
+[_Context_]{.monash-blue}
+
+This report evaluates the impact of the scheduling tool on wait times and overall service efficiency.
+:::
+
+::: {.fragment}
+[_Background_]{.monash-blue}
+
+To improve customer satisfaction and retention, we implemented a new AI-driven scheduling tool in early April.
+:::
+
+::: {.fragment}
+[_Methods_]{.monash-blue}
+
+Data was collected from service logs across 15 branches between January and June 2024.
+:::
+:::
+::: {.column width='50%'}
+
+::: {.fragment}
+[_Results_]{.monash-blue}
+
+In Q2, average customer wait time dropped from 12 minutes to 7 minutes following the implementation of the new scheduling algorithm.
+:::
+
+::: {.fragment}
+[_Discussion_]{.monash-blue}
+
+The primary driver of the improvement was the reduction of scheduling conflicts during peak hours.
+:::
+
+::: {.fragment}
+[_Next Steps_]{.monash-blue}
+
+Next quarter, expanding the system to all regional centres is expected to reduce wait times by an additional 20%.
+:::
+:::
+:::
+
+## Signposting
+
+Signposting helps readers navigate your document:
+
+* Use headings to indicate sections
+* Use subheadings if they will help
+
+::: {.fragment}
+Make sure sections are _linked_:
+
+::: {.incremental}
+* Paragraphs start with a topic sentence
+* End with a linking sentence taking the reader to the next section
+:::
+
+:::
+
+::: {.callout-tip}
+I should be able to read the first sentence of each paragraph and understand the document.
+:::
+
+## Clarity and concision
+
+* Avoid ambiguity - be confident in your statements
+* Remove redudancy, cut filler. [Be ruthless]{.monash-blue}
+* Balance detail and readability
+
+## Old-to-new technique
+
+```{css}
+#| echo: false
+
+.reveal .boxed{
+    background:#f9fafb;
+    border:2px solid #e5e7eb;
+    border-left:6px solid #60a5fa;   /* accent */
+    border-radius:12px;
+    padding:14px 16px;
+    box-shadow:0 2px 8px rgba(0,0,0,.04);
+    margin:1rem auto;
+    max-width:95%;
+    font-size: 0.7em;
+  }
+  .reveal .boxed .label{
+    display:block;
+    font-size:.7em;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    font-weight:700;
+    opacity:.7;
+    margin-bottom:.25rem;
+  }
+  /* optional variants */
+  .reveal .boxed.success{ border-left-color:#22c55e; }
+  .reveal .boxed.warn{    border-left-color:#ef4444; }
+  .reveal .boxed.center{  text-align:center; }
+
+```
+
+You have to guide readers through your ideas. But they may not share your background knowledge on the topic.
+
+Take the reader from familiar concepts first into new ideas.
+
+::: {.fragment}
+This doesn't mean guess what your reader knows.
+
+Consider anything you've already mentioned to be _old_, and all concepts for the first time to be _new_.
+:::
+
+::: {.fragment}
+Once a _new_ idea has been provided, it is then an _old_ idea you can use in future sentences and paragraphs.
+:::
+
+
+## Old-to-new example
+
+This example **does not** go from [old]{.monash-red2} to [new]{.monash-blue}.
+
+::: {.boxed .center}
+
+Giant breed dogs tend to experience [greater joint pain]{.monash-blue} as they age compared to their smaller canine relatives. The [weight of larger dogs]{.monash-blue} often causes [stress on their hips]{.monash-blue}. Discussing [dietary options]{.monash-blue} with a veterinarian is a good way to keep [a dog's weight]{.monash-red2} reasonable and [exercising your dog]{.monash-blue} every day is important
+:::
+
+## Old-to-new example
+
+::: {.boxed .center}
+Giant breed dogs tend to experience [greater joint pain]{.monash-blue} as they age compared to their smaller canine relatives. [This joint pain]{.monash-red2} often affects the hips in larger dogs, and it can be caused by their [weight]{.monash-blue}. But there a ways to keep [a dog's weight]{.monash-red2} reasonable, from [discussing dietary options with a veterinarian to exercising your dog]{.monash-blue} every day.
+:::
+
+::: {.incrementa}
+* Joint pain is introduced in the first sentence, then used as a bridge
+* Dog's weight becomes old, so two new ideas are introduced
+:::
+
+## Paragraph to paragraph
+
+The same old-to-new technique can be used to link paragraphs:
+
+::: {.boxed .center}
+Discussing a giant breed dog's diet with a veterinarian is vital, because they have expertise in the nutrition that will keep these breeds healthy. (Followed by evidence, interpretation, analysis)
+:::
+
+::: {.boxed .center}
+This discussion is a significant step in the right direction, but large dogs also require daily exercuse to maintain optimal physical health. (Followed by evidence, interpretation, analysis)
+:::
+
+::: {.boxed .center}
+Even if an owner finds the right food and exercise for their particular dog, they must consider nutirional supplements to help with the wear-and-tear on joints. (Followed by evidence, interpretation, analysis)
+:::
+
+## Paragraph to paragraph
+
+A good reader _may_ be able to follow the logic of paragraphs without guidance, but we can [take control of the narrative]{.monash-blue} to make sure they follow it.
+
+## Tying ideas together {.smaller}
+
+::: {.incremental}
+1. Use [internal summaries]{.monash-blue} to remind readers of points you've made:  
+[_Four possible solutions to the problem have been outlined_, but it is important to consider flaws to these ideas.]{.fragment}
+
+2. Use [pronouns]{.monash-blue} and [pointing words]{.monash-blue} to refer to nouns mentioned previously:  
+[_The suggestion_ was creative. _It_ saved the company several thousand dollars.  ]{.fragment}  
+[Buying a house can lead to a lot of _unchecked stress_. _This stress_ can affect a buyer's ability to remain realistic of financial limitations.]{.fragment}
+
+3. [Repeat key words]{.monash-blue} or phrases:  
+[Several employees participated in the _health fair_. Of the events the company sponsors, the _health fair_ is the most important.]{.fragment}
+
+4. Insert [transitional words]{.monash-blue} such as _therefore_, _similarly_ to connect ideas to one another:  
+[Four-day work weeks produce loyalty and satisfaction in employees. _Similarly_, increases in paid time off show substantial morale boosts.]{.fragment}
+:::
+
+## Parallelism
+
+Phrase similar ideas in a similar way.
+
+::: {.fragment}
+Repeat articles and verb tenses with each item in a series.
+:::
+
+::: {.boxed .center .warn .fragment}
+[Incorrect:]{.monash-red2} _Speaking_ in public is sometimes harder than _to speak_ on the phone
+:::
+
+::: {.boxed .center .success .fragment}
+[Correct:]{.monash-green2} _Speaking_ in public is sometimes harder than _speaking_ on the phone
+:::
+
+## Parallelism Exercise
+
+Phrase similar ideas in a similar way.
+
+Repeat articles and verb tenses with each item in a series.
+
+::: {.boxed .center .warn}
+[Incorrect:]{.monash-red2} Donna was asked to _write_, _answering_ phones, and _attended_ meetings.
+:::
+
+::: {.boxed .center .success .fragment}
+[Correct:]{.monash-green2} Donna was asked to _write_, _answer_ phones, and _attend_ meetings.
+:::
+
+## Writing clearly
+
+In English, works generally have two types of meanings:
+
+1. Denotative meaning - the literal meaning of a word
+2. Connotative meaning - the associations and emotions that a word evokes
+
+::: {.fragment}
+For example, slender, thin, and skinny have the same denotative meaning, but very different connotations.
+:::
+
+## Writing clearly
+
+**Always** follow _this_, _that_, _these_, and _those_ with a noun:
+
+::: {.boxed .center .warn}
+[Unclear:]{.monash-red2} I will take this
+:::
+
+::: {.boxed .center .success}
+[Clear:]{.monash-green2} I will take this _report_.
+:::
+
+## Writing concisely {.smaller}
+
+1. Elimintate unnecessary phrases
+2. Use clear and straightforward language
+3. Write in active voice
+4. Shorten wordy phrases
+5. Avoid starting sentences with "there is" or "it is"
+6. Eliminate extra nouns
+7. Eliminate filler words
+
+## Writing concisely - Exercise
+
+::: {.boxed .center}
+It is important to note that there are a variety of different reasons the campaign did not perform in the way we ideally wanted, which is something we should take into consideration. In order to move forward, an evaluation will need to be conducted by the team with respect to the targeting criteria, due to the fact that performance was lower among younger audiences. The dashboard, which is presently in the process of being updated, was used for most of the analysis. Basically, click-through rate was kind of flat in Q2, and increases in landing-page load time had a negative impact. A decision will be made by leadership after the results are reviewed.
+:::
+
+## Writing concisely - Solution
+
+::: {.boxed .center}
+The campaign underperformed mainly because we targeted younger audiences poorly and the landing-page load time increased. The team will review targeting criteria and update the dashboard before the next launch. Click-through rate was flat in Q2. Leadership will decide next steps after we present the results.
+:::
+
+::: {.fragment}
+Notice how this [leads with the cause]{.monash-blue}, uses [active voice]{.monash-blue}, [trims fillers]{.monash-blue} and cuts [noun stacks]{.monash-blue}.
+:::
+
+
+## Executive Summaries
+
+A stand-alone tl;dr for time-poor readers. [That's all of them.]{.fragment}
+
+::: {.fragment}
+Must include the _so what_, be skimmable, limited in numbers, actionable.
+:::
+
+::: {.fragment}
+This might be all the reading you get: [make it count]{.monash-blue}.
+:::
+
+## BLUF Structure
+
+**B**ottom **L**ine **U**p **F**ront is a popular structure:
+
+::: {.incremental}
+1. [Bottom line]{.monash-blue}: outcome in one sentence, one key number.
+2. [Drivers]{.monash-blue}: 1-2 causes, selective numbers
+3. [Implications]{.monash-blue}: risk/uncertainty, impact
+4. [Action]{.monash-blue}: what to do next, and by when
+:::
+
+::: {.fragment}
+Please practice _number hygiene_!
+
+Round sensibly, include denominators, but probably no more than three numbers total.
+:::
+
+## How to write one
+
+[Outcome] increased/decreased by X to Y [period/audience]. The change was driven by A and B. This matters because impact/constraint. We recommend action by owner/timeframe.
+
+::: {.fragment}
+or
+:::
+
+::: {.fragment}
+* Outcome X -> Y (Δ)
+* Drivers A, B
+* Do C by D, monitor E
+* Risk and limit F
+:::
+
+## Exercise {.smaller}
+
+::: {.boxed}
+In Q2, the growth team pursued several initiatives related to the purchase funnel and promotional activity that, taken together, affected performance in a number of ways. We simplified the checkout flow in May, which coincided with changes in mobile latency across devices; desktop improved, while Android experienced a short-lived slowdown in mid-June due to CDN routing. We also ran a referral promotion from June 10–30 with a 10% incentive. As a result of channel mix and CPMs, CAC edged up by 6% quarter-on-quarter. At the same time, our regional revenue mix shifted toward APAC by 36% as campaigns gained traction there. Overall conversion moved upward by 4.1% over the quarter, though results varied by segment and week. A detailed breakdown is available in the appendix; note that attribution overlaps between the promo window and the flow changes, so causality should be interpreted cautiously and additional testing is recommended before generalizing.
+:::
+
+::: {.fragment}
+* CAC = Customer Acquisition Cost
+* APAC = Asia-Pacific Region
+* CDN = Content Delivery Network
+* CPM = Cost per 1000 impressions
+:::
+
+
+## Exercise - Solution
+
+::: {.boxed}
+* Q2 conversion improved to **4.1%**, due to a simplified checkout; a brief Android latency spike in June muted some gains.
+* Mid-June referral promotion boosted top-of-funnel but raised **CAC (+6% QoQ)** as paid-social CPMs increased. Revenue tilted **toward APAC (36%)**, which lowers acquisition costs but increases localization needs for onboarding and support.
+* Recommended to keep the streamlined checkout; fix Android latency via CDN routing; tighten referral targeting to protect CAC; and prioritize APAC onboarding with localized payment copy and QA before the next campaign.
+
+:::
+
+## Common pitfalls:
+
+* Weather report summaries: Make sure to say "so what"
+* Jargon and metrics without context
+* Laundry list of numbers
+* Burying the ask
+
+## Audience Pivot: CEO vs. Engineering Lead
+
+**Version A — CEO (decision-oriented):**
+- Lead with outcome & business impact.
+- Clear **ask** (owner + timeframe).
+
+**Version B — Eng Lead (implementation):**
+- Lead with **drivers/constraints**.
+- Concrete actions; avoid budget asks unless essential.
+
+**Deliverable:** Two summaries (A & B) that differ in emphasis, not facts.
+
+## Audience Pivot
+
+::: {.boxed}
+* Checkout simplification raised conversion (now 4.1%). A mid-June Android latency spike (CDN routing) reduced Android lift during the promo window. APAC at 36% of revenue increases localization demand.
+* Re-route Android traffic on CDN and add latency alerts; A/B the referral audience to cut low-quality signups that drive +6% CAC; ship localized onboarding and payments copy for APAC. Owners: Core Web, Growth, Product. Target: next sprint for CDN; two sprints for copy.
+:::
+
+::: {.fragment}
+What differences do you notice?
+:::
+
+## Figures, Tables & Captions
+
+We'll talk later in the semester about how to make figures and tables.
+
+Today's focus is on writing about these elements.
+
+## Caption structure
+
+#### What is a good caption?
+
+::: {.incremental}
+* Who/what/when, unit/denominator, and critical caveats
+* State the [takeaway]{.monash-blue}
+* <= 3 numbers, avoiding method details unless essential
+:::
+
+::: {.fragment}
+Checklist: Scope · Takeaway · Units/denominators · Selective Numbers · Caveats
+:::
+
+## Caption templates - takeaway
+
+::: {.incremental}
+* Line chart:  
+[Outcome] moved from [X to Y]{.monash-blue} from [T1-T2]{.monash-blue}, with the sharpest change in [Month/Group]{.monash-blue} after [Event]{.monash-blue} (n=**, unit).
+* Bar chart:  
+[Group A]{.monash-blue} leads [Group B]{.monash-blue} by [X]{.monash-blue}, driven by [Reason/segment]{.monash-blue} (period)
+* Scatter plot:  
+[Metric B]{.monash-blue} increase [~m per 10 units of A]{.monash-blue}, strongest for [Segment]{.monash-blue} (period).
+* Table:  
+Top three [categories]{.monash-blue} account for [78%]{.monash-blue} of total [metric]{.monash-blue}, with [Category A]{.monash-blue} at [X%]{.monash-blue} (period).
+
+:::
+
+## Caption examples
+
+```{r}
+#| echo: false
+library(tidyverse)
+
+signups_2025 <- tibble(
+  month   = seq(ymd("2025-01-01"), ymd("2025-12-01"), by = "1 month"),
+  signups = c(1200, 1350, 1500, 1700, 2300, 2400, 2350, 2380, 2420, 2500, 2600, 2800)
+)
+
+signups_2025 <- signups_2025 |>
+  mutate(
+    month_label = factor(
+      format(month, "%b"),
+      levels = format(seq(ymd("2025-01-01"), ymd("2025-12-01"), by = "1 month"), "%b")
+      )
+    )
+
+p1 <- ggplot(signups_2025, aes(x = month_label, y = signups)) +
+  geom_line(group = 1, color = "firebrick", size = 0.8) +
+  geom_point(color = "firebrick", size = 3) +
+  labs(x = "Month", y = "Signups") +
+  cowplot::theme_cowplot()
+
+p1
+```
+
+
+::: {.boxed}
+Line chart of monthly signups in 2025
+:::
+
+## Caption examples
+
+```{r}
+#| echo: false
+p1
+```
+
+::: {.boxed}
+Monthly signups doubled between January and June 2025 (1.2k -> 2.4k), with a May spike after the referral launch; growth held steady in June.
+:::
+
+## Caption examples
+
+```{r}
+#| echo: false
+library(tibble)
+library(dplyr)
+library(kableExtra)
+library(scales)
+
+# ---- Dummy data ----
+cohort_churn <- tribble(
+  ~cohort, ~n_users, ~m12_churn,
+   2019,     5200,     0.13,
+   2020,     6100,     0.14,
+   2021,     5800,     0.12,  # best
+   2022,     6400,     0.16,
+   2023,     7000,     0.19   # worst
+)
+
+# Prepare display table
+tbl <- cohort_churn %>%
+  transmute(
+    Cohort = cohort,
+    `Cohort size (n)` = comma(n_users),
+    `Month 12 churn` = percent(m12_churn, accuracy = 0.1),
+    `Month 12 retention` = percent(1 - m12_churn, accuracy = 0.1)
+  )
+
+# Indices for styling
+best_idx  <- which(cohort_churn$m12_churn == min(cohort_churn$m12_churn))
+worst_idx <- which(cohort_churn$m12_churn == max(cohort_churn$m12_churn))
+
+# ---- kable (HTML) ----
+kbl <- tbl %>%
+  kbl(
+    caption = "Churn by cohort (Month 12)",
+    align = c("l","r","r","r"),
+    booktabs = TRUE
+  ) %>%
+  kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped","hover","condensed"),
+    font_size = 14
+  ) %>%
+  row_spec(best_idx, bold = TRUE)
+kbl
+```
+
+::: {.boxed}
+Table of churn by cohort
+:::
+
+## Caption examples
+
+```{r}
+#| echo: false
+kbl
+```
+
+::: {.boxed}
+Churn by cohort from 2019 to 2023. [2019-2021 cohorts]{.monash-blue} have low churn ([<14%]{.monash-blue}); 2023 had the highest at **19%** due to [mobile onboarding drop-offs]{.monash-blue}.
+:::
+
+## Writing about figures and tables _in text_
+
+::: {.incremental}
+* [Lead with the point]{.monash-blue} and then cite the visual:  
+Conversion rose after checkotu simplifcation; **Fig. 2** shows the May jump.
+* [Add what the eye can't]{.monash-blue}: scale, denominators, uncertainty
+* Don't narratve the drawing
+* Don't duplicate the caption
+:::
+
+::: {.fragment}
+Pattern: [Claim]{.monash-blue} · [Specific constrast/number]{.monash-red2} · [Visual reference]{.monash-green2} · [Implication]{.monash-fuchsia2} 
+:::
+
+## Writing about figures and tables _in text_ - Example
+
+Pattern: [Claim]{.monash-blue} · [Specific constrast/number]{.monash-red2} · [Visual reference]{.monash-green2} · [Implication]{.monash-fuchsia2} 
+
+::: {.fragment .boxed}
+After we removed one form field, [conversion increased]{.monash-blue} to [4.1% (+0.6 pp)]{.monash-red2}. [Figure 2]{.monash-green2} shows the step-change in May, with a smaller lift on Android during the latency incident. This supports [continuing the simplified flow]{.monash-fuchsia2} while we address mobile performance.
+:::
+
+## Exercise
+
+Scenario:
+
+Monthly active users rose +22% Q2; Fig. 3 shows steady gains after email reactivation; Table 1 lists top segments (dormant 30–60 days = biggest lift).
+
+Task: 
+
+Write 2–3 sentences that (1) make the claim, (2) use ≤2 numbers, (3) reference Fig. 3/Table 1, (4) state an implication.
+
+## Exercise - Solution
+
+::: {.boxed}
+Monthly active users grew 22% in Q2, driven by the email reactivation program. Figure 3 shows the step-up in June, and Table 1 confirms the largest lift came from 30–60 day dormant users. We should expand the sequence to 90-day dormants and A/B the subject lines.
+:::
+
+## Caption pitfalls
+
+::: {.incremental}
+
+* Caption describes the pixels vs Captions stating the point
+* Too many numbers
+* Missing denominators and units
+* Caption and body text _disagree_ on the key message
+* In-text mentions without an implication
+
+:::
+
+## Wrap-up
+
+5 rules for clear, concise, structured writing:
+
+::: {.incremental}
+1. Lead with the main insight
+2. Keep the flow logical and signposted
+3. Summarise effectively for time-poor readers
+4. Make visuals tell a story through captions
+5. Edit ruthlessly for clarity and concision
+:::
+
+## Wrap-up
+
+::: {.callout-tip}
+## Resources
+
+* [University of Arizona Writing Center](https://writingcenter.uagc.edu/writing-skills-refreshers)
+* [PlainLanguage.gov](https://www.plainlanguage.gov/guidelines/concise/)
+* [Monash University Writing Resources](https://www.monash.edu/student-academic-success/learnhq/excel-at-writing)
+
+:::
