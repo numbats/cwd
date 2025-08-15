@@ -1,0 +1,106 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Assignment 2: Summarising technical content"
+author: "Michael Lydeamore"
+date: today
+format:
+    html:
+        embed-resources: true
+---
+
+```{r}
+#| echo: false
+
+total_marks <- 0
+
+add_marks <- function(amount) {
+    total_marks <<- total_marks + amount
+
+    amount
+}
+
+```
+
+```{r, echo = FALSE, eval = file.exists("tutorial.css")}
+htmltools::includeCSS("tutorial.css")
+```
+
+## `r emo::ji("target")` Objectives
+
+-   Create a piece of technical communication
+
+::: callout-important
+This is an **individual assignment**.
+:::
+
+## Output format
+
+-   Maximum length: Four A4 pages (Part A) + 2 A4 pages (Part B)
+
+-   Please upload the completed PDF to Moodle
+
+## Instructions
+
+In this asseessment, you will be transforming a piece of academic writing into an executive-focussed technical report. You can re-use any tables and figures from the original article, but you will need to write your own text.
+
+### Part A: Writing the article
+
+You are an analyst in a research company. You have noticed some new academic work that is relevant to your field. The first step to bringing the work in house is to write a technical report for your manager.
+
+Your manager is competent, and reasonably technical. They are time-poor, and so clear communication will help make your point the fastest. Your report will need to include:
+
+* An executive summary
+* An introduction to the problem
+* Key results
+* **Brief** methods
+* Conclusion
+
+Your report also needs:
+
+* At least one reference to an article (academic, web page etc)
+* Working cross-references to figure(s), table(s) if included, and sections where required
+
+::: {.callout-caution}
+Interpreting these papers **is difficult**. You are not expected to understand all of the technical details. If you have _any_ questions about the papers, please ask in the forums, or during consultation. There will be a couple of dedicated question times in the workshops on weeks with less oral presentations.
+:::
+
+#### Choosing an article
+
+Four articles are available:
+
+* [COVID-19 in low-tolerance border quarantine systems: Impact of the Delta variant of SARS-CoV-2](assignment-2-papers/Zachreson2021.pdf)
+* [Application of a new methodology and R package reveals a high burden of healthcare-associated infections (HAI) in Germany compared to the average in the European Union/European Economic Area, 2011 to 2012](assignment-2-papers/Zacher2019.pdf)
+* [Attribution of the Australian bushfire risk to anthropogenic climate change](assignment-2-papers/Oldebborgh2021.pdf)
+* [Understanding links between water-quality variables and nitrate concentration in freshwater streams using high frequency sensor data](assignment-2-papers/Kermorvant2023.pdf)
+
+You may also choose your own article not in this list, but it must be approved by the CE.
+
+### Part B: Article analysis
+
+Compare and contrast the format of the article you chose in Part A with the report you wrote. In particular, consider:
+
+* Where the key takeaways are located
+* How results are presented
+* Caveats and limitations in both the article and your report
+
+## Marking Rubric
+
+Part A (15 marks):
+
+- Structure adhered to (1 mark)
+- Executive summary summarises the work (3 marks)
+- Report is clear and easy to understand (3 marks)
+- Report is written at the correct level (1 mark)
+- Paragraphs contain topic sentences, and flow from one to the next (2 marks)
+- Results include a figure and/or a table, with a clear caption, and a cross-reference in text (2 marks)
+- Methods includes data source, and some details of work done (2 marks)
+- References included (1 mark)
+
+Part B (5 marks): 
+
+-   Compared and contrasted differences
+-   Highlighted reasons for differences
+
+**Maximum grade:** 20 marks
+
+Up to 3 marks will be deducted for spelling and grammatical errors.
