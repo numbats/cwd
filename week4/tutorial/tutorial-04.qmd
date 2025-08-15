@@ -1,0 +1,129 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 4"
+author: "Michael Lydeamore"
+date: "Week 4"
+format:
+    unilur-html:
+        output-file: index.html
+        embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
+---
+
+
+```{r setup, include = FALSE, eval = file.exists("setup.R")}
+source("setup.R")
+```
+
+```{r}
+#| echo: false
+#| eval: !expr file.exists("tutorial.css")
+htmltools::includeCSS("tutorial.css")
+```
+
+```{r}
+#| include: false
+checkbox <- function(text) {
+  paste0('<label class="checkbox-container"><input type="checkbox"> ', text, '<span class="checkmark"></span>
+</label>')
+}
+```
+
+## 🎯 Objectives
+
+* use Quarto for creating reproducible documents
+* make blog websites using Quarto
+* share webpage and websites on public domains with Quarto Pubs, GitHub Pages or Netlify
+
+::: {.callout-note collapse="true"}
+
+# Preparation
+
+1. Install the [latest RStudio IDE](https://www.rstudio.com/products/rstudio/download/)
+2. Install the [latest Quarto CLI](https://quarto.org/docs/get-started/)
+3. (Optional) Make a (free) account at [https://quartopub.com/](https://quartopub.com/) if you want to share your website via Quarto Pub.
+4. (Optional) Make a (free) account at [https://www.netlify.com/](https://www.netlify.com/) if you want to share your website via Netlify. 
+
+:::
+
+Note: there will be no tutorial solution this week as the task is about getting you set up for making a website using Quarto. 
+
+
+<!-- Instructor note: This document is intentionally bad. Give to students to restructure, rewrite the executive summary, fix the caption, and write about the figure in text. -->
+
+## Executive Summary
+
+There are a number of different reasons why the overall situation regarding sign-ups in 2025 is noteworthy, and it is important to highlight that performance, in a general sense, moved in an upward direction over the course of the year. At this point in time, because several initiatives were undertaken and due to the fact that some seasonality exists in the market, there were increases observed across a variety of months, and in some other months there were also variations that could be attributed to a range of different factors. It is perhaps most appropriate to say that there is some evidence that the changes we made maybe helped a little bit, although there are caveats and constraints that should be taken into account prior to reaching any definitive conclusions on this point. As a consequence of the above, it can be stated that sign-ups improved over time, and this is something that will likely have implications for the organization going forward in terms of operations and also potentially in terms of resourcing as well, depending on demand levels that could materialize later in the year.
+
+## Background and Context
+
+The context for the analysis is that we wanted to look into how things were going with respect to sign-ups during 2025, and there were a number of conversations in the team in which it was agreed that this would be good to examine, particularly because of various initiatives (some of which were marketing-related while others were product-related) and also because stakeholders asked for a general overview to be prepared. It is the case that there were campaigns and also some other activities which were not coordinated in a formal sense, which might have had an impact on monthly totals. There is also the point that the economy and seasonality and even weather sometimes play a role, which is something to be kept in mind.
+
+## Data Sources and Methods
+
+Data was compiled from spreadsheets, exports, logs, dashboards, and other sources and then a semi-manual consolidation process was performed by the team in a way that ensured that there would be broad consistency in the numbers. The figures are believed to be correct as far as the available records allow; however, it should be noted that there might be differences between systems and that these may require further reconciliation at a later date. Definitions were used in a way that is largely consistent with previous reports, except when they were not, which is not expected to have had a material effect on the analysis. It is also relevant that some months have 31 days and others have 30, which could possibly have some influence. For reference, totals are presented at the month level and they are counts of sign-ups as per the CRM, which is a best-effort estimate.
+
+## Observations and Notes
+
+There is an upward trajectory that can be seen if one looks at the chart below, and there are months that go up and sometimes down a bit, which is something that tends to happen in real-world data. It is important to call out that in May there was a jump that occurred and then in June it stayed kind of high, which could possibly be due to marketing or other factors that are not within the scope of this document to fully detail. As can be seen in the figure below, the blue line goes up over time and then ends at a higher value later, which is consistent with growth, and it is also possible to observe that dots are placed on the line. As a general comment, there is a sense that initiatives such as campaigns as well as improvements in various journeys may have had an effect, although causality is difficult to say for sure at this time.
+
+```{r}
+#| label: fig-signups-2025
+#| fig-cap: "Line chart of monthly sign-ups in 2025."
+
+library(tibble)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+
+signups_2025 <- tibble(
+  month   = seq(ymd("2025-01-01"), ymd("2025-12-01"), by = "1 month"),
+  signups = c(1200, 1350, 1500, 1700, 2300, 2400, 2350, 2380, 2420, 2500, 2600, 2800)
+)
+
+ggplot(signups_2025, aes(x = month, y = signups, group = 1)) +
+  geom_line() +
+  geom_point() +
+  scale_x_date(date_labels = "%b", date_breaks = "1 month", expand = c(0.01, 0.01)) +
+  labs(x = NULL, y = "Monthly sign-ups") +
+  theme_minimal(base_size = 14)
+```
+
+## Detailed Month-by-Month Notes
+
+In terms of the numbers, it is the case that January started at 1,200 and then February was 1,350 and March was 1,500 and April was 1,700 and then May was 2,300 and June was 2,400, and July was 2,350 and August was 2,380 and September was 2,420 and October was 2,500 and November was 2,600 and December was 2,800, which therefore implies that the line goes up with small variations that can be considered to be within normal ranges. It is worth noting that January to March was kind of lower than later months, which is often the case. It is possible that a referral program or a relaunch or other initiatives may have played a role in certain months, although this is not analyzed in detail in this document and could be a topic for future work that may be undertaken when timing permits.
+
+## Additional Considerations
+
+There are implications which include potential needs for resourcing at the end of the year and other topics that might be considered later pending additional analysis, which will be done in the future once more information is available. It is also the case that there might be segmentation differences between different devices or geographies or audiences and that there could be further breakdowns which might be examined if it is decided that this would be helpful. It is recommended that a future analysis be conducted to look into seasonality and to confirm whether the general upward trend is continuing into 2026 and whether any particular months warrant special attention. See Figure 1 for the line going up.
+
+As above, numbers are subject to change if other sources are reconciled and it is not expected that this would change the direction of the results but it could make small differences here and there, which is one reason the totals in other documents might not match exactly. In addition, there is a possibility that some sign-ups are counted twice if the same person signs up again in a different way, although this is thought to be rare and is not believed to be material.
+
+::: {.unilur-solution}
+## Executive Summary
+
+* Sign-ups increased over the year, with 2800 sign-ups in December
+* Changes in the referral program likely caused sudden spikes followed by stagnation
+* Further analysis is required to determine the impact of marketing campaigns versus product changes
+
+## Background
+
+A number of initatives were undertaken in 2024 to improve sign-ups, including changes to the referral program and marketing campaigns. This report examines the impact of these changes on monthly sign-up totals in 2025.
+
+## Data Sources and Methods
+
+Data over the year was compiled from the data lake, and consolidated manually. These figures may not align fully with data from other more automated sources. Sign-ups are aggregated to the level of the month.
+
+## Results
+
+Sign-ups generally increased over the year, with a notable spike in May (@fig-signups-2025). The referral program changes in May are likely to have caused this spike, followed by a stagnation in June. This suggests that the referral program changes were effective, but that further changes are needed to maintain growth.
+
+Over the remainder of the year, sign-ups continued to increase, albeit at a slower rate. This suggests that sustained marketing efforts may be required to continue growth.
+
+## Conclusion
+
+The referral program changes in May appear to have had a positive impact on sign-ups, but further analysis is required to determine the impact of marketing campaigns versus product changes. The data suggests that sustained marketing efforts may be required to continue growth.
+
+:::

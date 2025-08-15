@@ -1,8 +1,8 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Tutorial 4"
+subtitle: "Tutorial 3"
 author: "Michael Lydeamore"
-date: "Week 4"
+date: "Week 3"
 format:
     unilur-html:
         output-file: index.html
