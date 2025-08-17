@@ -10,6 +10,9 @@ format:
     unilur-html+solution:
         output-file: solution.html
         embed-resources: true
+
+execute:
+  cache: false
 ---
 
 
