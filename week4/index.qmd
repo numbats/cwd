@@ -285,138 +285,90 @@ When reading, you want to:
   .scramble-status {
     font-weight: 600;
   }
-  .is-correct { border-color: #22c55e !important; }
-  .is-wrong   { border-color: #ef4444 !important; }
+  .is-correct { 
+    border-color: #22c55e !important; 
+    background: #ecfdf5 !important;   /* light green fill */
+  }
+  .is-wrong { 
+    border-color: #ef4444 !important; 
+    background: #fef2f2 !important;   /* only used when you press "Check" */
+  }
 ```
 
 ```{js}
 #| echo: false
-// Utility: shuffle an array (Fisher–Yates)
-function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
 
-function initScramble(el) {
-  // el = .scramble container
-  const cards = Array.from(el.querySelectorAll('.card'));
-  cards.forEach(card => card.setAttribute('draggable', 'true'));
+function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
 
-  let dragSrc = null;
-
-  function handleDragStart(e) {
-    dragSrc = this;
-    this.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-    // for Firefox
-    e.dataTransfer.setData('text/plain', this.dataset.id || '');
-  }
-  function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    const target = e.target.closest('.card');
-    el.querySelectorAll('.drop-target').forEach(x => x.classList.remove('drop-target'));
-    if (target && target !== dragSrc) target.classList.add('drop-target');
-  }
-  function handleDragLeave() {
-    this.classList.remove('drop-target');
-  }
-  function handleDrop(e) {
-    e.preventDefault();
-    const target = e.target.closest('.card');
-    el.querySelectorAll('.drop-target').forEach(x => x.classList.remove('drop-target'));
-    if (!target || target === dragSrc) return;
-
-    const children = Array.from(el.children);
-    const srcIndex = children.indexOf(dragSrc);
-    const tgtIndex = children.indexOf(target);
-
-    if (srcIndex < tgtIndex) {
-      el.insertBefore(dragSrc, target.nextSibling);
+function gradePositions(container, {showWrong=false} = {}) {
+  const correct = (container.dataset.correct||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const cards = [...container.querySelectorAll('.card')];
+  cards.forEach((card, i) => {
+    const ok = (correct[i] === card.dataset.id);
+    card.classList.toggle('is-correct', ok);
+    if (showWrong) {
+      card.classList.toggle('is-wrong', !ok);
     } else {
-      el.insertBefore(dragSrc, target);
-    }
-  }
-  function handleDragEnd() {
-    this.classList.remove('dragging');
-    el.querySelectorAll('.drop-target').forEach(x => x.classList.remove('drop-target'));
-  }
-
-  el.addEventListener('dragover', handleDragOver);
-  cards.forEach(card => {
-    card.addEventListener('dragstart', handleDragStart);
-    card.addEventListener('dragleave', handleDragLeave);
-    card.addEventListener('drop', handleDrop);
-    card.addEventListener('dragend', handleDragEnd);
-  });
-
-  // Shuffle on init if data-autoshuffle="true"
-  if (el.dataset.autoshuffle === 'true') {
-    const items = Array.from(el.children);
-    shuffleArray(items).forEach(n => el.appendChild(n));
-  }
-}
-
-function checkOrder(wrapper) {
-  const container = wrapper.querySelector('.scramble');
-  const status = wrapper.querySelector('.scramble-status');
-  const correctSeq = (container.dataset.correct || '')
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean);
-
-  const current = Array.from(container.querySelectorAll('.card')).map(c => c.dataset.id);
-
-  // Reset styles
-  container.querySelectorAll('.card').forEach(c => {
-    c.classList.remove('is-correct','is-wrong');
-  });
-
-  let allGood = true;
-  current.forEach((id, idx) => {
-    const card = container.querySelector(`.card[data-id="${id}"]`);
-    if (correctSeq[idx] === id) {
-      card.classList.add('is-correct');
-    } else {
-      card.classList.add('is-wrong');
-      allGood = false;
+      card.classList.remove('is-wrong');
     }
   });
+}
 
+function initScramble(el){
+  const cards=[...el.querySelectorAll('.card')]; cards.forEach(c=>c.setAttribute('draggable','true'));
+  let dragSrc=null;
+
+  function dragStart(e){dragSrc=this; this.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain', this.dataset.id||'');}
+  function dragOver(e){e.preventDefault(); e.dataTransfer.dropEffect='move'; const t=e.target.closest('.card'); el.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target')); if(t&&t!==dragSrc) t.classList.add('drop-target');}
+  function dragLeave(){this.classList.remove('drop-target');}
+  function drop(e){
+    e.preventDefault();
+    const t=e.target.closest('.card');
+    el.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));
+    if(!t||t===dragSrc) return;
+    const kids=[...el.children], si=kids.indexOf(dragSrc), ti=kids.indexOf(t);
+    if(si<ti){el.insertBefore(dragSrc, t.nextSibling);} else {el.insertBefore(dragSrc, t);}
+    // 🔔 Immediately (re)grade after any drop
+    gradePositions(el, {showWrong:false});
+  }
+  function dragEnd(){this.classList.remove('dragging'); el.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));}
+  el.addEventListener('dragover', dragOver);
+  cards.forEach(c=>{c.addEventListener('dragstart',dragStart); c.addEventListener('dragleave',dragLeave); c.addEventListener('drop',drop); c.addEventListener('dragend',dragEnd);});
+
+  if(el.dataset.autoshuffle==='true'){shuffleArray([...el.children]).forEach(n=>el.appendChild(n));}
+  // Grade initial state (useful if not shuffled or some cards already correct)
+  gradePositions(el, {showWrong:false});
+}
+
+function checkOrder(wrapper){
+  const container=wrapper.querySelector('.scramble');
+  const status=wrapper.querySelector('.scramble-status');
+  gradePositions(container, {showWrong:true});
+  const allGood=[...container.querySelectorAll('.card')].every(c=>c.classList.contains('is-correct'));
   status.textContent = allGood ? '✅ Correct order!' : '❌ Not quite — adjust highlighted cards.';
 }
 
-function shuffleScramble(wrapper) {
-  const container = wrapper.querySelector('.scramble');
-  const items = Array.from(container.children);
-  shuffleArray(items).forEach(n => container.appendChild(n));
-
-  // Clear feedback
-  wrapper.querySelector('.scramble-status').textContent = '';
-  container.querySelectorAll('.card').forEach(c => c.classList.remove('is-correct','is-wrong'));
+function shuffleScramble(wrapper){
+  const container=wrapper.querySelector('.scramble'), items=[...container.children];
+  shuffleArray(items).forEach(n=>container.appendChild(n));
+  wrapper.querySelector('.scramble-status').textContent='';
+  // After shuffle, clear reds but still show greens where they happen to align
+  gradePositions(container, {showWrong:false});
 }
 
-// Hook into Reveal lifecycle (or run immediately if not using data-state)
-function initAllScramblesIn(scope=document) {
+function initAll(scope=document){
   scope.querySelectorAll('.scramble').forEach(initScramble);
-  // Wire buttons in the same wrapper
-  scope.querySelectorAll('.scramble-wrap').forEach(wrap => {
-    const shuffleBtn = wrap.querySelector('[data-action="shuffle"]');
-    const checkBtn   = wrap.querySelector('[data-action="check"]');
-    shuffleBtn?.addEventListener('click', () => shuffleScramble(wrap));
-    checkBtn?.addEventListener('click', () => checkOrder(wrap));
+  scope.querySelectorAll('.scramble-wrap').forEach(wrap=>{
+    wrap.querySelector('[data-action="shuffle"]')?.addEventListener('click',()=>shuffleScramble(wrap));
+    wrap.querySelector('[data-action="check"]')?.addEventListener('click',()=>checkOrder(wrap));
   });
 }
 
-if (window.Reveal && Reveal.on) {
-  Reveal.on('ready', e => initAllScramblesIn(e.currentSlide || document));
-  Reveal.on('slidechanged', e => initAllScramblesIn(e.currentSlide));
+if (window.Reveal && Reveal.on){
+  Reveal.on('ready', e => initAll(e.currentSlide || document));
+  Reveal.on('slidechanged', e => initAll(e.currentSlide));
 } else {
-  // Fallback if not inside Reveal
-  document.addEventListener('DOMContentLoaded', () => initAllScramblesIn(document));
+  document.addEventListener('DOMContentLoaded', () => initAll(document));
 }
 ```
 
@@ -428,24 +380,26 @@ if (window.Reveal && Reveal.on) {
 In Q2, average customer wait time dropped from 12 minutes to 7 minutes following the implementation of the new scheduling algorithm.
 :::
 
+::: {.card data-id="3"}
+Next quarter, expanding the system to all regional centres is expected to reduce wait times by an additional 20%.
+:::
+
 ::: {.card data-id="2"}
 To improve customer satisfaction and retention, we implemented a new AI-driven scheduling tool in early April.
 :::
 
-::: {.card data-id="3"}
-Next quarter, expanding the system to all regional centres is expected to reduce wait times by an additional 20%.
-:::
 
 ::: {.card data-id="4"}
 Data was collected from service logs across 15 branches between January and June 2024.
 :::
 
-::: {.card data-id="5"}
-The primary driver of the improvement was the reduction of scheduling conflicts during peak hours.
-:::
 
 ::: {.card data-id="6"}
 This report evaluates the impact of the scheduling tool on wait times and overall service efficiency.
+:::
+
+::: {.card data-id="5"}
+The primary driver of the improvement was the reduction of scheduling conflicts during peak hours.
 :::
 
 :::
@@ -513,8 +467,10 @@ Make sure sections are _linked_:
 
 :::
 
+::: {.fragment}
 ::: {.callout-tip}
 I should be able to read the first sentence of each paragraph and understand the document.
+:::
 :::
 
 ## Clarity and concision
