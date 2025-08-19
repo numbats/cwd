@@ -6,6 +6,7 @@ project:
     - "*.md"
   resources:
     - "*-supp.qmd"
+    - "assignments/assignment-2-papers/*.pdf"
 
 website:
   title: "ETC5523 Communicating With Data"
