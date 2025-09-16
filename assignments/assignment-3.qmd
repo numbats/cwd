@@ -44,7 +44,7 @@ In this assessment, you will be creating a personal website, including informati
 
 ::: {.callout-important}
 
-You must join the GitHub classroom here: [https://classroom.github.com/a/VNotbOuM](https://classroom.github.com/a/VNotbOuM). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
+You must join the GitHub classroom here: [https://classroom.github.com/a/pM7OZP_9](https://classroom.github.com/a/pM7OZP_9). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
 
 :::
 
