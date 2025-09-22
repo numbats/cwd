@@ -217,7 +217,7 @@ The balance of benefits and costs for using an interactive visualisation approac
 
 # What is `shiny`?
 
-<i class="fa-solid fa-gear fa-spin"></i> [Demo App](https://ebsmonash.shinyapps.io/ETC5523-Covid-19-App-Demo/?showcase=0)
+<i class="fa-solid fa-gear fa-spin"></i> [Demo App](https://shiny.posit.co/r/gallery/government-public-sector/nz-trade-dash/)
 
 
 # How to get started with `shiny`?
