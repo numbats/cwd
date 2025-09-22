@@ -389,6 +389,65 @@ sliderInput("id13", "How many?", min = 0, max = 10, value = 0)
 :::
 :::
 
+## Understanding `inputs` and `outputs`
+
+Every `input` and `output` has an `id` (e.g. `"id1"`).
+
+* `input$id1` gives the current value of the input
+* `output$id1` is used to assign a value to the output
+
+::: {.fragment}
+For example,
+
+``` r
+output$myplot <- renderPlot({
+  plot(cars)
+})
+```
+
+Here, `myplot` is the `id` of the output, and `renderPlot()` is used to create a plot output.
+:::
+
+## Understanding `inputs` and `outputs`
+
+This is connected to an input in the UI, e.g.
+
+``` r
+plotOutput("myplot")
+```
+
+## Reactive expressions
+
+There are also _reactive expressions_, which are used to create values that depend on inputs and other reactive expressions.
+
+``` r
+input_plus_10 <- reactive({
+  input$id1 + 10
+})
+
+textOutput("id1_plus_10", input_plus_10())
+```
+
+::: {.fragment}
+Note the _function_-style calling of the reactive expression. This is easy to forget!
+:::
+
+## The `req` function
+
+When you have inputs that are required for an output to be generated, you can use the `req` function to stop execution of the code until the required inputs are available.
+
+This is useful when you have inputs that are optional, e.g. a date range input that may be empty.
+
+``` r
+output$myplot <- renderPlot({
+  req(input$date_range)  # Stop here if date_range is NULL
+  plot(cars)
+})
+```
+
+
+# Putting it together
+
 # Layouts
 
 ## `fluidRow` + `columns` {.scrollable}
@@ -456,6 +515,33 @@ fluidPage(sidebarLayout(
 </div>
 ```
 
+## Including a shiny app in a package
+
+* Inside your packages `inst` folder:
+  * Create a folder called `shiny`
+  * Put your app files inside this folder
+  * Put stylesheets and scripts in `inst/shiny/www`
+
+::: {.fragment}
+The `www` folder is special, and Shiny knows to look for static files there.
+:::
+
+## Including your shiny app in a package
+
+To include a function that launches your app, you can use the following code:
+
+``` r
+#' Launch my shiny app
+#' 
+#' @export
+#' @importFrom shiny runApp
+run_my_app <- function() {
+  appDir <- system.file("shiny", package = "yourpackagename")
+
+  shiny::runApp(appDir)
+}
+
+```
 
 
 # Server & Client Communication
@@ -499,7 +585,7 @@ server | ui
 [shinyapps.io](shinyapps.io)
 
 
-## Week 3 Lesson 
+## Week 9 Lesson 
 
 
 ::: callout-important
@@ -544,3 +630,183 @@ server | ui
 * Cheatsheet for Shiny [[Cheatsheet]{.box}](https://github.com/rstudio/cheatsheets/raw/main/shiny.pdf)
 
 :::
+
+
+## Demo app
+
+```r
+library(shiny)
+library(ggplot2)
+library(dplyr)
+library(bslib)
+
+ui <- fluidPage(
+  theme = bs_theme(version = 5, bootswatch = "flatly"),
+  includeCSS("www/style.css"),
+
+  titlePanel("Women's Premier League Match Explorer"),
+
+  # Make the sidebar narrower (3/12) and the main panel wider (9/12)
+  sidebarLayout(
+    sidebarPanel(
+      width = 3,
+      sliderInput(
+        "top_batters",
+        "Number of top batters",
+        min = 1, max = 50, value = 20
+      ),
+      selectizeInput(
+        "season",
+        "Season",
+        choices = sort(unique(ipldata$season)),
+        selected = sort(unique(ipldata$season)),
+        multiple = TRUE,
+        options = list(placeholder = "Choose season(s)")
+      )
+    ),
+    mainPanel(
+      width = 9,
+      # Let the plot breathe vertically
+      plotOutput("distPlot", height = "75vh")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+
+  output$distPlot <- renderPlot({
+    req(input$season, input$top_batters)
+
+    ipldata |>
+      summarise_best_batters() |>
+      ungroup() |>
+      filter(boundary_percent > 0, season %in% input$season) |>
+      arrange(desc(runs)) |>
+      slice(1:input$top_batters) |>
+      ggplot(aes(y = boundary_percent, x = dot_percent, size = 2*balls_faced)) +
+      geom_point(colour = "red", alpha = 0.3) +
+      geom_text(
+        aes(label = striker),
+        vjust = -0.5, hjust = 0.5, color = "#013369",
+        position = position_dodge(0.9), size = 5
+      ) +
+      labs(x = "Dot Percent", y = "Boundary Percent") +
+      theme_minimal(base_size = 13) +
+      theme(
+        plot.title.position = "plot",
+        panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title = element_text(face = "bold")
+      )
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+## Improving the demo app
+
+```r
+library(shiny)
+library(ggplot2)
+library(dplyr)
+library(bslib)
+library(plotly)
+
+ui <- fluidPage(
+  theme = bs_theme(version = 5, bootswatch = "flatly"),
+  includeCSS("www/style.css"),
+
+  titlePanel("Women's Premier League Match Explorer"),
+
+  # Make the sidebar narrower (3/12) and the main panel wider (9/12)
+  sidebarLayout(
+    sidebarPanel(
+      width = 3,
+      sliderInput(
+        "top_batters",
+        "Number of top batters",
+        min = 1, max = 50, value = 20
+      ),
+      selectizeInput(
+        "season",
+        "Season",
+        choices = sort(unique(ipldata$season)),
+        selected = sort(unique(ipldata$season)),
+        multiple = TRUE,
+        options = list(placeholder = "Choose season(s)")
+      )
+    ),
+    mainPanel(
+      width = 9,
+      # Let the plot breathe vertically
+      plotlyOutput("distPlot", height = "75vh"),
+      markdown("Data courtesy of [cricsheet.org](cricsheet.org) via the `cricketdata` package"),
+      downloadButton("download_plot")
+
+    )
+  )
+)
+
+server <- function(input, output, session) {
+
+  label_percent <- scales::label_percent(accuracy = 0.1)
+
+
+  plot <- reactive({
+    req(input$season, input$top_batters)
+
+    ipldata |>
+      summarise_best_batters() |>
+      ungroup() |>
+      filter(boundary_percent > 0, season %in% input$season) |>
+      arrange(desc(runs)) |>
+      slice(1:input$top_batters) |>
+      mutate(
+        text = paste0("Dot Balls: ", label_percent(dot_percent/100),
+                      "<br>Strike Rate: ", round(strikerate, digits = 1),
+                      "<br>Boundaries: ", label_percent(boundary_percent/100),
+                      "<br>Runs: ", runs,
+                      "<br>Balls Faced: ", balls_faced,
+                      ifelse(length(input$season) > 1, paste0("<br>Year: ", season), ""))
+      ) |>
+      ggplot(
+        aes(text = text)
+      ) +
+      geom_point(
+        aes(y = boundary_percent, x = dot_percent, size = 2*balls_faced),
+        colour = "red", alpha = 0.3) +
+      geom_text(
+        aes(y = boundary_percent, x = dot_percent, label = striker),
+        vjust = -0.5, hjust = 0.5, color = "#013369",
+        position = position_dodge(0.9), size = 5
+      ) +
+      labs(x = "Dot Percent", y = "Boundary Percent") +
+      theme_minimal(base_size = 13) +
+      theme(
+        plot.title.position = "plot",
+        panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title = element_text(face = "bold")
+      )
+  }
+  )
+  output$distPlot <- renderPlotly({
+
+    ggplotly(plot(), tooltip = "text")
+  })
+
+  output$download_plot <- downloadHandler(
+    filename = function() {
+      paste0("wpl-top",input$top_batters,"-",input$season, ".png")
+    },
+
+    content = function(file) {
+      ggsave(plot = plot(), filename = file, bg = "white")
+    }
+  )
+}
+
+shinyApp(ui = ui, server = server)
+
+```
