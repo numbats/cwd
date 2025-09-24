@@ -43,7 +43,7 @@ week <- as.integer(1 + ((Sys.Date() - as_date(start_semester))/7))
 
 ## Consultation
 
-* Michael Lydeamore: Thursday 10am-11am (Rm 354, Building 6)
+* Michael Lydeamore: Tuesdays 1.30pm-2.30pm (Rm 354, Building 6)
 * Maliny Po: Wednesday 1pm-2.30pm (Rm 232A, Building 6)
 
 ```{r}
