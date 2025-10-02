@@ -88,7 +88,6 @@ The final blog post must have:
 * Correct author information (you)
 * The following sections:
     * Problem description
-    * Data description
     * Analysis
     * Conclusion
 * At least one figure, with a cross-reference in text
@@ -103,15 +102,10 @@ Problem description (2 marks):
 
 * Short summary of the problem or issue you are analysing (2 marks)
 
-Data description (6 marks):
+Analysis (10 marks):
 
 * Source of the data clearly identified (1 mark)
-* Short description of the variables in the dataset (not a data dictionary!) (2 marks)
-* Data cleaning steps described (2 marks)
-* Code included where needed (which may not be everywhere) (1 mark)
-
-Analysis (5 marks):
-
+* Findings of the analysis clearly described (2 marks)
 * Tables and plots designed so that the audience can acquire the desired information efficiently (2 marks for plot, 2 marks for table)
 * Included cross-references (1 mark)
 * Analysis links back to the questions in the problem description (2 marks)
@@ -141,4 +135,4 @@ To do this, you will need to:
 * Pages set up correctly (1 mark)
 * Website HTML files correctly on version control (1 mark)
 
-**Maximum grade**: 4 + 3 + 18 + 3 = 28 marks
+**Maximum grade**: 4 + 3 + 10 + 3 = 20 marks
