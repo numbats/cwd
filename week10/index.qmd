@@ -495,6 +495,28 @@ solar_data_priced <- reactive({
 })
 ```
 
+## Code management
+
+By this point, your `app.R` file may be getting quite long. To keep things manageable:
+
+- Split UI and server into separate files (`ui.R` and `server.R`)
+- Modularise repeated components into functions or modules and then source them
+
+::: {.fragment}
+When using `source`, remember the path is relative to the app's working directory, not the file location.
+:::
+
+::: {.fragment}
+You can't define _variables_ in sourced files and expect them to be available in the main app. Instead, define _functions_ that return values, and then use the functions inside `reactive` or similar.
+:::
+
+::: {.fragment}
+Thinking in this modularised, functional way is similar to the workflow in `targets`, and helps to avoid the 1000-line script problem. Get in the habit early!
+:::
+
+
+
+
 ## Recap: Packaging shiny apps in an R package
 
 Recall the R package structure:
