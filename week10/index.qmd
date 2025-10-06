@@ -1,6 +1,6 @@
 ---
 pagetitle: "ETC5523: Communicating with Data"
-subtitle: "Stylishly communicating with code"
+subtitle: "R Shiny — Advanced: tabsets, shared reactives, debugging, conditional UI"
 author: "Michael Lydeamore"
 email: "michael.lydeamore@monash.edu"
 date: "Week 10"
@@ -9,7 +9,7 @@ unit-url: "cwd.numbat.space"
 footer: "ETC5523 Week 10"
 format: 
   revealjs:
-    logo: images/monash-one-line-black-rgb.png
+    logo: ../images/monash-one-line-black-rgb.png
     slide-number: c
     multiplex: false
     theme: ../assets/monash.scss
@@ -31,13 +31,14 @@ current_file <- knitr::current_input()
 basename <- gsub(".[Rq]md$", "", current_file)
 
 knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 4,
   fig.align = "center",
   out.width = "100%",
   fig.retina = 3,
   warning = FALSE,
   message = FALSE,
-  cache = FALSE,
-  cache.path = "cache/"
+  cache = FALSE
 )
 ```
 
@@ -78,436 +79,487 @@ Lecturer: *`r rmarkdown::metadata$author`*
 :::
 
 
-## {#aim}
+## {#aim background="white"}
 
 ::: {.callout-important }
 
 ## Aim
 
-* Document your functions
-* Create vignettes for your package
-* Distribute your package
+* Tabbed layouts (tabsets) to organise views
+* Shared reactive datasets / reactiveValues used across components
+* More debugging techniques and diagnostics
+* Auto-generated narrative text driven by reactive expressions
+* Conditionally showing UI elements (show/hide based on inputs)
 
 :::
+
+::: fragment
 
 ::: {.callout-tip }
 
 ## Why
 
-* Documentation informs users of how to use your package 
-* Adopting best practice development workflow will make package development easier 
-* Distributing your package is needed for adoption of your package by others
-
+These patterns let you write cleaner, more efficient apps and craft persuasive narratives using the same underlying data.
 
 :::
 
-# Recap of package development
-
-## Communicating about your [R package]{.monash-blue}
-
-- What is the [**goal**]{.monash-blue} of the package?
-- [**What**]{.monash-blue} does your function(s) do? 
-- [**How**]{.monash-blue} do we use it?
-- [**Why**]{.monash-blue} should we use it?
-- [**Where**]{.monash-blue} do we find and install it?
-
-. . . 
-
-::: {.center .f-headline}
-
-[**Documentation**]{.monash-ruby2} is vital 
-
 :::
 
-## `random_number()` function
+---
 
 ```{r}
-random_number <- function(range) {
-  random_numbers <- data.frame(numbers = runif(n = 100, min = 0, max = range))
-
-  ggplot2::ggplot(data = random_numbers, ggplot2::aes(x = numbers)) +
-    ggplot2::geom_histogram()
-}
-
-random_number(50)
+#| echo: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(tidyr)
 ```
 
-## Using our own data
+## Dataset
 
-`data-raw/census-birthplace.R`:
 ```{r}
-#| eval: false
-census_birthplace <- read.csv("data-raw/census-birthplace.csv") |>
-  dplyr::mutate(birth = factor(birth))
+smartmeter <- read.csv(here::here("data", "smartmeter.csv"))
 
-usethis::use_data(census_birthplace, overwrite = TRUE)
+head(smartmeter)
+```
+
+## Dataset after some cleaning
+
+```{r}
+solar_data <- smartmeter |>
+  pivot_longer(
+    cols = starts_with("X"),
+    names_to = "datetime",
+    values_to = "energy_kwh"
+  ) |>
+  mutate(
+    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
+    energy_kwh = as.numeric(energy_kwh),
+    datetime = paste0(DATE, " ", datetime),
+    datetime = lubridate::ymd_hm(datetime)
+  ) |>
+  janitor::clean_names()
+
+solar_data
+```
+
+## The basic app
+
+```r
+library(shiny)
+
+ui <- fluidPage(
+  headerPanel("Solar dashboard"),
+  sidebarPanel(
+    sliderInput("date_range", "Subset dates", min = as.Date('2024-07-15'), max = as.Date('2025-10-05'),
+                value = c(as.Date('2024-07-15'), as.Date('2025-10-05'))),
+  ),
+  mainPanel(
+    plotOutput("solar_plot")
+  )
+)
+
+server <- function(input, output) {
+  solar_data <- read.csv(here::here("data", "smartmeter.csv")) |>
+    pivot_longer(
+    cols = starts_with("X"),
+    names_to = "datetime",
+    values_to = "energy_kwh"
+  ) |>
+  mutate(
+    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
+    energy_kwh = as.numeric(energy_kwh),
+    datetime = paste0(DATE, " ", datetime),
+    datetime = lubridate::ymd_hm(datetime)
+  ) |>
+  janitor::clean_names()
+
+  output$solar_plot <- renderPlot({
+    solar_data <- solar_data |>
+      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2])
+    ggplot(solar_data, aes(x = datetime, y = energy_kwh)) +
+      geom_line() +
+      labs(y = 'kWh', x = 'Date') +
+      theme_minimal()
+  })
+}
+```
+
+# Tabsets and layout patterns
+
+## How to implement tabsets (step-by-step)
+
+1. Decide what content belongs together — group related plots, tables or controls.
+2. Use `tabsetPanel(id = 'tabs', tabPanel('A', ...), tabPanel('B', ...))` in your UI.
+3. If you need to react to which tab is active, give the tabset an `id` and inspect `input$tabs` on the server.
+
+## How to implement tabsets (example)
+
+Small example:
+
+```r
+ui <- fluidPage(
+  tabsetPanel(id = 'main_tabs',
+    tabPanel('Overview', plotOutput('p1')),
+    tabPanel('Details', plotOutput('p2'))
+  ),
+  mainPanel(
+    textOutput('which_tab')
+  )
+)
+
+server <- function(input, output) {
+  output$which_tab <- renderText({ paste("Current tab:", input$main_tabs)})
+}
+```
+
+## Updating our app to include a tabset
+
+```r
+library(shiny)
+library(DT)
+
+ui <- fluidPage(
+  headerPanel("Solar dashboard"),
+  sidebarPanel(
+    sliderInput("date_range", "Subset dates", min = as.Date('2024-07-15'), max = as.Date('2025-10-05'),
+                value = c(as.Date('2024-07-15'), as.Date('2025-10-05'))),
+  ),
+  mainPanel(
+    tabsetPanel(
+      tabPanel("Plot", plotOutput("solar_plot")),
+      tabPanel("Data", DTOutput("data_table"))
+    )
+  )
+)
+
+server <- function(input, output) {
+  solar_data <- read.csv(here::here("data", "smartmeter.csv")) |>
+    pivot_longer(
+    cols = starts_with("X"),
+    names_to = "datetime",
+    values_to = "energy_kwh"
+  ) |>
+  mutate(
+    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
+    energy_kwh = as.numeric(energy_kwh),
+    datetime = paste0(DATE, " ", datetime),
+    datetime = lubridate::ymd_hm(datetime)
+  ) |>
+  janitor::clean_names()
+
+  output$solar_plot <- renderPlot({
+    solar_data <- solar_data |>
+      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2])
+    ggplot(solar_data, aes(x = datetime, y = energy_kwh)) +
+      geom_line() +
+      labs(y = 'kWh', x = 'Date') +
+      theme_minimal()
+  })
+
+  output$data_table <- renderDT({
+    solar_data <- solar_data |>
+      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2])
+    solar_data
+  })
+}
+```
+
+## When to use tabsets
+
+- Use for logically separate views or different analysis perspectives of the same data (like our three framings).
+- Avoid deep nesting of tabs (it adds cognitive load). Prefer progressive disclosure: keep primary controls visible and move advanced filters to secondary tabs.
+
+# Reactive variables & shared datasets
+
+## Reactive variables & shared datasets
+
+You may have noticed in our app we are re-cleaning and processing the dataset inside each `render*()` function. This is inefficient and error-prone.
+
+::: {.fragment}
+Instead, we can create shared reactive expressions that parse and clean the data once, and then multiple outputs can re-use the cleaned data.
+:::
+
+## Reactive variables & shared datasets
+
+To implement:
+
+::: {.columns}
+::: {.column width='50%'}
+
+
+```r
+# Shared reactive dataset
+solar_data <- reactive({
+  df <- read.csv(here::here("data", "smartmeter.csv")) |>
+    pivot_longer(
+      cols = starts_with("X"),
+      names_to = "datetime",
+      values_to = "energy_kwh"
+    ) |>
+    mutate(
+      datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
+      energy_kwh = as.numeric(energy_kwh),
+      datetime = paste0(DATE, " ", datetime),
+      datetime = lubridate::ymd_hm(datetime)
+    ) |>
+    janitor::clean_names()
+  df
+})
+```
+:::
+::: {.column width='50%'}
+
+::: {.fragment}
+
+Then inside `renderPlot()` or `renderDT()` we call `solar_data()` to get the cleaned data frame.
+
+```r
+output$solar_plot <- renderPlot({
+  df <- solar_data() |>
+    filter(datetime >= input$date_range[1] & datetime <= input$date_range[2])
+  ggplot(df, aes(x = datetime, y = energy_kwh)) +
+    geom_line() +
+    labs(y = 'kWh', x = 'Date') +
+    theme_minimal()
+})
+```
+
+:::
+:::
+:::
+
+## Best practice checklist
+
+::: {.incremental}
+
+- Validate early: use `req()` and `validate()` at the top of reactive expressions
+- Keep single responsibility: each reactive does one transformation step and you chain them (parse -> clean -> aggregate)
+- Use descriptive names and document the contract for each reactive (inputs, outputs, error modes)
+
+:::
+
+# Other inputs and outputs
+
+## File inputs
+
+So far we have hard-coded the data source. To make the app reusable, we can add a file input control to let users upload their own solar CSV.
+
+```r
+fileInput("solar_file", "Upload solar data (CSV)", accept = c('.csv'))
+```
+
+Then inside the `solar_data` reactive we check if a file is uploaded and read it.
+
+```r
+solar_data <- reactive({
+  req(input$solar_file) # require a file
+  read.csv(input$solar_file$datapath)
+  # ... rest of parsing and validation ...
+})
+```
+
+## Showing and hiding UI elements
+
+You might only want to show certain controls or outputs based on user selections.
+
+For example, if you are changing `geoms` then the user might want to include a parameter that only applies to one geom.
+
+## Enter the `conditionalPanel`
+
+```r
+conditionalPanel(
+  condition = "input.geom_type == 'hist'",
+  sliderInput("bin_width", "Bin Width", min = 1, max = 30, value = 7)
+)
+```
+
+Here, the `condition` is in JavaScript. In `R` land, you read this as
+
+```r
+inpuut$geom_type == 'hist'
+```
+
+## Example of conditional UI
+
+```r
+# client
+radioButtons("plot_geom", "Plot type",
+                 choices = c("Line" = "line", "Histogram" = "hist"),
+                 selected = "line"),
+conditionalPanel(
+  condition = "input.plot_geom == 'hist'",
+  sliderInput("bins", "Number of bins", min = 5, max = 60, value = 30),
+  selectInput("aggregation_size", "Aggregation type", choices = c("None", "Daily", "Weekly", "Monthly")),
+)
+
+# server
+
+solar_data_aggregated <- reactive({
+  req(solar_data_filtered())
+  if (input$aggregation_size == "Daily") {
+    solar_data_filtered() |>
+      group_by(date) |>
+      summarise(energy_kwh = sum(energy_kwh, na.rm = TRUE))
+  } else if (input$aggregation_size == "Weekly") { ... }
+})
+```
+
+## File downloading
+
+You can let users download processed datasets or reports using `downloadButton()` in the UI and `downloadHandler()` on the server.
+
+```r
+downloadButton("download_plot", "Download Plot")
+
+# server
+
+output$download_plot <- downloadHandler(
+  filename = function() { paste("solar_plot", Sys.Date(), ".png", sep = "") },
+  content = function(file) {
+    ggsave(file, plot = solar_plot(), device = "png", bg = "white", width = 8, height = 6)
+  }
+)
+```
+
+# On-the-fly data manipulation
+
+## On-the-fly data manipulation
+
+You can let users manipulate data on-the-fly using inputs that control filtering, aggregation, or transformations.
+
+In our solar app, we could let users input their price per kWh and feed-in tariff to calculate potential savings.
+
+## `observeEvent`
+
+Sometimes you want to trigger something when something else happens, like when a button is clicked, rather than on every input change. If you have a long running computation, you might want to only run it when the user clicks "Update".
+
+This is where we use `observeEvent()`:
+
+```r
+# client
+
+actionButton("update", "Update calculations")
+
+# server
+
+observeEvent(input$update, {
+  # Re-run expensive calculations here
+  solar_data_priced <- solar_data_filtered()
+  solar_data_priced$cost <- input$electricity_price * solar_data_priced$energy_kwh
+  solar_data_priced$total_cost <- cumsum(solar_data_priced$cost)
+})
+```
+
+## Dynamic UI generation
+
+You can also use `actionButton` with `reactiveValues` to let users input multiple conditions without pre-specifying the numbers.
+
+```r
+# client
+
+div(id = "price_inputs",
+  numericInput("electricity_price_1", "Price per kwh", value = 0.28, min = 0)
+),
+div(style = "text-align: right;",
+  actionButton("add_price", "Add another price"),
+)
+
+# server
+
+
+n_prices <- reactiveVal(1)
+observeEvent(input$add_price, {
+  n <- n_prices() + 1
+  n_prices(n)
+
+  insertUI(
+    selector = "#price_inputs",
+    where = "beforeEnd",
+    ui = numericInput(
+      paste0("electricity_price_", n), 
+      paste("Price per kwh"), value = 0.28, min = 0)
+  )
+})
+
+
+solar_data_priced <- reactive({
+  req(prices())
+  solar_data_priced <- solar_data_filtered()
+  for (i in 1:n_prices()) {
+    solar_data_priced[, paste0("electricity_price_", i)] <- prices()[i] * solar_data_priced$energy_kwh
+    solar_data_priced[, paste0("total_cost_", i)] <- cumsum(solar_data_priced[, paste0("electricity_price_", i)])
+  }
+
+  solar_data_priced
+})
+```
+
+## Recap: Packaging shiny apps in an R package
+
+Recall the R package structure:
+
+```
+my_package/
+  R/
+    functions.R
+    plots.R
+  man/
+    my_function.Rd
+  vignettes/
+    my_vignette.Rmd
+```
+
+## Recap: Packaging shiny apps in an R package
+
+To include a shiny app, create an `inst/app/` directory inside your package:
+
+::: {.columns}
+::: {.column width='50%'}
+```
+my_package/
+  R/
+    functions.R
+    plots.R
+    man/
+    my_function.Rd
+  vignettes/
+    my_vignette.Rmd
+  inst/
+    app/
+      app.R
+      www/
+        styles.css
+        script.js
+      data/
+        dataset.csv
+```
+:::
+::: {.column width='50%'}
+::: {.fragment}
+Access things inside the package using `system.file()`:
+
+```r
+dataset <- read.csv(system.file("app/data/dataset.csv", package = "my_package"))
 ```
 
 ::: {.fragment}
-Then in a package function: 
-```{r}
-#| eval: false
-
-top_n_birthplace <- function(n, years = c(2016, 2021)) {
-  census_birthplace |>
-    dplyr::filter(census %in% years) |>
-    dplyr::group_by(census) |>
-    dplyr::arrange(count) |>
-    dplyr::slice(1:n)
-}
-
-```
+Or export them using `roxygen` and then use as normal
 :::
-
-
-## Using pipe operator in your package 
-
-The base pipe (`|>`) is fine for 99% of cases - I recommend just using that.
-
-If you _need_ the `magrittr` pipe (`%>%`) then you can use
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_pipe()
-```
-
-## Including Shiny apps in your package {.nonincremental}
-
-The process to include a Shiny app is a bit more complicated than data or a function.
-
-Put your app code in `inst/[appname]/app.R`
-
-::: {.fragment}
-In your function to launch your app:    
-```{r}
-#| eval: false
-
-run_app <- function() {
-  app_dir <- system.file("ausbirthapp", package = "ausbirthplace")
-  shiny::runApp(app_dir, display.mode = "normal")
-}
-
-```
-
 :::
-
-::: {.fragment}
-Files in `inst/` are installed with your package but are considered "internal".
-
-The `system.file` tells R where to look for your shiny app code.
 :::
-
-## Including Shiny apps in your package
-
-::: {.callout-warning}
-Don't include an example for running a shiny app! It will cause R to hang.
 :::
 
 # Demo
 
+## Recap
 
-# Documentation {background-color="#006DAE"}
+- Tabsets for organizing views
+- Shared reactive datasets for efficiency
+- Conditional UI elements
+- On-the-fly data manipulation with `observeEvent`
+- Packaging shiny apps in an R package
 
 
-## Documenting R functions with `roxygen2`
 
-- use `#'` above a function to write documentation for that function
-- `roxygen2` uses `@` tags to structure documentation, e.g. 
-  * any text after `@description` is the description
-  * any text after `@param` describes the arguments of the function
-  * `@export` signals that it is an exported function
-  * any text after `@return` describes the return object
-  * the full list of Rd tags are found [here](https://roxygen2.r-lib.org/articles/rd.html)
-- `devtools::document()` converts the Rd tags to appropriate sections of `.Rd` files written in the `man/` folder
 
-## Documenting `praise.me` package 
-
-`R/random_number.R`
-```{r}
-#| eval: false
-#' Histograms of random numbers
-#'
-#' Generates 100 uniform random numbers between 0 and `range`, and
-#' plots a `ggplot2` histogram.
-#'
-#' You can modify the plot using
-#' ```r
-#' random_number(5) + ggplot2::theme_bw()
-#' ```
-#'
-#' @param range **Maximum** value for the uniform distribution
-#'
-#' @return `ggplot2` histogram of the random values
-#' @export
-#'
-#' @importFrom ggplot2 ggplot aes geom_histogram
-#'
-#' @examples
-#' random_number(12)
-random_number <- function(range) {
-  random_numbers <- data.frame(numbers = runif(n = 100, min = 0, max = range-1))
-
-  ggplot2::ggplot(data = random_numbers, aes(x = numbers)) +
-    geom_histogram()
-}
-```
-
-
-## Documenting data
-
-- `usethis::use_data_raw()` to store R code to process raw data, 
-- `usethis::use_data()` to save a binary file in `data/` directory,
-- The data is named `praises`.
-- Documentation is contained in `data.R` or `name-of-data.R`
-
-## Documenting data
-
-`R/data.R`
-
-```{r}
-#| eval: false
-#' Number of Australian residents by country of birth from the 2016 and 2021 census
-#'
-#' @format ## 'census_birthplace'
-#' A data frame with 105 rows and 4 columns
-#' \describe{
-#'   \item{birth}{Country of birth}
-#'   \item{count}{Number of residents from that birth country}
-#'   \item{percentage}{Percentage of residents from that birth country}
-#'   \item{census}{Year of census (either 2016 or 2021)}
-#' }
-#' @source <https://www.abs.gov.au/websitedbs/censushome.nsf/home/2016>
-"census_birthplace"
-```
-
-## Make package documentation
-
-- Add documentation of the "big picture" of your package
- 
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_package_doc()
-```
-
-- Above creates the file below
-
-. . . 
-
-`R/ausbirthplace-package.R`
-```{r}
-#| eval: false
-#' @keywords internal
-"_PACKAGE"
-
-## usethis namespace: start
-## usethis namespace: end
-NULL
-```
-
-
-- Default package documentation is built from your DESCRIPTION file
-
-. . . 
-
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-library(ausbirthplace)
-?ausbirthplace
-```
-
-
-
-## Vignette: a long-form documentation
-
-- Some documentation doesn't fit as a package or function documentation.
-- You may want to built a vignette (article) for these cases.
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_vignette(name = "my-amazing-package", 
-                      title = "My amazing package")
-```
-
-- Edit the created Rmd file 
-- Knit the vignette to see what it looks like
-- Use `devtools::build()` to build package with vignettes included
-
-
-
-# Dependencies {background-color="#006DAE"}
-
-## Adding dependencies
-
-
-- Dependencies are specified in DESCRIPTION file under three categories:
-  - `Depends`: Specify the version of R that the package will work with or package that it is dependent on (e.g. for ggplot2 extension packages, it depends on ggplot2).
-  - `Imports`: External packages that are imported to use in your package. Most external packages are in this category.
-  - `Suggests`: Packages that are not strictly needed but are nice to have, i.e. you use them in examples or vignettes. 
-- You can add easily add this via `usethis::use_package()`
-
-# Sharing {background-color="#006DAE"}
-
-## Share and collaborate on your package
-
-
-* Track changes to your code with Git
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_git()
-```
-
-* Collaborate with others via GitHub (or otherwise)
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_github()
-```
-
-. . . 
-
-or for existing repo, run from the terminal:
-
-```{zsh}
-#| eval: false
-#| code-code-line-numbers: false
-git remote add origin https://github.com/user/repo.git
-```
-
-
-* You can install your R package now using:
-
-. . . 
-
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-devtools::install_github("user/repo")
-```
-
-## Installing `praise.me` package
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-devtools::install_github("MikeLydeamore/ausbirthplace")
-```
-
-* The package is found at `https://github.com/MikeLydeamore/ausbirthplace`.
-* It's a good idea to add a `README` file with installation instructions -- this is displayed in the GitHub repo.
-* You can create a `README.Rmd` file with
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_readme_rmd() 
-# OR usethis::use_readme_md() if you have no code
-```
-* Make sure you knit the `README.Rmd` when you modify its contents.
-
-## Package documentation website with `pkgdown`
-
-- Automatically turns all package documentation into a website.
-- Documentation can now be easily viewable outside of R.
-- Easy to customise appearance of the site using YAML
-
-## Using `pkgdown` 
-
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_pkgdown()
-```
-
-- Build site locally with `pkgdown::build_site()`
-- Site appearance is modified in the `_pkgdown.yml` file
-  - [bootswatch](https://bootswatch.com/) themes for the appearance of the whole site
-  - organising function / vignette documentation with reference
-- See the [vignette](https://pkgdown.r-lib.org/articles/pkgdown.html) for more details
-- Automatically build and deploy your site with GitHub actions
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_pkgdown_github_pages() # if using this, no need for usethis::use_pkgdown()
-```
-
-## The whole package development workflow
-
-```{r}
-#| eval: false
-available::available("pkgname") # check if package name is available (if planning to publish publicly)
-usethis::create_package("pkgname")
-usethis::use_git() # set up version control
-usethis::use_github() # optional
-usethis::use_r("myfile")
-# write some functions in a script
-usethis::use_data_raw() # if adding data
-devtools::load_all() # try it out in the console
-usethis::use_package("import-pkgname") # add package to import (or depends or suggests)
-usethis::use_package_doc() # add package documentation
-usethis::use_pipe() # if you want to add %>% from `magrittr`
-usethis::use_vignette("vignette-name") # add vignette
-devtools::build() # build vignettes
-devtools::install() # to install package
-devtools::check() # to build and check a package 
-usethis::use_readme_rmd() # to add a README Rmd file
-styler::style_pkg() # optional (commit first, then review changes carefully)
-usethis::use_pkgdown_github_pages() # for setting up pkgdown website on github
-# `usethis::use_pkgdown()` if not using github pages
-```
-
-
-
-
-## Week 10 Lesson 
-
-
-::: callout-important
-
-## Summary
-
-::: nonincremental
-
-- Package documentation is important to let others know about the goal of the package, what your function does, and how to use your package.
-- Sharing your package by making it easy to install, commiting to good documentation, and making the documentation accessible helps to build trust to use your package.
-- You can make package development and distribution easy with `usethis`, `devtools`, `roxygen2`, and `pkgdown`.
-
-:::
-
-:::
-
-. . . 
-
-::: callout-tip
-
-## Resources
-
-::: nonincremental
-
-
-- [`roxygen2` documentation tags](https://roxygen2.r-lib.org/articles/rd.html)
-- [Customising your `pkgdown` site](https://pkgdown.r-lib.org/articles/customise.html)
-
-:::
-
-:::
