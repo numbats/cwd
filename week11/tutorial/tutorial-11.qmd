@@ -1,72 +1,100 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Tutorial 11"
+subtitle: "Tutorial 10"
 author: "Michael Lydeamore"
-date: "Week 11"
+date: "Week 10"
 format:
     unilur-html:
         output-file: index.html
         embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
 ---
-
-
-```{r setup, include = FALSE, eval = file.exists("setup.R")}
-source("setup.R")
-library(tidyverse)
-knitr::opts_chunk$set(
-    fig.path = "images/tutorial-11-",
-    eval = FALSE
-)
-
-```
-
-```{r, echo = FALSE, eval = file.exists("tutorial.css")}
-htmltools::includeCSS("tutorial.css")
-```
-
-
-
 
 
 ## 🎯 Objectives
 
 
-* dissect the encoding choices for plots and its role in providing the information that supports your data story
-* discuss with peers about effective data visualisation
+* practice writing long-form documentation vignettes
+* write functions and its documentation using `usethis` and `roxygen2`
+* convert your package documentation into a website with `pkgdown`
+
+::: {.callout-note collapse="true"}
+
+## Preparation
+
+1. `install.packages(c("pkgdown"))`
+2. Clone the github repo below:
+
+```{zsh}
+#| eval: false
+#| echo: true
+git clone https://github.com/etc5523-2022/cwdata.git
+```
+
+:::
 
 
 
-## Exercise 11A
+##  Exercise 9A
 
-For the following data visualisation, discuss with your peers:
+Open the `cwdata` project directory and create a new vignette via `usethis`.
 
-- What are the main information that the audiences will gain? 
-- What makes the data visualisation effective or not effective?
-- What other graphs would you construct for the same intended message?
+The name of the vignette should be "crops" and the title will be 
+"Our World in Data: Key Crop Yields".
 
-In particular, you should check the following:
+Your vignette should contain the following:
 
-- **Perceptual tasks**: What visual element must the audience decode to retrieve the statistical information?
-- **Cognitive principles**: What cognitive principles are assisting the audience to "see" the information you want them to see?
-- **Aesthetic appeal**: How well is the aesthetic design integrated with the rest of the data story?
+- A description of the data, including it's source, and how to access it with your package.
+- Two `ggplot2` visualisations with short descriptions, giving examples of things you could learn from the `key_crop_yields` data. If you are stuck on ideas
+take a look at the [charts found on the Our World in Data website](https://ourworldindata.org/crop-yields). Remember that any external packages you use should be added to your DESCRIPTION file under Suggests.
 
-### Plot #1
+Once you have finished your vignette, create a README file via `usethis`
+that describes the intent of the package and how you could install it from your
+github.
 
-![](../images/datavis-apple-ipo.png)
+##  Exercise 9B
 
-### Plot #2
+Build a local `pkgdown` website. 
+Modify the `pkgdown` YAML file so your website has the following:
 
-![](../images/datavis-co2.png)
+- a customised theme for the website
+- the vignette is available via  "Articles" link in the navbar
 
-### Plot #3
+## Exercise 9C 
 
-![](../images/datavis-energy.png)
+Now let's create a function to help us create a "proportional stacked area chart". 
 
+The function will take a vector of numbers and convert them to proportions. Missing values should be removed from the input vector but remain in the output vector. 
 
-### Plot #4
+Here's some examples of what the output should look like:
 
-![](../images/datavis-marathon.jpg)
+```{r}
+#| eval: false
+x <- c(10, 30, 40)
+stack_normalize(x)
+# c(0.125, 0.375, .5)
+x <- c(75, 0, 5, 20, NA)
+stack_normalise(x)
+# c(0.75, 0, 0.05, 0.2, NA)
+x <- c(NA, NA, 10)
+stack_normalize(x)
+# c(NA, NA, 1)
+```
 
-### Plot #5
+Create a new R script in your package called `stack-normalise.R` and place the function. Remember to document it and provide examples of use. 
 
-![](../images/datavis-shitshow.png)
+## Exercise 9D
+
+Inspect the `inst` directory. What do you see in there?
+
+How is that code being used in the package?
+
+Write a _new_ shiny app, based on the one in `inst`, that converts the current ggplot to a `plotly` output. Then, write a new function for the package that will run this app.
+
+::: unilur-solution
+
+An example package for this tutorial can be found [here](https://github.com/etc5523-2022/cwdata/tree/tut9).
+
+:::

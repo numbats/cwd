@@ -1,0 +1,12 @@
+name: solar-dashboard
+title: solar-dashboard
+username: sparkle-modelling
+account: sparkle-modelling
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15665902
+bundleId: 11005357
+url: https://sparkle-modelling.shinyapps.io/solar-dashboard/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

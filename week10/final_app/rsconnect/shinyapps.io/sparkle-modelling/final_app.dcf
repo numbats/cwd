@@ -1,0 +1,10 @@
+name: final_app
+title:
+username: sparkle-modelling
+account: sparkle-modelling
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15677145
+bundleId: 11005325
+url: https://sparkle-modelling.shinyapps.io/final_app/
+version: 1
