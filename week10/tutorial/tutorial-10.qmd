@@ -11,7 +11,7 @@ format:
 
 ## Preparation
 
-Below is a slightly modified version of the solar dashboard app we built in class. I have added a function to simulate solar production data. You'll also want the solar data [Download]("solar_data.csv").
+Below is a slightly modified version of the solar dashboard app we built in class. I have added a function to simulate solar production data. You'll also want the solar data [Download](solar_data.csv).
 
 <details>
 ```r
