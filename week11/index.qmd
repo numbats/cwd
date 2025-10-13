@@ -1,9 +1,9 @@
 ---
 pagetitle: "ETC5523: Communicating with Data"
-subtitle: "Stylishly communicating with code"
+subtitle: "Automated tools for package development and documentation"
 author: "Michael Lydeamore"
 email: "michael.lydeamore@monash.edu"
-date: "Week 10"
+date: "Week 11"
 department: "Department of Econometrics and Business Statistics"
 unit-url: "cwd.numbat.space"
 footer: "ETC5523 Week 10"
@@ -134,13 +134,14 @@ random_number(50)
 
 ## Using our own data
 
-`data-raw/census-birthplace.R`:
+`data-raw/smartmeter.R`:
 ```{r}
 #| eval: false
-census_birthplace <- read.csv("data-raw/census-birthplace.csv") |>
-  dplyr::mutate(birth = factor(birth))
+smartmeter <- read.csv("data-raw/smartmeter.csv") |>
+  clean_solar_data() |>
+  select(-c(nmi, meter_serial_number))
 
-usethis::use_data(census_birthplace, overwrite = TRUE)
+usethis::use_data(smartmeter, overwrite = TRUE)
 ```
 
 ::: {.fragment}
@@ -148,16 +149,32 @@ Then in a package function:
 ```{r}
 #| eval: false
 
-top_n_birthplace <- function(n, years = c(2016, 2021)) {
-  census_birthplace |>
-    dplyr::filter(census %in% years) |>
-    dplyr::group_by(census) |>
-    dplyr::arrange(count) |>
-    dplyr::slice(1:n)
+last_n_days <- function(n) {
+  smartmeter |>
+    dplyr::filter(date >= (max(date) - n))
 }
 
 ```
 :::
+
+## Using data in your package
+
+People have become very used to the pipe syntax, and so actually the above function is better written as:
+
+```r
+#' @examples
+#' 
+#' smartmeter |> last_n_days(n = 7)
+last_n_days <- function(.data, n) {
+  smartmeter |>
+    dplyr::filter(date >= (max(date) - n))
+}
+```
+
+::: {.fragment .callout-tip}
+Your case may not be as straightforward as this: do not feel like you can _never_ include a data object inside a function. It is still useful!
+:::
+
 
 
 ## Using pipe operator in your package 
@@ -184,7 +201,7 @@ In your function to launch your app:
 #| eval: false
 
 run_app <- function() {
-  app_dir <- system.file("ausbirthapp", package = "ausbirthplace")
+  app_dir <- system.file("app.R", package = "solardash")
   shiny::runApp(app_dir, display.mode = "normal")
 }
 
@@ -204,6 +221,14 @@ The `system.file` tells R where to look for your shiny app code.
 Don't include an example for running a shiny app! It will cause R to hang.
 :::
 
+Instead, include your example inside an `if` statement:
+
+```r
+if (interactive()) {
+  run_app()
+}
+```
+
 # Demo
 
 
@@ -221,35 +246,19 @@ Don't include an example for running a shiny app! It will cause R to hang.
   * the full list of Rd tags are found [here](https://roxygen2.r-lib.org/articles/rd.html)
 - `devtools::document()` converts the Rd tags to appropriate sections of `.Rd` files written in the `man/` folder
 
-## Documenting `praise.me` package 
+## Documenting `solarash` package 
 
-`R/random_number.R`
-```{r}
-#| eval: false
-#' Histograms of random numbers
-#'
-#' Generates 100 uniform random numbers between 0 and `range`, and
-#' plots a `ggplot2` histogram.
-#'
-#' You can modify the plot using
-#' ```r
-#' random_number(5) + ggplot2::theme_bw()
-#' ```
-#'
-#' @param range **Maximum** value for the uniform distribution
-#'
-#' @return `ggplot2` histogram of the random values
-#' @export
-#'
-#' @importFrom ggplot2 ggplot aes geom_histogram
-#'
-#' @examples
-#' random_number(12)
-random_number <- function(range) {
-  random_numbers <- data.frame(numbers = runif(n = 100, min = 0, max = range-1))
-
-  ggplot2::ggplot(data = random_numbers, aes(x = numbers)) +
-    geom_histogram()
+`R/cleaning.R`
+```r
+#' Cleans Solar Data from the Jemema Electricity Portal
+#' 
+#' @param .data A data frame containing raw solar data extracted from the Jemema Electricity Portal.
+#' @return A cleaned data frame with columns: date, datetime, energy_kwh, and other relevant columns.
+#' 
+#' @importFrom tidyr pivot_longer
+#' @importFrom dplyr mutate
+clean_solar_data <- function(.data) {
+  ...
 }
 ```
 
@@ -265,20 +274,21 @@ random_number <- function(range) {
 
 `R/data.R`
 
-```{r}
-#| eval: false
-#' Number of Australian residents by country of birth from the 2016 and 2021 census
-#'
-#' @format ## 'census_birthplace'
-#' A data frame with 105 rows and 4 columns
+```r
+#' Example Smart Meter Data from the Jemena Electricity Portal
+#' 
+#' A dataset containing example smart meter data extracted from the Jemena Electricity Portal.
+#' @format A data frame with 17520 rows and 4 variables:
 #' \describe{
-#'   \item{birth}{Country of birth}
-#'   \item{count}{Number of residents from that birth country}
-#'   \item{percentage}{Percentage of residents from that birth country}
-#'   \item{census}{Year of census (either 2016 or 2021)}
+#'   \item{date}{Date of the reading (YYYY-MM-DD)}
+#'   \item{datetime}{Date and time of the reading (POSIXct)}
+#'   \item{energy_kwh}{Energy consumption in kilowatt-hours (kWh)}
+#' \item{con_gen}{Whether the reading is consumption or generation}
+#' \item{estimated}{Whether the reading is estimated or actual. In this dataset, all readings are actual.}
 #' }
-#' @source <https://www.abs.gov.au/websitedbs/censushome.nsf/home/2016>
-"census_birthplace"
+#' 
+#' @source \url{https://jemena.com.au/}
+"smartmeter"
 ```
 
 ## Make package documentation
@@ -295,7 +305,7 @@ usethis::use_package_doc()
 
 . . . 
 
-`R/ausbirthplace-package.R`
+`R/solardash-package.R`
 ```{r}
 #| eval: false
 #' @keywords internal
@@ -315,8 +325,8 @@ NULL
 ```{r}
 #| eval: false
 #| code-line-numbers: false
-library(ausbirthplace)
-?ausbirthplace
+library(solarash)
+?solardash
 ```
 
 
@@ -338,6 +348,41 @@ usethis::use_vignette(name = "my-amazing-package",
 - Edit the created Rmd file 
 - Knit the vignette to see what it looks like
 - Use `devtools::build()` to build package with vignettes included
+
+## Quarto vignettes
+
+It is possible!
+
+::: {.fragment}
+Add to your DESCRIPTION file:
+
+```
+VignetteBuilder:
+  quarto
+```
+:::
+
+::: {.fragment}
+and change your YAML header to:
+
+```
+vignette: >
+  %\VignetteIndexEntry{Vignette's Title}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+```
+:::
+
+## Quarto vignettes
+
+::: {.callout-warning}
+This is still _new_ and there may be some issues with some package checkers. [Our experience is that CRAN has accepted packages even when they've failed tests because of the Quarto engine]{.fragment}
+:::
+
+::: {.fragment}
+I believe it is where things are heading, so it is worth trying out, even if it costs you some pain now.
+:::
+
 
 
 
@@ -399,15 +444,15 @@ git remote add origin https://github.com/user/repo.git
 devtools::install_github("user/repo")
 ```
 
-## Installing `praise.me` package
+## Installing `solardash` package
 
 ```{r}
 #| eval: false
 #| code-line-numbers: false
-devtools::install_github("MikeLydeamore/ausbirthplace")
+devtools::install_github("MikeLydeamore/solardash")
 ```
 
-* The package is found at `https://github.com/MikeLydeamore/ausbirthplace`.
+* The package is found at `https://github.com/MikeLydeamore/solardash`.
 * It's a good idea to add a `README` file with installation instructions -- this is displayed in the GitHub repo.
 * You can create a `README.Rmd` file with
 
@@ -451,6 +496,67 @@ usethis::use_pkgdown()
 usethis::use_pkgdown_github_pages() # if using this, no need for usethis::use_pkgdown()
 ```
 
+## Customising `pkgdown` site
+
+First, modify `_pkgdown.yml` file
+
+```yaml
+template:
+  boostrap: 5
+```
+
+And then the world is your customising oyster:
+
+::: {.fragment}
+
+::: {.panel-tabset}
+## Dark mode
+
+Add dark mode with
+
+```yaml
+template:
+  light-switch: true
+  theme: gruvbox-light
+  theme-dark: gruvbox-dark
+```
+
+## Themes
+
+Choose from [bootswatch themes](https://bootswatch.com/). Strangely `theme` here means syntax highlighting theme, not theme theme. Computer scientists.
+
+```yaml
+template:
+  bootswatch: cyborg
+  theme: arrow-dark
+```
+
+## Complicated equations
+By default maths is rendered with `mathml` which is pretty good but not perfect. You can switch with
+
+```yaml
+template:
+  math-rendering: katex (or mathjax)
+```
+
+## Navbar
+
+You can move your navigation bar around:
+
+```yaml
+navbar:
+  structure:
+    left: [intro, reference, articles]
+    right: [github, search]
+```
+
+Note that `intro` is the packaged-named vignette we made before.
+
+:::
+
+:::
+
+
 ## The whole package development workflow
 
 ```{r}
@@ -476,10 +582,138 @@ usethis::use_pkgdown_github_pages() # for setting up pkgdown website on github
 # `usethis::use_pkgdown()` if not using github pages
 ```
 
+# So you're ready for CRAN {background-color="#006DAE"}
+
+## Getting ready for CRAN
+
+CRAN has quite the [set](https://cran.r-project.org/web/packages/submission_checklist.html) of [policies](https://cran.r-project.org/web/packages/policies.html) to follow. Some are "optional" but most are mandatory.
+
+::: {.fragment}
+
+Start with:
+
+```r
+usethis::use_release_issue(version = NULL)
+```
+
+:::
+
+::: {.fragment}
+This will create a GitHub issue with a checklist of things to do before submitting to CRAN.
+:::
+
+
+## Extra checks
+
+Some key points:
+
+::: {.incremental style="font-size: xx-large"}
+1. `devtools::check()` must give `0 0 0`. Realistically it will give one note (new submission), but try to avoid all others.
+2. `devtools::run_examples()` must run without error
+3. `checkhelper::find_missing_tags()`: All functions must have `@noRd` or `@export` tag
+4. `urlchecker::url_check()`
+5. `rhub::rhub_check()`
+6. `usethis::use_cran_comments()`: Add a `cran-comments.md` file with responses to common questions
+:::
+
+## Common errors
+
+One of the most common warnings is
+
+`no visible binding for global variable`
+
+::: {.fragment}
+This is a result of using the non-standard evaluation in `dplyr` and `ggplot2` (and other places). Unfortunately the fix is very unsatisfying.
+:::
+
+::: {.fragment}
+Include a `zzz.R` file in your `R` folder with a call to:
+
+```r
+utils::globalVariables(c("var1", "var2", "var3"))
+```
+:::
+
+## Common errors
+
+`All declared Imports should be used`
+
+We have packages that are _only_ used in our shiny app but nowhere else.
+
+We handle these like we would examples or tests: `Suggests`.
+
+::: {.fragment}
+But, what would happen now if we tried to launch the shiny app without these suggested packages installed?
+:::
+
+## Error handling is also communication
+
+The `cli` package is a modern way to handle messages, warnings, and errors.
+
+Documentation: https://cli.r-lib.org/
+
+```r
+run_solar_dashboard <- function() {
+  required_packages <- c("DT", "ggplot2", "readr")
+  for (pkg in required_packages) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      cli::cli_abort("Package '{pkg}' must be installed to run the dashboard.")
+    }
+  }
+  
+  ...
+}
+```
+
+## Error handling is also communication
+
+The `cli` package is a modern way to handle messages, warnings, and errors.
+
+Documentation: https://cli.r-lib.org/
+
+```r
+run_solar_dashboard <- function() {
+  required_packages <- c("DT", "ggplot2", "readr")
+  for (pkg in required_packages) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      cli::cli_abort(c(
+        "Package {.pkg {pkg}} must be installed to run the dashboard.",
+        "i" = "You can install it with {.code install.packages('{pkg}')}"
+      ))
+    }
+  }
+  
+  ...
+}
+```
 
 
 
-## Week 10 Lesson 
+## Other tips
+
+::: {.incremental style="font-size: xx-large"}
+* All software names _must_ be in single quotes
+* You need a license: `usethis::use_mit_license("Your Name")`
+* The Copyright holder in `LICENSE` and `DESCRIPTION` should match
+* Find functions that don't have an example:  
+```r
+system("grep -c examples man/*Rd", intern = TRUE) |> 
+  grep(":0$", x = _, value = TRUE)
+```
+* Make sure your description doesn't start with "This package ..."
+* Makes sure you have a `BugReports` and `URL` with `devtools::use_github_links()`
+:::
+
+# Submit it! {background-color="#006DAE"}
+
+Don't be afraid to submit your package to CRAN!
+
+::: {.fragment}
+They are helpful and although they may reject your package, they will give you feedback on what to fix.
+:::
+
+
+## Week 11 Lesson 
 
 
 ::: callout-important
