@@ -1,12 +1,12 @@
 ---
 pagetitle: "ETC5523: Communicating with Data"
-subtitle: "Case Studies"
-author: "Kate Saunders"
-email: "kate.saunders@monash.edu"
-date: "Week 11"
+subtitle: "Stylishly communicating with code"
+author: "Michael Lydeamore"
+email: "michael.lydeamore@monash.edu"
+date: "Week 10"
 department: "Department of Econometrics and Business Statistics"
 unit-url: "cwd.numbat.space"
-footer: "ETC5523 Week 11"
+footer: "ETC5523 Week 10"
 format: 
   revealjs:
     logo: images/monash-one-line-black-rgb.png
@@ -22,7 +22,7 @@ format:
     include-after-body: "../assets/after-body.html"
     incremental: true
 execute:
-  echo: false
+  echo: true
   eval: true
 ---
 
@@ -39,28 +39,6 @@ knitr::opts_chunk$set(
   cache = FALSE,
   cache.path = "cache/"
 )
-library(tidyverse)
-theme_set(theme_bw(base_size = 18))
-
-```
-
-```{r data, include = FALSE, cache = TRUE}
-files <- paste0("data/", dir("data/", pattern = "^tmax"))
-data <- map_dfr(files, ~ {
-    station <- read_csv(.x, n_max = 1) %>% pull("site name")
-    tmp <- read_csv(.x, skip = 2, col_names = c("date", "max_temp")) %>%
-        select(date, max_temp) %>%
-        mutate(station = station)
-}) %>%
-    mutate(station = recode(station,
-        "PERTH AIRPORT" = "Perth",
-        "ADELAIDE (WEST TERRACE / NGAYIRDAPIRA)" = "Adelaide",
-        "CAIRNS AERO" = "Cairns",
-        "BRISBANE AERO" = "Brisbane",
-        "SYDNEY (OBSERVATORY HILL)" = "Sydney",
-        "CANBERRA AIRPORT" = "Canberra",
-        "MELBOURNE (OLYMPIC PARK)" = "Melbourne"
-    ))
 ```
 
 ## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
@@ -100,650 +78,436 @@ Lecturer: *`r rmarkdown::metadata$author`*
 :::
 
 
-##  {#aim}
+## {#aim}
 
-::: callout-important
+::: {.callout-important }
+
 ## Aim
 
--   Revise principles and practices for data based communication
--   Review four different case study examples
--   Evaluate if those case studies effectively convey intended messages to viewers
+* Document your functions
+* Create vignettes for your package
+* Distribute your package
+
 :::
 
-# Case study {background-color="#006DAE"}
+::: {.callout-tip }
 
-Daily maximum temperature in selected Australian locations
+## Why
 
-## Data from the Bureau of Meteorology
+* Documentation informs users of how to use your package 
+* Adopting best practice development workflow will make package development easier 
+* Distributing your package is needed for adoption of your package by others
 
-Daily maximum temperature from beginning of 1910 to mid 2021 for 7 Australian location (Perth, Adelaide, Cairns, Brisbane, Sydney, Canberra, and Melbourne).
+
+:::
+
+# Recap of package development
+
+## Communicating about your [R package]{.monash-blue}
+
+- What is the [**goal**]{.monash-blue} of the package?
+- [**What**]{.monash-blue} does your function(s) do? 
+- [**How**]{.monash-blue} do we use it?
+- [**Why**]{.monash-blue} should we use it?
+- [**Where**]{.monash-blue} do we find and install it?
+
+. . . 
+
+::: {.center .f-headline}
+
+[**Documentation**]{.monash-ruby2} is vital 
+
+:::
+
+## `random_number()` function
 
 ```{r}
-data %>%
-    head() %>%
-    knitr::kable()
+random_number <- function(range) {
+  random_numbers <- data.frame(numbers = runif(n = 100, min = 0, max = range))
+
+  ggplot2::ggplot(data = random_numbers, ggplot2::aes(x = numbers)) +
+    ggplot2::geom_histogram()
+}
+
+random_number(50)
 ```
 
-## Daily maximum temperature
+## Using our own data
 
-```{r plot-max-temp1}
-data %>%
-    # filter(lubridate::year(date) > 2017) %>%
-    mutate(station = fct_reorder(station, max_temp, last)) %>%
-    ggplot(aes(date, max_temp, color = station)) +
-    geom_line() +
-    colorspace::scale_color_discrete_qualitative() +
-    labs(x = "Date", y = "") +
-    scale_y_continuous(labels = scales::comma_format(suffix = "°C"))
+`data-raw/census-birthplace.R`:
+```{r}
+#| eval: false
+census_birthplace <- read.csv("data-raw/census-birthplace.csv") |>
+  dplyr::mutate(birth = factor(birth))
+
+usethis::use_data(census_birthplace, overwrite = TRUE)
 ```
 
-::: fragment
-Very long time series... what's the intended message?
-:::
+::: {.fragment}
+Then in a package function: 
+```{r}
+#| eval: false
 
-## Recent maximum temperature trend
+top_n_birthplace <- function(n, years = c(2016, 2021)) {
+  census_birthplace |>
+    dplyr::filter(census %in% years) |>
+    dplyr::group_by(census) |>
+    dplyr::arrange(count) |>
+    dplyr::slice(1:n)
+}
 
-```{r plot-max-temp2}
-data %>%
-    filter(date >= as.Date("2019-07-01")) %>%
-    mutate(station = fct_reorder(station, max_temp, last)) %>%
-    ggplot(aes(date, max_temp, color = station)) +
-    geom_line() +
-    colorspace::scale_color_discrete_qualitative() +
-    labs(x = "Date", y = "") +
-    scale_y_continuous(labels = scales::comma_format(suffix = "°C"))
 ```
-
-::: fragment
-Lots of fluctuation in temperature... does it show the trend?
 :::
 
-## Recent maximum temperature
 
-```{r plot-max-temp3}
-data %>%
-    filter(date >= as.Date("2019-07-01")) %>%
-    mutate(station = fct_reorder(station, max_temp, last)) %>%
-    ggplot(aes(date, max_temp, color = station)) +
-    geom_smooth(se = FALSE) +
-    colorspace::scale_color_discrete_qualitative() +
-    labs(x = "Date", y = "") +
-    scale_y_continuous(labels = scales::comma_format(suffix = "°C"))
-```
+## Using pipe operator in your package 
 
-::: fragment
-This is showing the fit from a GAM model... but we lost understanding the underlying variation in the original data
-:::
+The base pipe (`|>`) is fine for 99% of cases - I recommend just using that.
 
-## Recent maximum temperature
-
-```{r plot-max-temp4}
-data %>%
-    filter(date >= as.Date("2019-07-01")) %>%
-    mutate(station = fct_reorder(station, max_temp, last)) %>%
-    ggplot(aes(date, max_temp, color = station)) +
-    geom_line(alpha = 0.2, size = 0.5) +
-    geom_smooth(se = FALSE) +
-    colorspace::scale_color_discrete_qualitative() +
-    labs(x = "Date", y = "") +
-    scale_y_continuous(labels = scales::comma_format(suffix = "°C"))
-```
-
-::: fragment
-Some models don't look like a good fit... let's examine individually
-:::
-
-## Recent maximum temperature
-
-```{r plot-max-temp5}
-data %>%
-    filter(date >= as.Date("2019-07-01")) %>%
-    mutate(station = fct_reorder(station, max_temp, last)) %>%
-    ggplot(aes(date, max_temp, color = station)) +
-    geom_line(alpha = 0.2, size = 0.5) +
-    geom_smooth(se = FALSE, size = 0.5) +
-    colorspace::scale_color_discrete_qualitative() +
-    labs(x = "Date", y = "") +
-    scale_y_continuous(labels = scales::comma_format(suffix = "°C")) +
-    facet_wrap(~station) +
-    theme(text = element_text(size = 10))
-```
-
-::: fragment
-The legend is redundant here... remove unnessary elements.
-:::
-
-## Recent maximum temperature
-
-```{r plot-max-temp6}
-data %>%
-    filter(date >= as.Date("2019-07-01")) %>%
-    mutate(station = fct_reorder(station, max_temp, last)) %>%
-    ggplot(aes(date, max_temp, color = station)) +
-    geom_line(alpha = 0.2, size = 0.5) +
-    geom_smooth(
-        se = FALSE, size = 0.5,
-        method = loess,
-        method.args = list(span = 0.3)
-    ) +
-    geom_text(
-        data = ~ filter(.x, date == "2019-07-01"),
-        aes(label = station),
-        y = 40, hjust = 0
-    ) +
-    colorspace::scale_color_discrete_qualitative() +
-    labs(x = "", y = "") +
-    scale_y_continuous(labels = scales::comma_format(suffix = "°C")) +
-    facet_wrap(~station) +
-    theme(text = element_text(size = 10)) +
-    guides(color = "none") +
-    theme(
-        strip.background = element_blank(),
-        strip.text = element_blank()
-    )
-```
-
-::: fragment
-Using loess with span of 0.3 instead ... comparison across location is harder when in data shown in different panels
-:::
-
-## Recent maximum temperature
-
-```{r plot-max-temp7}
-data %>%
-    filter(date >= as.Date("2019-07-01")) %>%
-    mutate(station = fct_reorder(station, max_temp, last)) %>%
-    ggplot(aes(date, max_temp)) +
-    geom_smooth(
-        se = FALSE, size = 0.5,
-        method = loess,
-        method.args = list(span = 0.3),
-        data = ~ rename(.x, station2 = station),
-        aes(group = station2),
-        color = "grey", alpha = 0.8
-    ) +
-    geom_line(alpha = 0.2, size = 0.5, aes(color = station)) +
-    geom_smooth(
-        se = FALSE, size = 0.5,
-        method = loess,
-        method.args = list(span = 0.3),
-        aes(color = station)
-    ) +
-    geom_text(
-        data = ~ filter(.x, date == "2019-07-01"),
-        aes(label = station, color = station),
-        y = 40, hjust = 0
-    ) +
-    colorspace::scale_color_discrete_qualitative() +
-    labs(x = "", y = "") +
-    scale_y_continuous(labels = scales::comma_format(suffix = "°C")) +
-    facet_wrap(~station) +
-    theme(text = element_text(size = 10)) +
-    guides(color = "none") +
-    theme(
-        strip.background = element_blank(),
-        strip.text = element_blank()
-    )
-```
-
-::: fragment
-Casting a shadow of the fitted model across locations in each panel makes it easier to compare ...
-:::
-
-## Recent maximum temperature
-
-```{r plot-max-temp8}
-data %>%
-    filter(date >= as.Date("2019-07-01")) %>%
-    mutate(station = fct_reorder(station, max_temp, max)) %>%
-    ggplot(aes(date, station)) +
-    geom_tile(aes(fill = max_temp)) +
-    colorspace::scale_fill_continuous_sequential(
-        labels = scales::comma_format(suffix = "°C"),
-        palette = "Reds 2", rev = TRUE
-    ) +
-    labs(x = "", y = "", fill = "")
-```
-
-::: fragment
-There were missing values in data that wasn't apparent before!
-:::
-
-## Weekly average maximum temperature
-
-```{r plot-max-temp9}
-data %>%
-    filter(date >= as.Date("2019-07-01")) %>%
-    mutate(station = fct_reorder(station, max_temp, max)) %>%
-    mutate(
-        week = lubridate::week(date),
-        year = lubridate::year(date)
-    ) %>%
-    group_by(week, year, station) %>%
-    mutate(temp = mean(max_temp, na.rm = TRUE)) %>%
-    ggplot(aes(date, station)) +
-    geom_tile(aes(fill = temp)) +
-    colorspace::scale_fill_continuous_sequential(
-        labels = scales::comma_format(suffix = "°C"),
-        palette = "Reds 2", rev = TRUE
-    ) +
-    labs(x = "", y = "", fill = "")
-```
-
-::: fragment
-By taking weekly averages, the plot is smoother and you can focus trends in the data instead of getting distracted with daily fluctuations.
-:::
-
-## Maximum temperature by month
-
-```{r plot-max-temp10}
-data %>%
-    filter(date >= as.Date("2019-07-01")) %>%
-    mutate(station = fct_reorder(station, max_temp, max)) %>%
-    mutate(
-        month = lubridate::month(date),
-        year = lubridate::year(date)
-    ) %>%
-    group_by(month, year) %>%
-    mutate(mdate = min(date)) %>%
-    ungroup() %>%
-    ggplot(aes(mdate, max_temp)) +
-    geom_boxplot(
-        outlier.size = 0.5,
-        aes(group = mdate, fill = station)
-    ) +
-    labs(x = "", y = "", fill = "") +
-    facet_wrap(~station) +
-    theme(
-        strip.background = element_blank(),
-        strip.text = element_blank(),
-        text = element_text(size = 12)
-    ) +
-    scale_y_continuous(labels = scales::comma_format(suffix = "°C")) +
-    guides(fill = "none", color = "none") +
-    geom_text(
-        data = ~ filter(., date == min(date)),
-        aes(label = station, color = station), y = 50,
-        hjust = 0
-    ) +
-    colorspace::scale_color_discrete_qualitative() +
-    colorspace::scale_fill_discrete_qualitative() +
-    ylim(0, 55)
-```
-
-::: fragment
-This plot makes it easier to see the monthly variation...
-:::
-
-::: fragment
-Can you think of other ways to visualise this data?
-:::
-
-# Case study {background-color="#006DAE"}
-
-Communicating Climate Change
-
-## Line Graph
+If you _need_ the `magrittr` pipe (`%>%`) then you can use
 
 ```{r}
+#| eval: false
+#| code-line-numbers: false
+usethis::use_pipe()
+```
 
-#| fig-width: 8 
+## Including Shiny apps in your package {.nonincremental}
+
+The process to include a Shiny app is a bit more complicated than data or a function.
+
+Put your app code in `inst/[appname]/app.R`
+
+::: {.fragment}
+In your function to launch your app:    
+```{r}
+#| eval: false
+
+run_app <- function() {
+  app_dir <- system.file("ausbirthapp", package = "ausbirthplace")
+  shiny::runApp(app_dir, display.mode = "normal")
+}
+
+```
+
+:::
+
+::: {.fragment}
+Files in `inst/` are installed with your package but are considered "internal".
+
+The `system.file` tells R where to look for your shiny app code.
+:::
+
+## Including Shiny apps in your package
+
+::: {.callout-warning}
+Don't include an example for running a shiny app! It will cause R to hang.
+:::
+
+# Demo
+
+
+# Documentation {background-color="#006DAE"}
+
+
+## Documenting R functions with `roxygen2`
+
+- use `#'` above a function to write documentation for that function
+- `roxygen2` uses `@` tags to structure documentation, e.g. 
+  * any text after `@description` is the description
+  * any text after `@param` describes the arguments of the function
+  * `@export` signals that it is an exported function
+  * any text after `@return` describes the return object
+  * the full list of Rd tags are found [here](https://roxygen2.r-lib.org/articles/rd.html)
+- `devtools::document()` converts the Rd tags to appropriate sections of `.Rd` files written in the `man/` folder
+
+## Documenting `praise.me` package 
+
+`R/random_number.R`
+```{r}
+#| eval: false
+#' Histograms of random numbers
+#'
+#' Generates 100 uniform random numbers between 0 and `range`, and
+#' plots a `ggplot2` histogram.
+#'
+#' You can modify the plot using
+#' ```r
+#' random_number(5) + ggplot2::theme_bw()
+#' ```
+#'
+#' @param range **Maximum** value for the uniform distribution
+#'
+#' @return `ggplot2` histogram of the random values
+#' @export
+#'
+#' @importFrom ggplot2 ggplot aes geom_histogram
+#'
+#' @examples
+#' random_number(12)
+random_number <- function(range) {
+  random_numbers <- data.frame(numbers = runif(n = 100, min = 0, max = range-1))
+
+  ggplot2::ggplot(data = random_numbers, aes(x = numbers)) +
+    geom_histogram()
+}
+```
+
+
+## Documenting data
+
+- `usethis::use_data_raw()` to store R code to process raw data, 
+- `usethis::use_data()` to save a binary file in `data/` directory,
+- The data is named `praises`.
+- Documentation is contained in `data.R` or `name-of-data.R`
+
+## Documenting data
+
+`R/data.R`
+
+```{r}
+#| eval: false
+#' Number of Australian residents by country of birth from the 2016 and 2021 census
+#'
+#' @format ## 'census_birthplace'
+#' A data frame with 105 rows and 4 columns
+#' \describe{
+#'   \item{birth}{Country of birth}
+#'   \item{count}{Number of residents from that birth country}
+#'   \item{percentage}{Percentage of residents from that birth country}
+#'   \item{census}{Year of census (either 2016 or 2021)}
+#' }
+#' @source <https://www.abs.gov.au/websitedbs/censushome.nsf/home/2016>
+"census_birthplace"
+```
+
+## Make package documentation
+
+- Add documentation of the "big picture" of your package
  
-temp_data_average = readRDS("data/stripes_data_sydney.rds")
-
-ggplot(data = temp_data_average, aes(x = Year, y = mean_daily_temp)) + 
-  # geom_smooth() +
-  geom_line() +
-  ylab("Average daily max temp (°C)") + 
-  ggtitle("Sydney, Australia") +
-  theme_bw()
+```{r}
+#| eval: false
+#| code-line-numbers: false
+usethis::use_package_doc()
 ```
 
-Is it clear the climate is changing?
+- Above creates the file below
 
-## Line Graph
+. . . 
+
+`R/ausbirthplace-package.R`
+```{r}
+#| eval: false
+#' @keywords internal
+"_PACKAGE"
+
+## usethis namespace: start
+## usethis namespace: end
+NULL
+```
+
+
+- Default package documentation is built from your DESCRIPTION file
+
+. . . 
+
 
 ```{r}
- 
-temp_data_average = readRDS("data/stripes_data_sydney.rds")
-
-ggplot(data = temp_data_average, aes(x = Year, y = mean_daily_temp)) + 
-  geom_smooth() +
-  geom_line() +
-  ylab("Average daily max temp (°C)") + 
-  ggtitle("Sydney, Australia") +
-  theme_bw() 
+#| eval: false
+#| code-line-numbers: false
+library(ausbirthplace)
+?ausbirthplace
 ```
 
-Let's add a geom_smooth() - Is the trend clear now?
 
-## Warming Stripes
+
+## Vignette: a long-form documentation
+
+- Some documentation doesn't fit as a package or function documentation.
+- You may want to built a vignette (article) for these cases.
+
+. . . 
 
 ```{r}
-vec_of_ones = rep(1, nrow(temp_data_average))
-temp_data_average <- mutate(temp_data_average, 
-                            ones = vec_of_ones)
-
-
-ggplot(temp_data_average, aes(x = Year, y = ones)) + 
-  geom_col(aes(fill = mean_daily_temp)) +
-  scale_fill_distiller("Mean Daily Temperature", palette = "RdBu") +  
-  theme_void() +
-  theme(legend.position = "none")
+#| eval: false
+#| code-line-numbers: false
+usethis::use_vignette(name = "my-amazing-package", 
+                      title = "My amazing package")
 ```
 
-Sydney #showyourstripes <br>
+- Edit the created Rmd file 
+- Knit the vignette to see what it looks like
+- Use `devtools::build()` to build package with vignettes included
 
-<font size = "3"> Graphic by Ed Hawkins: https://showyourstripes.info/ </font size = "3">
 
-## Labelled Strips
+
+# Dependencies {background-color="#006DAE"}
+
+## Adding dependencies
+
+
+- Dependencies are specified in DESCRIPTION file under three categories:
+  - `Depends`: Specify the version of R that the package will work with or package that it is dependent on (e.g. for ggplot2 extension packages, it depends on ggplot2).
+  - `Imports`: External packages that are imported to use in your package. Most external packages are in this category.
+  - `Suggests`: Packages that are not strictly needed but are nice to have, i.e. you use them in examples or vignettes. 
+- You can add easily add this via `usethis::use_package()`
+
+# Sharing {background-color="#006DAE"}
+
+## Share and collaborate on your package
+
+
+* Track changes to your code with Git
+
+. . . 
 
 ```{r}
-ggplot(temp_data_average, aes(x = Year, y = ones)) + 
-  geom_col(aes(fill = mean_daily_temp)) +
-  scale_fill_distiller("Mean Daily Temperature", palette = "RdBu") +  
-  theme_minimal() + 
-  theme(axis.text.y = element_blank(),
-        axis.title.y = element_blank(),
-        axis.title.x = element_blank(),
-        legend.position = "none") +
-  ggtitle("Sydney Temperature Change (1859, 2020)") 
+#| eval: false
+#| code-line-numbers: false
+usethis::use_git()
 ```
 
-Do we need to know what the exact temperature is to get the message?
+* Collaborate with others via GitHub (or otherwise)
 
-## Bars
+. . . 
 
 ```{r}
-temp_data_average <- temp_data_average %>% 
-  mutate(transformed = (mean_daily_temp  - mean(mean_daily_temp))/
-           sd(mean_daily_temp))
-
-old_mean = mean(temp_data_average %>% 
-  filter(Year > 1971 & Year < 2000) %>% 
-  pull(mean_daily_temp), na.rm =TRUE)
-
-new_mean = mean(temp_data_average %>% 
-  filter(Year >= 2000) %>% 
-  pull(mean_daily_temp), na.rm =TRUE)
-
-ggplot(temp_data_average, aes(x = Year, y = transformed)) + 
-  geom_col(aes(fill = mean_daily_temp)) +
-  scale_fill_distiller("Temp (°C)", palette = "RdBu") +  # add a legend label
-  theme_void() + 
-  theme(legend.position = "none") +
-  ggtitle(paste0("Sydney temperatures have increased by ", round(new_mean - old_mean, 2), "°C"))
+#| eval: false
+#| code-line-numbers: false
+usethis::use_github()
 ```
 
-Do bar size and summary text help convey change is happening?
+. . . 
 
-## Bars with scale
+or for existing repo, run from the terminal:
+
+```{zsh}
+#| eval: false
+#| code-code-line-numbers: false
+git remote add origin https://github.com/user/repo.git
+```
+
+
+* You can install your R package now using:
+
+. . . 
+
 
 ```{r}
-ggplot(temp_data_average, aes(x = Year, y = transformed)) + 
-  geom_col(aes(fill = mean_daily_temp)) +
-  scale_fill_distiller("Temp (°C)", palette = "RdBu") +  
-  theme_minimal() + 
-  theme(legend.position = "none", 
-        axis.title.y = element_blank()) +
-  ggtitle("Sydney Temperature Change", "Relative to 1971 - 2000 [°C]") 
+#| eval: false
+#| code-line-numbers: false
+devtools::install_github("user/repo")
 ```
 
-What are the advantages / disadvantages to making this graphic more scientifically accurate?
+## Installing `praise.me` package
 
-## Climate Spiral
+```{r}
+#| eval: false
+#| code-line-numbers: false
+devtools::install_github("MikeLydeamore/ausbirthplace")
+```
 
-Interactive version shown at the Rio Olympics in 2016
+* The package is found at `https://github.com/MikeLydeamore/ausbirthplace`.
+* It's a good idea to add a `README` file with installation instructions -- this is displayed in the GitHub repo.
+* You can create a `README.Rmd` file with
 
-![](images/circlestripes1910.png){width="30%"} ![](images/circlestripes1985.png){width="30%"} ![](images/circlestripes2022.png){width="30%"}
+. . . 
 
-Does animation help convey the climate is warming? <br>
+```{r}
+#| eval: false
+#| code-line-numbers: false
+usethis::use_readme_rmd() 
+# OR usethis::use_readme_md() if you have no code
+```
+* Make sure you knit the `README.Rmd` when you modify its contents.
 
-<font size = "3"> https://climate.nasa.gov/climate_resources/300/video-climate-spiral-1880-2022/ </font size = "3">
+## Package documentation website with `pkgdown`
 
-# Case study {background-color="#006DAE"}
+- Automatically turns all package documentation into a website.
+- Documentation can now be easily viewable outside of R.
+- Easy to customise appearance of the site using YAML
 
-Brisbane Floods, February - March 2022
+## Using `pkgdown` 
 
-## Predicted Extent
 
-What works and what does not work about this warning communication? <small>Source: https://www.brisbane.qld.gov.au/ (now expired)</small>
+```{r}
+#| eval: false
+#| code-line-numbers: false
+usethis::use_pkgdown()
+```
 
-![](images/20220228%20-%20Brisbane%20River%20Flood%20Forecast%20map%204_0m_AHD.png){fig-align="center"}
+- Build site locally with `pkgdown::build_site()`
+- Site appearance is modified in the `_pkgdown.yml` file
+  - [bootswatch](https://bootswatch.com/) themes for the appearance of the whole site
+  - organising function / vignette documentation with reference
+- See the [vignette](https://pkgdown.r-lib.org/articles/pkgdown.html) for more details
+- Automatically build and deploy your site with GitHub actions
 
-## Zoomed In
+. . . 
 
-Does this map help people to understand if they will be flooded?
+```{r}
+#| eval: false
+#| code-line-numbers: false
+usethis::use_pkgdown_github_pages() # if using this, no need for usethis::use_pkgdown()
+```
 
-![](images/CutDown_PredictedExtent.jpg){fig-align="center"}
+## The whole package development workflow
 
-## Search Addresses
+```{r}
+#| eval: false
+available::available("pkgname") # check if package name is available (if planning to publish publicly)
+usethis::create_package("pkgname")
+usethis::use_git() # set up version control
+usethis::use_github() # optional
+usethis::use_r("myfile")
+# write some functions in a script
+usethis::use_data_raw() # if adding data
+devtools::load_all() # try it out in the console
+usethis::use_package("import-pkgname") # add package to import (or depends or suggests)
+usethis::use_package_doc() # add package documentation
+usethis::use_pipe() # if you want to add %>% from `magrittr`
+usethis::use_vignette("vignette-name") # add vignette
+devtools::build() # build vignettes
+devtools::install() # to install package
+devtools::check() # to build and check a package 
+usethis::use_readme_rmd() # to add a README Rmd file
+styler::style_pkg() # optional (commit first, then review changes carefully)
+usethis::use_pkgdown_github_pages() # for setting up pkgdown website on github
+# `usethis::use_pkgdown()` if not using github pages
+```
 
-Does using a table to display the data make it clearer?
 
-<center>![](images/BCC_Flood.png){width="80%"}</center>
 
-<small>Source: https://www.brisbane.qld.gov.au/ (now expired)</small>
 
-## Probabilistic Words
+## Week 10 Lesson 
 
-::: columns
-::: {.column width="40%"}
-People interpret probabilistic words in different ways <br><br>
-
-Likely roughly corresponds to 50% - 70%.
-
-<br><br>
-
-<small> Source: https://hbr.org/2018/07/if-you-say-something-is-likely-how-likely-do-people-think-it-is </small>
-:::
-
-::: {.column width="60%"}
-<center>![](images/likely_chart.png){width="40%"}</center>
-:::
-:::
-
-## Gaps
-
-::: callout-warning
-## Unclear
-
--   Will my home by impacted?
-
--   Will I be isolated by flood-waters?
-
--   Can I evacuate?
-:::
 
 ::: callout-important
-## Warnings were inadequate
 
--   Breakdown in warning communication
-
--   But where exactly?
-
--   Clear failed data based communication was a factor
-:::
-
-## Flow of data and information
-
-![](images/Value_chain.png)
-
-## Learning from the Brisbane Floods
-
-::: callout-note
-## Warning communication
-
--   Needs to help people make a decision
-
--   Encourage people to take the right actions
-:::
-
-::: callout-tip
-## Future looking
-
--   Scope to improve how we communicate warnings with data
-
--   This will help better support people during disasters
-:::
-
-# Case study {background-color="#006DAE"}
-
-New South Wales & Victorian Flooding, October 2022
-
-## Warning Levels
-
-<center>![](images/flood_level_warnings.png){width="35%"}</center>
-
-<small> https://hazardwatch.gov.au/ </small>
-
-## Decision making under stress
-
-Difficult to make decisions in emergency situations. <br> People don't always make good decisions under stress.
-
-<br> <br>
-
-::: callout-tip
-## Categorical Data Helps
-
--   People are better at thinking in categories
--   Categories are less complex than probabilities
--   Categories can also help when communicating uncertainty
-:::
-
-## VicAlert - 2022-10-17
-
-Hazard levels and related icons
-
-<center>![](images/Hazard_map_screenshot.png){width="90%"}</center>
-
-## VicAlert - 2022-10-17
-
-Clear hazard messaging
-
-<center>![](images/warning_message.png){width="90%"}</center>
-
-## Review 
-
-How do the design elements contribute to the effectiveness of the data communication? Consider 
-
-- Colour 
-- Icons 
-- Polygons
-- Map
-- Pop Up Messages 
-- Flashing Icons
-- Interactivity 
-
-<!-- ## Silos -->
-
-<!-- ::: columns -->
-
-<!-- ::: {.column width="50%"} -->
-
-<!-- NSW Hazard Watch ![](images/nsw_hazard_watch.png){width="88%"} -->
-
-<!-- ::: -->
-
-<!-- ::: {.column width="50%"} -->
-
-<!-- Vic Alert ![](images/vic_vicalert.png){width="100%"} -->
-
-<!-- ::: -->
-
-<!-- ::: -->
-
-<!-- ## Impact Forecasts: Road closures -->
-
-<!-- <center>![](images/nsw_traffic_post_event_20221206){width="80%"}</center> -->
-
-<!-- <small>https://www.livetraffic.com/incident-details/139477</small> -->
-
-<!-- ## Criticism -->
-
-<!-- -   Road closure based apps are designed for everyday use -->
-
-<!-- -   Extreme events are system breakers (fire and floods) -->
-
-<!-- -   Data is out of date (highly local impacts) -->
-
-<!-- -   Display is crowded -->
-
-<!-- <center>![](images/Clousres_Screen_Shot_%2020221117_081212am.png){width="40%"}</center> -->
-
-<!-- ## Forbes Road closures -->
-
-<!-- Forbes was cut in three by flooding - -->
-
-<!-- <center>![](images/Forbes%20_%20Screen%20Shot%202022-11-17%20at%208.06.06%20am.png){width="80%"}</center> -->
-
-<!-- <small>https://www.livetraffic.com/incident-details/139477</small> -->
-
-<!-- ## Criticism -->
-
-<!-- App isn't purpose build for: -->
-
-<!-- -   Evacuation routing -->
-
-<!-- -   Showing isolation risk -->
-
-<!-- -   Displaying uncertainty with hazard evolution -->
-
-<!-- ## Why all this matters?? -->
-
-<!-- -   People need to know how to evacuate -->
-
-<!-- -   People need to know when their window is evacuation -->
-
-<!-- -   People need to know if they can reach essential services\ -->
-
-<!--     eg Hospitals, Police Stations, Domestic Violence Shelters -->
-
-<!-- ## Forbes Road closures -->
-
-<!-- NSW Traffic directed to a more local source of information -->
-
-<!-- <center>![](images/Message_Screen_Shot_20221117_at_080407am){width="80%"}</center> -->
-
-<!-- ## Forbes -->
-
-<!-- <center>![](images/Forbes_road_closures.png){width="80%"}</center> -->
-
-<!-- ## Safe routes -->
-
-<!-- <center>![](safe_evacuation_route.png){width="60%"}</center> -->
-
-<!-- <center>![](images/google_route.png){width="40%"}</center> -->
-
-## Week 11 Lesson
-
-::: callout-important
 ## Summary
 
--   We revised the principles and practices of data visualisation
--   We critically evaluated different examples of data communication
+::: nonincremental
+
+- Package documentation is important to let others know about the goal of the package, what your function does, and how to use your package.
+- Sharing your package by making it easy to install, commiting to good documentation, and making the documentation accessible helps to build trust to use your package.
+- You can make package development and distribution easy with `usethis`, `devtools`, `roxygen2`, and `pkgdown`.
+
 :::
+
+:::
+
+. . . 
 
 ::: callout-tip
+
 ## Resources
 
--   GHCND Daily dataset, see [rnoaa package](https://github.com/ropensci/rnoaa)
--   [#ShowYourStripes](https://showyourstripes.info/)
--   [Brisbane City Council](https://fam.brisbane.qld.gov.au/?page=entry-resident-visitor)
--   [NSW Hazard Watch](https://hazardwatch.gov.au/)
--   [VicAlert](https://www.emergency.vic.gov.au/respond/)
+::: nonincremental
+
+
+- [`roxygen2` documentation tags](https://roxygen2.r-lib.org/articles/rd.html)
+- [Customising your `pkgdown` site](https://pkgdown.r-lib.org/articles/customise.html)
+
 :::
-
-## 
-
-::: callout-note
-## Contributors
-
-
--   Case study on Australian Temperature developed by Dr Emi Tanaka
-
--   Warming Stripes case study developed by Dr Kate Saunders
-
--   Natural Hazards case studies developed by Dr Kate Saunders
 
 :::

@@ -21,7 +21,7 @@ schedule <- tribble(
     9, "Communicating data with interactive web apps", "", "",
     10, "Communicating data interatively: Part 2", "", "", # Assignment 3 due
     11, "Automated systems for code communication", "", "",
-    12, "Course recap", "", "", # Assignment 4 due in Week 13
+    12, "Profsesional Skills Communication", "", "", # Assignment 4 due in Week 13
 )
 
 # Assignment 1: Breaking down published articles
