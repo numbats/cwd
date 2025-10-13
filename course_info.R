@@ -19,8 +19,8 @@ schedule <- tribble(
     7, "Introduction to web technologies and styling", "", "", # Assignment 2 due
     8, "R packages and documentation", "", "",
     9, "Communicating data with interactive web apps", "", "",
-    10, "Automated systems for code communication", "", "", # Assignment 3 due
-    11, "Guest lecture: Communicating risk in a natural disaster", "", "",
+    10, "Communicating data interatively: Part 2", "", "", # Assignment 3 due
+    11, "Automated systems for code communication", "", "",
     12, "Course recap", "", "", # Assignment 4 due in Week 13
 )
 
