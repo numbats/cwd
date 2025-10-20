@@ -7,6 +7,9 @@ format:
     unilur-html:
         output-file: index.html
         embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true    
 ---
 
 ## Preparation
