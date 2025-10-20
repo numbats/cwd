@@ -7,6 +7,7 @@ format:
     unilur-html:
         output-file: index.html
         embed-resources: true
+engine: knitr
 ---
 
 
