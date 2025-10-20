@@ -1,0 +1,459 @@
+---
+pagetitle: "ETC5523: Communicating with Data"
+subtitle: "Professional Skills Communication"
+author: "Michael Lydeamore"
+email: "michael.lydeamore@monash.edu"
+date: "Week 12"
+department: "Department of Econometrics and Business Statistics"
+unit-url: "cwd.numbat.space"
+footer: "ETC5523 Week 12"
+format: 
+  revealjs:
+    logo: images/monash-one-line-black-rgb.png
+    slide-number: c
+    multiplex: false
+    theme: ../assets/monash.scss
+    show-slide-number: all
+    show-notes: true
+    controls: true
+    width: 1280
+    height: 720
+    css: [../assets/tachyons-addon.css, ../assets/custom.css]
+    include-after-body: "../assets/after-body.html"
+    incremental: true
+execute:
+  echo: true
+  eval: true
+---
+
+```{css}
+#| echo: false
+
+/* --- CV Good/Bad blocks for revealjs (Quarto) --- */
+:root {
+  --good-bg: rgba(22, 163, 74, 0.10);   /* green-600 @ ~10% */
+  --good-border: #16a34a;
+  --good-text: #065f46;
+
+  --bad-bg: rgba(220, 38, 38, 0.10);    /* red-600 @ ~10% */
+  --bad-border: #dc2626;
+  --bad-text: #7f1d1d;
+
+  --chip-bg: rgba(0,0,0,0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --good-bg: rgba(22, 163, 74, 0.18);
+    --good-text: #d1fae5;
+    --bad-bg: rgba(220, 38, 38, 0.18);
+    --bad-text: #fee2e2;
+    --chip-bg: rgba(255,255,255,0.10);
+  }
+}
+
+/* Scope to reveal slides so it won't affect other outputs */
+.reveal .slides section .good,
+.reveal .slides section .bad {
+  padding: 0.9rem 1rem 0.95rem 1rem;
+  border-radius: 10px;
+  border-left: 8px solid;
+  margin: 0.6rem 0;
+  background: var(--good-bg);
+  line-height: 1.35;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.04) inset;
+}
+
+/* Variants */
+.reveal .slides section .good {
+  border-color: var(--good-border);
+  background: var(--good-bg);
+  color: var(--good-text);
+}
+.reveal .slides section .bad {
+  border-color: var(--bad-border);
+  background: var(--bad-bg);
+  color: var(--bad-text);
+}
+
+/* Header line with icon label */
+.reveal .slides section .good > p:first-child,
+.reveal .slides section .bad  > p:first-child {
+  margin: 0 0.5em 0.75rem 0;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Pseudo-icon chips */
+.reveal .slides section .good > p:first-child::before,
+.reveal .slides section .bad  > p:first-child::before {
+  display: inline-block;
+  font-weight: 900;
+  line-height: 1;
+  padding: 0.25rem 1rem;
+  margin-right: 1rem;
+  border-radius: 999px;
+  background: var(--chip-bg);
+}
+.reveal .slides section .good > p:first-child::before { content: "✓ Good"; }
+.reveal .slides section .bad  > p:first-child::before { content: "⚠ Needs work"; }
+
+/* Make bullet lines look like CV bullets */
+.reveal .slides section .cv-line {
+  margin: 0.15rem 0 0 0;
+  padding-left: 1.1rem;
+  position: relative;
+}
+.reveal .slides section .cv-line::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+}
+
+/* Side-by-side layout helper for comparisons */
+.reveal .slides section .cv-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  align-items: start;
+}
+@media (max-width: 900px){
+  .reveal .slides section .cv-compare { grid-template-columns: 1fr; }
+}
+```
+
+
+```{r, include = FALSE}
+current_file <- knitr::current_input()
+basename <- gsub(".[Rq]md$", "", current_file)
+
+knitr::opts_chunk$set(
+  fig.align = "center",
+  out.width = "100%",
+  fig.retina = 3,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  cache.path = "cache/"
+)
+```
+
+## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
+
+### `r rmarkdown::metadata$subtitle`
+
+Lecturer: *`r rmarkdown::metadata$author`*
+
+`r rmarkdown::metadata$department`
+
+::: tl
+<br>
+
+<ul class="fa-ul">
+
+<li>
+
+[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`
+
+</li>
+
+<li>
+
+[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`
+
+</li>
+
+<li>
+
+[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
+
+</li>
+
+</ul>
+
+<br>
+:::
+
+# SETUs {background-color="#006DAE"}
+
+# Professional Skills Communication {background-color="#006DAE"}
+
+## Research as a career
+
+There are two main paths after your degree: Industry and Academia.
+
+The doors are not as exclusive as they used to be, but it can still be difficult to move between the two.
+
+::: {.columns style="font-size: x-large;"}
+::: {.column width='50%'}
+::: {.fragment}
+#### Why pick an academic career?
+
+::: {.incremental}
+- (Typically) on the cutting edge of research
+- Discover things no-one has ever known before
+- Often a broad and diverse set of work
+- Eventually freedom to pursue your own interests
+- Not commercially driven
+:::
+
+:::
+:::
+::: {.column width='50%'}
+::: {.fragment}
+#### Why pick an industry career?
+
+::: {.incremental}
+- Often better pay
+- "More" stable work
+- Faster pathway to impact
+- (Typically) 9-5 work hours and better balance
+- Supported by a team
+- Often better resourced
+:::
+:::
+
+
+:::
+:::
+
+::: {.fragment}
+Today we will focus on industry careers. If you would like to talk academia, please let me know.
+:::
+
+
+
+
+## Job applications
+
+Be pretty broad in your search. Some examples (from today):
+
+- [Business Analyst - Glenvill Housing](https://www.seek.com.au/job/87648860)
+- [Data Scientist - Austin Health](https://www.seek.com.au/job/87599935)
+- [Technical Analyst - CauseIs](https://www.seek.com.au/job/87955579)
+- [Research Data Analyst - Parliament of Victoria](https://www.seek.com.au/job/87850891)
+
+## Job application tips
+
+::: {.incremental}
+- You can probably do anything that mentions the word "data" and doesn't require an enormous amount of experience
+- This would include jobs like Business Analyst, Data Analyst, Data Scientist, Data Engineer, Reporting Analyst, Data Engineer, and probably more
+- If they ask for Python, you can probably still do it. You know _some_ Python already and you have deep knowledge in a language you can apply to _any_ other language.
+:::
+
+## Resumes / CVs
+
+::: {.incremental}
+- Cut ruthelessly
+- Sub 2-pages
+- **No photo** (this is a cultural difference)
+- Tailor to the job
+:::
+
+::: {.fragment}
+Often the Resume also acts as the cover letter these days. This means your Resume needs to do the job of a cover letter and hit a lot of keywords in the job ad, and highlight your experience.
+:::
+
+## Building a Resume
+
+- [Vitae package](https://github.com/mitchelloharawild/vitae)
+- [My web template](https://github.com/MikeLydeamore/MikeLydeamore.github.io/blob/master/cv/index.qmd)
+- [LaTeX-free PDF printing](https://www.cynthiahqy.com/posts/cv-html-pdf/)
+
+## Resume Structure
+
+- Contact information
+- Employment history
+- Education [maybe swap this with Employment early in your career]{.fragment style="font-size: x-large;"}
+- Achievements / Awards
+- References (often by Request)
+
+::: {.fragment}
+Typically add paragraphs under each job and education to describe your _relevant_ experience and skills.
+:::
+
+## Resume examples
+
+::: {.bad}
+Did analysis on Sales Data
+:::
+
+::: {.fragment}
+
+::: {.good}
+Developed a machine learning model analysing 1M+ records, improving forecast accuracy by 15%
+:::
+
+:::
+
+::: {.fragment}
+
+::: {.bad}
+Built a dashboard for sales data
+:::
+
+:::
+
+::: {.fragment}
+::: {.good}
+Built an interactive dashboard in Shiny to visualise sales data from a data warehouse. Shared with 20+ stakeholders, accessed hundreds of times per week.
+:::
+:::
+
+## Applicant Tracking Systems
+I wish it wasn't the case, but pretty much every company uses automated software to screen resumes.
+
+It is therefore _critical_ that your resume can pass these automated checks.
+
+::: {.fragment}
+It pains me to say that PDFs produced by LaTeX are often not ATS friendly.
+
+It is probably a better idea to export PDF **and** Word versions of your resume.
+:::
+
+# Build and Review {background-color="#006DAE"}
+
+## Cover letters
+
+Usually the first thing the _recruiter_ will see (not the hiring manager).
+
+Use formal language, and be gender neutral whenever possible.
+
+::: {.fragment}
+
+:::
+
+## Cover Letter - Example {.scrollable}
+
+::: {style="font-size: large; margin-bottom: 2em;"}
+
+Dear Sir/Madam,
+
+I wish to apply for the position of Lecturer in Business Analytics. I would relish the challenge and the exception opportunity to learn provided by this position. 
+
+I am currently a postdoctoral research fellow at Monash University, where my focus is on constructing network models of patient transfers to predict and later control the spread of antimicrobial resistance. I was awarded my PhD in 2019 from The University of Melbourne, supervised by Prof James McCaw, Prof Jodie McVernon and Dr Patricia Campbell. My project is focused on constructing mathematical models of Scabies and Group A Streptococcus transmission in remote Indigenous communities in northern Australia. I have previously completed a Masters of Philosophy at The University of Adelaide, where I constructed a household-based model of influenza transmission and modelled the use of antivirals. My experience in these projects has given me a strong background in statistical modelling and operational research.
+
+During the COVID-19 pandemic, I created and led the modelling and forecasting team, which later became the COVID-19 Analytics Team. My time working in this team allowed me to improve my skills in communicating to non-experts, as well as in leading and supervising a team that consisted of vastly different experience and skill levels.
+
+Each of my research projects has been heavily collaborative, often involving colleagues across mathematics and statistics, epidemiology, public health and bioinfomatics. This has allowed me to develop my communication skills, both written and verbal, to a variety of target audiences.
+
+I have lead authored four publications which appeared in peer-reviewed journals, and made substantial contributions to four others, often with coauthors across a wide variety of research interests. This indicates my ability to work well in a team and to communicate my work effectively.
+
+I would appreciate the opportunity to be considered for this position as I believe it would be a fantastic utilisation of my experience and education, as well as offering a great breadth of experience.
+
+
+Sincerely,
+
+Michael Lydeamore
+
+:::
+
+# Cover Letter Practice {background-color="#006DAE"}
+
+[https://www.seek.com.au/job/87599935](https://www.seek.com.au/job/87599935)
+
+## Online presence
+
+For analysts, an online portfolio is becoming increasingly useful. This used to be restricted to just softwar engineers, but given the way we now think about data analysis, you can see why the portfolio might be useful.
+
+::: {.incremental}
+- GitHub profile
+- Personal website (doesn't have to have a nice URL)
+- Key pieces of software you have written
+:::
+
+::: {.fragment}
+You can list all of these in your resume as well! Don't rely on recruiters to find them for you.
+:::
+
+## Online presence
+
+Social media is sadly a part of professional life now. This is particularly true of LinkedIn where recruiters will often look you up.
+
+Posting your achievements can be confronting, but it is a good way to get your work out there and show that you have skills.
+
+::: {.fragment}
+You may feel like you are one of millions, but actually the skills you have are _rare_ and in demand.
+:::
+
+## Networking
+
+Networking is still one of the best ways to get a job.
+
+::: {.fragment}
+It is confronting to talk to people you don't know. Most people feel this way.
+:::
+
+::: {.fragment}
+Some tips:
+
+::: {.incremental}
+- Practice your elevator pitch (30 second summary of who you are and what you do)
+- Every event you attend, try to meet 3 new people
+- Follow around people you know and use their connections
+- _Never_ point our your weaknesses!
+:::
+
+:::
+
+## Networking
+
+Some places to start building your network:
+
+::: {.incremental}
+- Graduate events (although these are less common now)
+- Industry talks (often held by universities)
+- Meetups (e.g. Data Science Melbourne, R-Ladies Melbourne, RunApp, Hackathons)
+- ETC5543 Internships
+:::
+
+::: {.fragment}
+Ask other people to go with you! This includes more senior people like your lecturers or colleagues that are already in the industry.
+:::
+
+
+# Interviewing {background-color="#006DAE"}
+
+## Interviewing
+
+After probably many applications, hopefully you get an interview!
+
+::: {.fragment}
+Every interview is a bit different. It may have:
+:::
+
+::: {.incremental}
+- Multiple rounds
+- Technical assessments
+- Group interviews
+
+:::
+
+::: {.fragment}
+How would you prepare for each of these?
+:::
+
+## Interviewing
+
+Some tips:
+
+::: {.incremental}
+- Research the company
+- Ask who will be on your panel and look them up
+- Prepare answers to common questions
+- If your interview is online, you can keep notes in front of you in a way that is hard to see
+- Prepare questions to ask the interviewers
+:::
+
+## Interviewing
+
+Remember, it is important to also _interview the company_.
+
+
+::: {.fragment}
+- Will you be part of a team?
+- What is the company culture like?
+- What kind of work will you be doing?
+:::
+
+# Good luck {background-color="#006DAE"}
