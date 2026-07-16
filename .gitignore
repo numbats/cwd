@@ -4,3 +4,5 @@ _site/
 site_libs/
 .DS_STORE
 week2/ETC5523 Week Two Workshop_ Journalism and Data.pptx
+
+**/*.quarto_ipynb

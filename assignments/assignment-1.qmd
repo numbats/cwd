@@ -25,7 +25,7 @@ add_marks <- function(amount) {
 htmltools::includeCSS("tutorial.css")
 ```
 
-## `r emo::ji("target")` Objectives
+## `r Objectives
 
 -   Understand the components of a piece of communication
 -   Identify differences in style of communication in different settings

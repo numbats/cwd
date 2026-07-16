@@ -29,7 +29,7 @@ htmltools::includeCSS("tutorial.css")
 You can view the oral presentation schedule online [here](https://docs.google.com/spreadsheets/d/1xfcRph4U4IBxIv0ZNAoro_zlHLxVpwOLwlMghHSmK9w/edit?usp=sharing).
 :::
 
-## `r emo::ji("target")` Objectives
+## Objectives
 
 -   Practice your verbal communication skills to your peers
 

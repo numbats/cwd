@@ -25,7 +25,7 @@ add_marks <- function(amount) {
 htmltools::includeCSS("tutorial.css")
 ```
 
-## `r emo::ji("target")` Objectives
+## Objectives
 
 Write an R package based on the provided R package on [GitHub Classroom](https://classroom.github.com/a/4Bu5SNnk):
 

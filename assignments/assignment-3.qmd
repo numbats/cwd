@@ -25,7 +25,7 @@ add_marks <- function(amount) {
 htmltools::includeCSS("tutorial.css")
 ```
 
-## `r emo::ji("target")` Objectives
+## Objectives
 
 - Create your own personal website
 - Turn your previous article into a blog post

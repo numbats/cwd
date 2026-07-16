@@ -74,25 +74,25 @@ server <- function(input, output) {
 
   solar_data <- reactive({
     req(input$solar_file)
-    read.csv(input$solar_file$datapath) |>
-    pivot_longer(
-    cols = starts_with("X"),
-    names_to = "datetime",
-    values_to = "energy_kwh"
-  ) |>
-  mutate(
-    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
-    energy_kwh = as.numeric(energy_kwh),
-    datetime = paste0(DATE, " ", datetime),
-    datetime = lubridate::ymd_hm(datetime)
-  ) |>
-  janitor::clean_names()
+  #   read.csv(input$solar_file$datapath) |>
+  #   pivot_longer(
+  #   cols = starts_with("X"),
+  #   names_to = "datetime",
+  #   values_to = "energy_kwh"
+  # ) |>
+  # mutate(
+  #   datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
+  #   energy_kwh = as.numeric(energy_kwh),
+  #   datetime = paste0(DATE, " ", datetime),
+  #   datetime = lubridate::ymd_hm(datetime)
+  # ) |>
+  # janitor::clean_names()
   })
 
   solar_data_filtered <- reactive({
     req(solar_data())
     solar_data() |>
-      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2]) |>
+      dplyr::filter(datetime >= input$date_range[1] & datetime <= input$date_range[2]) |>
       add_solar_model(max_kw = input$solar_size) |>
       mutate(net_use = energy_kwh - production)
   })

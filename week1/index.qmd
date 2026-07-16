@@ -97,9 +97,9 @@ Dr. Michael Lydeamore
 
 :::
 ::: {.column width='50%'}
-<center><img  class="circle-img" src="images/maliny-po.jpg" height = "200px"/>
+<center><img  class="circle-img" src="images/fonti-kar.JPG" height = "200px"/>
 
-Maliny Po
+Dr. Fonti Kar
 
 *Tutor*
 </center>
@@ -123,23 +123,6 @@ Maliny Po
   border-radius: 50%;
 }
 ```
-
-## 👩🏻‍🏫 ETC5523 Teaching Team
-
-Most material in this course was developed by 
-
-::: center 
-
-<img class="circle-img" src="https://emitanaka.org/images/avatar.jpg" height="200px" />
-
-[Dr. Emi Tanaka](https://emitanaka.org)
-
-:::
-
-<br />
-
-Emi is a guru of data communication, and I highly recommend checking out her website content and academic work.
-
 
 ## 🎯 ETC5523 Learning Objectives
 

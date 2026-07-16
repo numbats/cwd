@@ -18,7 +18,7 @@ htmltools::includeCSS("tutorial.css")
 ```
 
 
-## `r emo::ji("target")` Objectives
+## Objectives
 
 - understand what elements make certain questions harder or easier to answer 
 - classify types of communication 

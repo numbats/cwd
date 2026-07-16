@@ -18,7 +18,7 @@ htmltools::includeCSS("tutorial.css")
 ```
 
 
-## `r emo::ji("target")` Objectives
+## Objectives
 
 - Understand structure of journalism articles
 - Add data to a story to improve the impact

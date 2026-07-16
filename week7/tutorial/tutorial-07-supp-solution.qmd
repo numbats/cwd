@@ -34,36 +34,3 @@ strong {
   background-color: white;
 }
 ```
-
-```{r setup}
-#| include: false
-knitr::opts_chunk$set(echo = FALSE)
-library(tidyverse)
-library(tidycovid19)
-df <- download_merged_data(cached = TRUE, silent = TRUE)
-
-```
-
-```{r crunch-numbers}
-ausdf <- df %>% 
-  filter(country=="Australia") %>%
-  filter(!is.na(confirmed))
-
-last_date <- ausdf %>% 
-  pull(date) %>% 
-  max()
-
-last_cases <- ausdf %>% 
-  filter(date %in% c(last_date - 1, last_date)) %>% 
-  pull(confirmed) %>% 
-  diff()
-```
-There was **`r last_cases`** confirmed cases reported in Australia on **`r last_date`**.
-
-
-```{r covid-stripes, out.extra = "class='border'"}
-plot_covid19_stripes(df, 
-                     countries = c("AUS", "CHN", "IND",
-                                   "JPN", "SGP", "USA"), 
-                     type = "confirmed")
-```
