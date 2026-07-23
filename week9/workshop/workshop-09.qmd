@@ -1,0 +1,97 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 9: Writing the Shiny conversation"
+author: "Michael Lydeamore"
+date: "Week 9"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* describe an interactive app in terms of a user's goal;
+* write purposeful labels, help text and output explanations; and
+* test interface language through a user think-aloud.
+
+::: {.callout-note}
+## Use your project or the supplied scenario
+
+You may work on an app you are developing. Alternatively, use this scenario: a public app lets residents choose a library branch and date range, then displays visits over time and a table of the busiest days.
+:::
+
+## 1. Quickwrite: buttons do not explain themselves (5 minutes)
+
+List interface labels you have encountered such as **Submit**, **Run**, **Value**, or **Select option**. Choose one and write why it might be ambiguous to a first-time user.
+
+## 2. Define the user's goal (5 minutes)
+
+Complete these sentences before writing interface text:
+
+* This app is for...
+* They arrive because they want to know...
+* The app can help them decide or understand...
+* The app cannot tell them...
+
+If you cannot complete these precisely, narrow the app's purpose.
+
+## 3. Write the app's opening promise (7 minutes)
+
+Draft:
+
+1. an informative app title;
+2. a two-sentence introduction explaining what the user can learn; and
+3. one brief statement about the data's scope or limitation.
+
+Avoid introductions that merely say “Welcome” or list the technologies used to build the app.
+
+## 4. Write the controls (8 minutes)
+
+For at least two inputs, write:
+
+* a label that names the choice in the user's language;
+* a sensible default and why it is useful;
+* help text only where a reasonable user might need it; and
+* action-button text, if applicable, that states the action.
+
+Compare **Submit** with **Show visit patterns**. Which better predicts what will happen?
+
+## 5. Write around the output (8 minutes)
+
+Draft:
+
+* a dynamic output title that reflects the current selection;
+* a one-sentence instruction for reading the output;
+* a source note; and
+* a limitation or warning that appears where it becomes relevant.
+
+Do not make the user remember instructions from a different tab or the top of a long page.
+
+## 6. Think-aloud reader test (9 minutes)
+
+Give your text to a partner in this order: opening, controls, output. Do not explain it. The partner says aloud:
+
+1. what they think the app is for;
+2. what they would select first;
+3. what they expect each action to do; and
+4. how they would interpret the result.
+
+Record surprises, then revise the smallest amount of text needed to remove the most important misunderstanding.
+
+## 7. Writer's note (3 minutes)
+
+Complete: "The interface is a conversation because..."
+
+::: {.unilur-solution}
+## Instructor notes
+
+Encourage students to distinguish instructions from interpretation. “Choose a branch” tells the user what to do; “Higher points indicate busier days” tells them how to read the result.
+
+The think-aloud is not a quiz of the user. If the partner misunderstands, treat it as evidence about the current design. Do not let writers interrupt to defend or explain their text.
+:::

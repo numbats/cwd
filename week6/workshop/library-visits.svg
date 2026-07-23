@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 460" role="img" aria-labelledby="title desc">
+  <title id="title">Monthly Sunday library visits</title>
+  <desc id="desc">Sunday visits rise from 790 in February to 2100 in July, with a small decline between May and June.</desc>
+  <rect width="760" height="460" fill="white"/>
+  <text x="380" y="38" text-anchor="middle" font-family="sans-serif" font-size="23" font-weight="bold" fill="#222">Monthly Sunday library visits</text>
+  <g stroke="#d8d8d8" stroke-width="1">
+    <line x1="90" y1="370" x2="710" y2="370"/>
+    <line x1="90" y1="298" x2="710" y2="298"/>
+    <line x1="90" y1="226" x2="710" y2="226"/>
+    <line x1="90" y1="154" x2="710" y2="154"/>
+    <line x1="90" y1="82" x2="710" y2="82"/>
+  </g>
+  <g stroke="#333" stroke-width="1.5">
+    <line x1="90" y1="70" x2="90" y2="370"/>
+    <line x1="90" y1="370" x2="710" y2="370"/>
+  </g>
+  <g font-family="sans-serif" font-size="14" fill="#333" text-anchor="end">
+    <text x="78" y="375">500</text>
+    <text x="78" y="303">1,000</text>
+    <text x="78" y="231">1,500</text>
+    <text x="78" y="159">2,000</text>
+    <text x="78" y="87">2,500</text>
+  </g>
+  <g font-family="sans-serif" font-size="14" fill="#333" text-anchor="middle">
+    <text x="115" y="398">Feb</text>
+    <text x="228" y="398">Mar</text>
+    <text x="341" y="398">Apr</text>
+    <text x="454" y="398">May</text>
+    <text x="567" y="398">Jun</text>
+    <text x="680" y="398">Jul</text>
+  </g>
+  <text x="23" y="225" transform="rotate(-90 23 225)" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#333">Sunday visits</text>
+  <polyline points="115,328 228,267 341,214 454,165 567,177 680,127" fill="none" stroke="#006DAE" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#006DAE" stroke="white" stroke-width="2">
+    <circle cx="115" cy="328" r="6"/>
+    <circle cx="228" cy="267" r="6"/>
+    <circle cx="341" cy="214" r="6"/>
+    <circle cx="454" cy="165" r="6"/>
+    <circle cx="567" cy="177" r="6"/>
+    <circle cx="680" cy="127" r="6"/>
+  </g>
+</svg>

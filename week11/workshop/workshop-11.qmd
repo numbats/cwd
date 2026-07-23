@@ -1,0 +1,103 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 11: From reference documentation to a guide"
+author: "Michael Lydeamore"
+date: "Week 11"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* distinguish reference documentation from a task-based vignette;
+* structure a guide around a reader's problem; and
+* explain code, output and interpretation as one connected sequence.
+
+::: {.callout-note}
+## Choose a feature
+
+Use one meaningful task supported by your package. If you do not have one ready, use this example: a package contains `solar_summary(data, station)`, which returns annual maximum-temperature summaries for a selected weather station.
+:::
+
+## 1. Quickwrite: knowing is not doing (5 minutes)
+
+Write about the difference between knowing what a function's arguments mean and knowing how to use the function to answer a real question.
+
+## 2. Write the reader's question (5 minutes)
+
+Write one question your vignette will help a reader answer. It should describe a task or decision, not a package feature.
+
+Prefer:
+
+> How can I compare annual temperature extremes for one station?
+
+over:
+
+> How do I use `solar_summary()`?
+
+Then state what the reader should already know and have before beginning.
+
+## 3. Build the vignette spine (10 minutes)
+
+Create an outline with these roles, using informative headings rather than copying the role names:
+
+1. the problem and what the reader will accomplish;
+2. setup and data requirements;
+3. the smallest meaningful first result;
+4. interpretation of that result;
+5. one extension or variation; and
+6. limitations and a useful next step.
+
+Check that each section creates a reason to read the next one.
+
+## 4. Draft one complete section (12 minutes)
+
+Choose the section containing the first meaningful result. Write 150--200 words around a short code example.
+
+Your section must:
+
+* tell the reader why they are about to run the code;
+* show only code needed at that moment;
+* state what kind of output to expect;
+* interpret one feature of the output; and
+* connect the result back to the reader's question.
+
+Do not make the code carry the entire explanation.
+
+## 5. Repair an error message (4 minutes)
+
+Replace this message with one that supports recovery:
+
+> `Error in solar_summary: bad station`
+
+Assume the user typed a station name that is not present. The package can display the invalid name and direct the user to `available_stations()`.
+
+## 6. Reader path test (6 minutes)
+
+Exchange the outline and drafted section. The reader answers:
+
+* What will I be able to do by the end?
+* Where do I first receive a useful result?
+* Does the prose tell me what the result means?
+* What would I do next?
+
+Revise one heading or transition.
+
+## 7. Writer's note (3 minutes)
+
+Complete: "Reference documentation describes ______; a vignette helps a reader ______."
+
+::: {.unilur-solution}
+## Instructor notes and example error
+
+> Station `Melborne` was not found. Run `available_stations()` to see valid station names, then try again.
+
+Reference documentation is organised around functions and objects; a vignette is normally organised around a reader's goal. Both are necessary, but they should not be forced to do the same job.
+:::

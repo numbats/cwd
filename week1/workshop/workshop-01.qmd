@@ -1,0 +1,92 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 1: Writing before data"
+author: "Michael Lydeamore"
+date: "Week 1"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will have:
+
+* produced a short piece of writing without judging it as you draft;
+* revised an opening and an ending deliberately; and
+* reflected on one choice you made as a writer.
+
+::: {.callout-important}
+## Your writing is private
+
+You will not be asked to submit or share today's story. You may discuss how the writing felt or what choices you made, but the words themselves belong to you.
+:::
+
+::: {.callout-note collapse="true"}
+## What you need
+
+Use paper or a blank document. Close messages, reference material and editing tools. Spelling and grammar do not matter during the first draft.
+:::
+
+## 1. Arrive on the page (5 minutes)
+
+Write continuously in response to this sentence:
+
+> Just before I entered the room, I noticed...
+
+Do not plan. If you run out of things to say, describe what the room looks, sounds or feels like until another thought arrives.
+
+## 2. Choose a story prompt (3 minutes)
+
+Choose **one** prompt. Fiction is encouraged; you do not need to write about your life.
+
+1. A person finds something that should not be there.
+2. Two people want the same object for different reasons.
+3. A routine journey is interrupted by a small but important change.
+
+Decide only three things before you begin: **who**, **where**, and **what changes**.
+
+## 3. Draft without stopping (17 minutes)
+
+Write a scene of approximately 300--500 words.
+
+* Begin as close as possible to the moment something changes.
+* Include at least one concrete detail that a reader could see, hear, touch, smell or taste.
+* Allow something to be different by the final sentence.
+
+If you become stuck, write: "What happened next was..." and continue.
+
+## 4. Read as your first audience (8 minutes)
+
+Read the story silently from beginning to end. Do not correct every sentence. Instead:
+
+1. underline one sentence you like;
+2. place a star where your attention is strongest;
+3. place a question mark where you, as a reader, want more; and
+4. write one sentence in the margin describing what the story is really about.
+
+## 5. Make two deliberate revisions (9 minutes)
+
+Rewrite the opening so that it creates a clearer question in the reader's mind. Then rewrite the ending so that it gives the reader either a sense of change or a purposeful unanswered question.
+
+You do not need to rewrite the whole story.
+
+## 6. Writer's note (3 minutes)
+
+Complete these privately:
+
+* One choice I made deliberately was...
+* One part I would develop with another 20 minutes is...
+* During this unit, I would like to become better at...
+
+::: {.unilur-solution}
+## Instructor notes
+
+Write alongside the students for at least part of the drafting period. This signals that writing is an activity, not a performance students must give for the teacher.
+
+Avoid asking whether anyone wants to read their story aloud. Reaffirm at the end that the document will not be collected. The main teaching point is that drafting, rereading and revising are different activities.
+:::

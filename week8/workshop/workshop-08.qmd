@@ -1,0 +1,109 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 8: Documentation as an invitation"
+author: "Michael Lydeamore"
+date: "Week 8"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* describe a function from the user's perspective;
+* write useful reference documentation and examples; and
+* create a short README quick start that helps someone act.
+
+## 1. Quickwrite: a cold start (5 minutes)
+
+Recall a time when instructions assumed something you did not know. What did the writer assume? What single addition would have helped you begin?
+
+## 2. Define the user and their task (5 minutes)
+
+You are documenting this function for an R user who understands vectors but has not read its source code:
+
+```{r}
+#| eval: false
+#| echo: true
+
+percent_change <- function(old, new, digits = 1) {
+  if (any(old == 0)) {
+    stop("old cannot contain zero")
+  }
+  round((new - old) / old * 100, digits = digits)
+}
+```
+
+Before documenting individual arguments, write:
+
+* the task the user is trying to complete;
+* what the function returns; and
+* one situation in which the function should not be used without care.
+
+## 3. Read the function as evidence (5 minutes)
+
+Run these examples mentally and predict the output or error:
+
+```{r}
+#| eval: false
+#| echo: true
+
+percent_change(80, 100)
+percent_change(c(80, 50), c(100, 45), digits = 0)
+percent_change(0, 20)
+```
+
+List anything a user could misunderstand: direction, units, vector behaviour, rounding or the zero restriction.
+
+## 4. Draft the reference documentation (12 minutes)
+
+Write a `roxygen2` block containing:
+
+* a specific title;
+* a one- or two-sentence description;
+* `@param` entries for `old`, `new` and `digits`;
+* an `@return` entry that states the type and meaning;
+* two `@examples`, including a vector example; and
+* `@export`.
+
+Aim to answer user questions, not restate the argument names.
+
+## 5. Write the README quick start (8 minutes)
+
+Write a short section with the heading **Calculate a percentage change**. In no more than 100 words:
+
+1. state why someone would use the function;
+2. show one runnable call;
+3. show or explain the result; and
+4. mention the most important restriction.
+
+## 6. Cold-read test (7 minutes)
+
+Exchange the documentation, but not the original function, with a partner. The reader answers:
+
+* Which value is treated as the baseline?
+* What does a negative result mean?
+* Can the function accept vectors?
+* What happens when the baseline is zero?
+
+Revise the first place where the documentation failed to answer clearly.
+
+## 7. Writer's note (3 minutes)
+
+Complete: "Good documentation begins with the user's ______, not the code's ______."
+
+::: {.unilur-solution}
+## Instructor notes and example core description
+
+A useful opening is:
+
+> Calculate the percentage change from an old value to a new value. Positive results indicate an increase relative to `old`; negative results indicate a decrease.
+
+The return documentation should identify a numeric vector measured in percentage points of change, rounded to `digits`. Encourage examples that teach interpretation, not merely prove the function runs.
+:::

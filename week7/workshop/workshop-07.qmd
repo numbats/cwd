@@ -1,0 +1,85 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 7: From report prose to web prose"
+author: "Michael Lydeamore"
+date: "Week 7"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* restructure a passage for readers who scan webpages;
+* write informative headings, links and alt text; and
+* distinguish web writing from simply placing report prose online.
+
+## 1. Quick scan (5 minutes)
+
+Look at the supplied passage for no more than 20 seconds. Hide it, then write down everything you remember.
+
+> **Analysis of commuter travel patterns**
+>
+> In this section, the results of the analysis that was undertaken using the annual commuter survey are presented and discussed. It is important to note that respondents were asked a range of questions concerning the ways in which they travelled to the city and the factors that influenced their choices. Of the 4,200 people who responded, 46% reported that reliability was one of the most important considerations, compared with 31% who selected travel time and 18% who selected price. There are a number of possible explanations for these findings, including recent disruptions, changing work patterns and the fact that some commuters may be able to adjust their departure times. Further information about how the survey was undertaken can be found by clicking here. The figure below shows the results.
+
+## 2. Diagnose the reading experience (5 minutes)
+
+Mark the passage:
+
+* box the main result;
+* underline words that can be cut;
+* circle vague link or figure language; and
+* draw a line where a web reader might benefit from a heading or break.
+
+## 3. Transform the passage (15 minutes)
+
+Rewrite it as a short section of a public-facing webpage. Include:
+
+* an informative heading that carries the takeaway;
+* a direct opening sentence;
+* short, connected paragraphs;
+* a descriptive link to the survey methods; and
+* a purposeful introduction to the future figure.
+
+You may use a small list if it genuinely improves comparison. Do not turn every sentence into a bullet point.
+
+## 4. Write for access, not decoration (8 minutes)
+
+Imagine the accompanying figure is a horizontal bar chart showing:
+
+| Consideration | Percentage selecting it |
+|---|---:|
+| Reliability | 46% |
+| Travel time | 31% |
+| Price | 18% |
+
+Write alt text that communicates the figure's purpose and important pattern. Do not list every visual property or begin with “Image of”. Then write a concise figure caption that complements rather than duplicates the alt text.
+
+## 5. The 20-second reader test (9 minutes)
+
+Exchange only your rewritten section with a partner. After 20 seconds, the reader answers:
+
+1. What is the main finding?
+2. What evidence supports it?
+3. Where would you click for methods?
+4. What do you expect the figure to add?
+
+Revise one heading, link or opening sentence based on the answers.
+
+## 6. Writer's note (3 minutes)
+
+Complete: "Writing for the web changed the ______ of the passage more than its ______."
+
+::: {.unilur-solution}
+## Instructor notes
+
+A possible heading is **Reliable service matters more than faster or cheaper travel**. Useful link text would be **Read the commuter survey methods**, not **click here**.
+
+Possible alt text: **Reliability was selected by 46% of respondents, ahead of travel time at 31% and price at 18%.** Students can include “horizontal bar chart” when the chart form itself aids orientation, but the data relationship is the priority.
+:::

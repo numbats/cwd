@@ -1,0 +1,92 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 3: Finding the shape of a data story"
+author: "Michael Lydeamore"
+date: "Week 3"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* recognise the structural roles played by parts of a data story;
+* order information for a web reader; and
+* write a headline, lede and transitions that guide a reader.
+
+::: {.callout-note}
+## A fictional fact pack
+
+The facts below were invented for this writing exercise. Treat them as accurate within the exercise; do not use them as a real source.
+:::
+
+## 1. Quickwrite: what makes you continue? (5 minutes)
+
+Think about the last article, post or webpage that held your attention. Write continuously about what made you continue after the first few sentences.
+
+## 2. Read and label the fragments (7 minutes)
+
+The following fragments come from an unfinished story about a fictional council library program. Label each fragment with the role it might play: **lede**, **key result**, **background**, **method**, **caveat**, or **close**.
+
+> **A.** The council introduced Sunday opening at three branches in February after residents requested more weekend access.
+
+> **B.** Sunday visits reached 1,840 in May, more than double the 790 recorded during the program's first month.
+
+> **C.** For families crowded around the children's tables, an extra day has made the library feel less like a weekday service and more like part of the weekend.
+
+> **D.** The figures come from entrance counters. Staff estimate that occasional double-counting occurs when visitors leave and return on the same day.
+
+> **E.** If the trend continues through August, the council will consider extending Sunday opening to two smaller branches.
+
+> **F.** Across the first four months, the three branches recorded 5,420 Sunday visits.
+
+## 3. Build two possible structures (8 minutes)
+
+Order the fragments twice:
+
+1. as a short news story using an inverted-pyramid structure;
+2. as a feature or blog post that begins with people and gradually reveals the result.
+
+There is more than one defensible answer. Beside each order, state what the reader encounters first and why.
+
+## 4. Write the missing pieces (12 minutes)
+
+Choose one structure and write:
+
+* a specific headline of no more than 12 words;
+* a lede of no more than 35 words; and
+* two transitions that make the ordered fragments feel like one story.
+
+Do not merely announce the topic. Let the headline and lede carry information.
+
+## 5. The web scan test (7 minutes)
+
+Exchange only your headline, lede and fragment order with a partner. Your partner has 20 seconds to read, then answers from memory:
+
+1. What happened?
+2. Why might it matter?
+3. What would you expect to read next?
+
+Record the answers; do not defend the draft.
+
+## 6. Revise and reflect (6 minutes)
+
+Use the reader's response to revise one sentence. Then complete:
+
+> The structure makes the reader notice ______ before ______. This is useful because ______.
+
+::: {.unilur-solution}
+## Instructor notes and possible ordering
+
+A plausible news order is **B, F, A, D, E, C**. A plausible feature order is **C, A, B, F, D, E**. Other orders are valid when students can explain the intended reading experience.
+
+Possible news headline: **Sunday library visits double in four months**.
+
+Do not turn the discussion into a search for the official answer. The objective is to make information-order decisions visible and to support the structural analysis required in Assignment 1.
+:::

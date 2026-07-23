@@ -1,0 +1,95 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 10: Guiding an interactive journey"
+author: "Michael Lydeamore"
+date: "Week 10"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* plan the sequence in which an interactive app reveals information;
+* write useful default, empty, loading and error states; and
+* guide users without overloading every screen with instructions.
+
+::: {.callout-note}
+## Continue or begin
+
+Continue with last week's app or your own project. If needed, use the supplied library-visits app: users choose a branch and date range, inspect a plot and table, and download the selected records.
+:::
+
+## 1. Quickwrite: before the result exists (5 minutes)
+
+What does a user see before an app has enough information to display a result? List all the ways a blank space, spinner, warning or default chart could be interpreted.
+
+## 2. Map the journey (5 minutes)
+
+Draw four boxes and label them:
+
+1. **Arrive**
+2. **Choose**
+3. **Interpret**
+4. **Act or explore again**
+
+In each box, write the question in the user's mind. Connect the boxes in the order the app should answer them.
+
+## 3. Design the default state (7 minutes)
+
+Choose whether the app should open with a useful default result or wait for input. Write the text visible at that moment.
+
+If you use a default, make clear what is currently selected. If the app waits, tell the user what is required and what will happen next.
+
+## 4. Write conditional states (10 minutes)
+
+Draft one message for each state:
+
+* **loading:** work is underway;
+* **empty:** the selection is valid but contains no records;
+* **invalid:** the selected combination cannot be used;
+* **failed:** the app could not complete the task.
+
+Each message should help the user answer:
+
+1. What happened?
+2. Why, if known?
+3. What can I do now?
+
+Avoid blaming language such as “You entered an invalid value”.
+
+## 5. Tabs, disclosure and downloads (7 minutes)
+
+If the app has tabs, write labels that name user tasks or content rather than implementation details. Decide what belongs on the first screen and what can be revealed later.
+
+Then replace generic download text such as **Download** with a label that states what will be downloaded, and write a useful default file name.
+
+## 6. Journey walkthrough (8 minutes)
+
+In pairs, one person reads the four-box journey and all state messages in order. The reader identifies:
+
+* one moment where the next action is obvious;
+* one moment where they might become stuck; and
+* one instruction that appears too early or too late.
+
+Move, cut or rewrite one piece of text.
+
+## 7. Writer's note (3 minutes)
+
+Complete: "A useful error message returns control to the user by..."
+
+::: {.unilur-solution}
+## Instructor notes and example state
+
+Compare **Error: no rows returned** with:
+
+> **No visits match this selection.** Try a longer date range or choose another branch.
+
+The latter names the outcome and supplies two recovery actions without exposing an implementation detail. Discuss whether the app really knows *why* there are no records; messages should not invent explanations.
+:::

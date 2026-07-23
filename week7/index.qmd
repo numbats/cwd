@@ -616,7 +616,7 @@ format: html
 * There is a `css` engine:
 
 ```{css}
-#| echo: fenced
+/*| echo: fenced */
 h1 { color: red; }
 ```
 
@@ -653,7 +653,7 @@ format:
 * There is a `js` engine:
 
 ```{js}
-#| echo: fenced
+//| echo: fenced
 document.getElementById("p1").innerHTML = "content";
 ```
 

@@ -1,0 +1,89 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 2: One event, two audiences"
+author: "Michael Lydeamore"
+date: "Week 2"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* identify the audience and purpose of a message;
+* adapt the same event for two rhetorical situations; and
+* explain how audience changes language, detail and structure.
+
+::: {.callout-important}
+## Sharing today
+
+Your drafts remain private. At the end, you may share one sentence or discuss a writing choice without showing the underlying story.
+:::
+
+## 1. Quickwrite: getting through (5 minutes)
+
+Think of a time when a message was technically correct but still failed to get through. In private, write what the sender did, how the receiver interpreted it, and what might have helped.
+
+## 2. Select an event (5 minutes)
+
+Use an event from last week's story, invent a new event, or use this supplied scenario:
+
+> At 8:45 am, a student enters a nearly empty computer laboratory. A water bottle has leaked beside a workstation. The computer is still running, the floor is slippery, and an assessment deadline is at 9:00 am.
+
+You will communicate this event twice.
+
+| Version | Audience | Purpose |
+|---|---|---|
+| A | A close friend | Explain what happened and hold their interest |
+| B | University facilities staff | Enable an appropriate and timely response |
+
+Before drafting, write what each audience probably knows, cares about and needs to do next.
+
+## 3. Draft Version A (8 minutes)
+
+Write 120--150 words for the close friend. You might use chronology, character, suspense or humour. Decide what can be implied because the audience knows you.
+
+## 4. Draft Version B (8 minutes)
+
+Write 120--150 words for facilities staff. Include the location, immediate risk, relevant observations and requested action. Put the most decision-relevant information early.
+
+## 5. Rhetorical audit and revision (10 minutes)
+
+For each version, annotate:
+
+* **writer/ethos:** how do you establish that the message is credible?
+* **audience/pathos:** what does this reader notice or care about?
+* **message/logos:** what information allows the message to make sense?
+* **purpose:** what should the reader know, feel or do?
+
+Now revise the first sentence of each version so its purpose is apparent sooner.
+
+## 6. Compare choices (6 minutes)
+
+With a partner, discuss your decisions without needing to show the full drafts. You may share one sentence if you wish.
+
+Consider what changed in:
+
+* order;
+* tone;
+* assumed knowledge;
+* amount of detail; and
+* explicit requested action.
+
+## 7. Writer's note (3 minutes)
+
+Complete: "Changing the audience caused me to change... because..."
+
+::: {.unilur-solution}
+## Instructor notes
+
+There is no single correct version. Draw attention to situational competence: the informal version is not inherently worse, and the facilities version is not inherently better.
+
+A useful closing question is: "Which facts stayed constant, and which meanings changed?" This connects the activity to the idea that meanings rest in people rather than in words alone.
+:::

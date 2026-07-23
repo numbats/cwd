@@ -1,0 +1,105 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 12: The professional version of your story"
+author: "Michael Lydeamore"
+date: "Week 12"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* identify evidence of a professional capability in your work;
+* adapt that evidence for a CV, cover letter and interview; and
+* describe actions and results without vague self-praise.
+
+::: {.callout-important}
+## You control what you share
+
+Use a real course, employment or community example, or invent a plausible scenario. Sharing personal application material is optional. Feedback should address clarity and evidence, not judge someone's experience.
+:::
+
+## 1. Quickwrite: what changed? (5 minutes)
+
+Choose one piece of work from this unit. Write what existed before you began, what you personally did, and what became possible afterwards. Do not try to make it sound impressive yet.
+
+## 2. Build an evidence inventory (5 minutes)
+
+Complete the table in notes:
+
+| Evidence question | Your notes |
+|---|---|
+| What was the situation or need? | |
+| Who was the audience or user? | |
+| What action did you personally take? | |
+| What constraint or difficulty shaped your action? | |
+| What output, result or learning followed? | |
+| What could another person verify? | |
+
+Circle one capability the example demonstrates, such as audience awareness, data communication, technical documentation, user-centred design or revision.
+
+## 3. Version 1: the CV bullet (9 minutes)
+
+Write one bullet of no more than two lines. Begin with a precise verb and include:
+
+* what you produced or changed;
+* how or for whom; and
+* a result, scale or purpose.
+
+Avoid unsupported labels such as “excellent communicator” or “hard-working team player”. Let the evidence imply the quality.
+
+## 4. Version 2: the cover-letter paragraph (10 minutes)
+
+Expand the same evidence into 100--130 words for a role that values communication with data.
+
+Use this movement:
+
+1. state the capability relevant to the employer;
+2. give a compact situation;
+3. emphasise your action and reasoning;
+4. show the result or what you learned; and
+5. connect it explicitly to the role.
+
+Do not merely repeat the CV bullet in more words.
+
+## 5. Version 3: the interview story (8 minutes)
+
+Turn the example into speaking notes for a 60-second response. Use keywords rather than a script. Mark:
+
+* **S** -- situation and goal;
+* **A** -- your action and decisions; and
+* **R** -- result, reflection or next step.
+
+Read it aloud privately once. Cut background until your actions occupy at least half the response.
+
+## 6. Evidence-focused response (5 minutes)
+
+If you choose to exchange a version, the reader responds:
+
+* "The capability I infer is..."
+* "The strongest evidence is..."
+* "I wanted a more specific detail about..."
+
+If you prefer not to share, use the same prompts to assess your own work.
+
+## 7. Final writer's note (3 minutes)
+
+Return to your Week 1 goal if you have it. Complete:
+
+* One way my writing process has changed is...
+* One communication practice I will continue is...
+
+::: {.unilur-solution}
+## Instructor notes
+
+Keep the focus on translation across genres. The evidence remains broadly constant, but selection, compression, tone and explicitness change with the rhetorical situation.
+
+For students who feel they lack a numerical result, broaden “result” to include a usable artifact, a decision enabled, feedback acted upon, an error prevented, or a clearly identified learning and subsequent change.
+:::

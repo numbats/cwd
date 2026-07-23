@@ -27,7 +27,7 @@ execute:
 ---
 
 ```{css}
-#| echo: false
+/*| echo: false */
 
 /* --- CV Good/Bad blocks for revealjs (Quarto) --- */
 :root {

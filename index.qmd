@@ -58,11 +58,16 @@ schedule |>
         Date = format(Date, "%d %b"),
         Show = (!is.na(Week) & Week <= 12) & !grepl("University Holiday", Topic) & file.exists(glue::glue("./week{Week}/index.qmd")),
         Show_Tutorial = !is.na(Week) & Week <= 12,
+        Show_Workshop = !is.na(Week) & Week <= 12,
         Topic = if_else(!Show, Topic, glue::glue('[{{Topic}}](./week{{Week}}/index.html){target="_blank"}', .open = "{{", .close = "}}")),
+        Workshop = if_else(!Show_Workshop, "", glue::glue('[{{< fa pen >}}](./week{{{Week}}}/workshop/index.html){target="_blank"}', .open = "{{{", .close = "}}}")),
         Tutorial = if_else(!Show_Tutorial, "", glue::glue('[{{< fa list-check >}}](./week{{{Week}}}/tutorial/index.html){target="_blank"}', .open = "{{{", .close = "}}}")),
         Reference = if_else(!Show, Reference, glue::glue("[{Reference}]({Reference_URL})")),
         Assessments = if_else(is.na(Assignment), Assignment, glue::glue("[{Assignment}]({File})"))
     ) |>
-    select(-Show, -Show_Tutorial) |>
-    knitr::kable(format = "markdown")
+    select(-Show, -Show_Tutorial, -Show_Workshop) |>
+    knitr::kable(
+        format = "markdown",
+        align = c("r", "l", "l", "c", "c", "l", "l")
+    )
 ```

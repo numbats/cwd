@@ -1,0 +1,88 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 4: Revision for clarity"
+author: "Michael Lydeamore"
+date: "Week 4"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* identify the main point hidden in a weak passage;
+* use BLUF, topic sentences and old-to-new flow; and
+* revise for clarity and concision without discarding necessary caveats.
+
+## 1. Quickwrite: explain a familiar process (5 minutes)
+
+Choose an ordinary process you know well: making tea, joining a video call, topping up a travel card, or something similar. Explain it in five sentences to someone who has never done it.
+
+Underline the words that depend on knowledge you assumed the reader already had.
+
+## 2. Diagnose before editing (7 minutes)
+
+Read this deliberately poor executive-summary paragraph:
+
+> There are a number of different reasons why the overall situation regarding customer sign-ups in 2025 is noteworthy, and it is important to highlight that performance, in a general sense, moved in an upward direction over the course of the year. Because several initiatives were undertaken and due to the fact that some seasonality exists in the market, increases were observed across a variety of months, while variations in other months could be attributed to a range of factors. It is perhaps most appropriate to say that there is some evidence that the changes made by the organisation maybe helped, although caveats and constraints should be taken into account before reaching definitive conclusions.
+
+Before changing individual words, answer:
+
+1. What is the most important supported result?
+2. What is uncertain?
+3. What might the decision-maker need to do or investigate next?
+
+## 3. First revision: structure (10 minutes)
+
+Rewrite the passage in no more than 90 words.
+
+* Put the bottom line first.
+* Give each sentence one main job.
+* Move from information the reader already has to new information.
+* Preserve genuine uncertainty.
+
+## 4. Second revision: sentences (8 minutes)
+
+Read your revision aloud quietly. Look for:
+
+* abstract openings such as "there are" or "it is";
+* repeated ideas;
+* nominalisations that could become verbs;
+* long interruptions between subject and verb; and
+* lists whose elements are not parallel.
+
+Cut at least 10 more words without losing a necessary claim.
+
+## 5. Reader test (9 minutes)
+
+Exchange revisions with a partner. The reader responds only with:
+
+* "I think the main point is..."
+* "The place I became uncertain was..."
+* "One choice that helped me was..."
+
+Writers listen and take notes before explaining anything. Revise one sentence in response.
+
+## 6. Writer's note (6 minutes)
+
+Compare the original and final word counts. Then complete:
+
+> The most useful change was not removing words; it was ______.
+
+If time permits, apply the same process to one paragraph from your own work.
+
+::: {.unilur-solution}
+## Instructor notes and sample revision
+
+The original contains 95 words. A possible revision is:
+
+> Customer sign-ups increased during 2025, although the available analysis cannot establish why. Organisational initiatives may have contributed to the increase, but seasonal and other external factors provide plausible alternative explanations. The organisation should examine the timing of individual initiatives and compare the result with prior seasonal patterns before attributing the increase to its changes.
+
+This is only a model, not the target wording. Ask students which claims survived, which disappeared, and whether any uncertainty was weakened or exaggerated.
+:::

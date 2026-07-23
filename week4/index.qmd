@@ -85,7 +85,7 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 
 ```{css}
-#| echo: false
+/*| echo: false */
 
 .statement {
   text-align: center;
@@ -239,7 +239,7 @@ When reading, you want to:
 ## Example
 
 ```{css}
-#| echo: false
+/*| echo: false */
 
   .scramble {
     display: grid;
@@ -296,7 +296,7 @@ When reading, you want to:
 ```
 
 ```{js}
-#| echo: false
+//| echo: false
 
 function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
 
@@ -482,7 +482,7 @@ I should be able to read the first sentence of each paragraph and understand the
 ## Old-to-new technique
 
 ```{css}
-#| echo: false
+/*| echo: false */
 
 .reveal .boxed{
     background:#f9fafb;

@@ -1,0 +1,97 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Workshop 5: Turning statistical output into prose"
+author: "Michael Lydeamore"
+date: "Week 5"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this workshop, you will be able to:
+
+* select results that matter for a stated purpose;
+* translate statistical output into accurate prose; and
+* distinguish estimates, uncertainty, association and causation.
+
+::: {.callout-note}
+## Scenario and fictional results
+
+A company examined whether completion of an optional training program was associated with analysts' scores on an internal data-communication task. Scores range from 0 to 100. The model adjusts for each analyst's years of experience. These data were created for this exercise.
+:::
+
+| Term | Estimate | 95% confidence interval | p-value |
+|---|---:|---:|---:|
+| Training completed (yes vs no) | 4.8 | 2.1 to 7.5 | <0.001 |
+| Years of experience | 0.6 | 0.2 to 1.0 | 0.004 |
+
+Additional information: 240 analysts were included; 96 completed the training. Participation was optional rather than randomly assigned.
+
+## 1. Quickwrite: what deserves a sentence? (5 minutes)
+
+Imagine you have space for only one sentence about a statistical analysis. Write what you would need to know before deciding which number deserves that sentence.
+
+## 2. Read for meaning (5 minutes)
+
+Without drafting report prose yet, annotate the output:
+
+1. What does 4.8 compare?
+2. What is the unit of the outcome?
+3. What does the confidence interval add?
+4. What can the analysis not establish?
+
+## 3. Write the takeaway (7 minutes)
+
+Write one sentence for a technically competent, time-poor manager. Include the comparison and its practical size. Do not begin with the p-value.
+
+## 4. Build a results paragraph (10 minutes)
+
+Expand the takeaway into a paragraph of 80--120 words. Use this sequence if helpful:
+
+1. main result;
+2. numerical evidence and uncertainty;
+3. relevant adjustment or context; and
+4. limitation on interpretation.
+
+Do not describe every table cell. Do not claim that training **caused** the difference.
+
+## 5. Write a self-contained caption (7 minutes)
+
+Write a caption for the table. It should help a reader understand the table without searching the surrounding prose. Include:
+
+* the takeaway;
+* what the estimates represent;
+* the sample size; and
+* any abbreviation or essential model detail.
+
+## 6. Evidence check (8 minutes)
+
+Exchange the paragraph and caption with a partner. For every factual claim, the reader marks:
+
+* **S** -- supported directly by the supplied information;
+* **I** -- a reasonable interpretation, but not directly observed; or
+* **U** -- unsupported or too strong.
+
+Discuss disagreements, then revise the strongest unsupported claim.
+
+## 7. Writer's note (3 minutes)
+
+Complete: "The difference between reporting a number and communicating a result is..."
+
+::: {.unilur-solution}
+## Instructor notes and sample prose
+
+A possible takeaway is:
+
+> Analysts who completed the optional training scored an adjusted average of 4.8 points higher than analysts who did not complete it.
+
+A useful next sentence would report the confidence interval. The participation design matters: analysts who chose training may differ from other analysts in unmeasured ways. A low p-value does not overcome this limitation.
+
+Listen for “more likely”, “improved”, “impact” and “effect”; students often use these causally even when they intend only association.
+:::
