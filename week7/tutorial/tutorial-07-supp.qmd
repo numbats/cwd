@@ -6,4 +6,7 @@ author: "Michael Lydeamore"
 date: "Week 2"
 output:
     html
+execute:
+  engine:
+    knitr
 ---
