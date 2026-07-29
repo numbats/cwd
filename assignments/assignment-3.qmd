@@ -29,6 +29,7 @@ htmltools::includeCSS("tutorial.css")
 
 - Create your own personal website
 - Turn your previous article into a blog post
+- Communicate your data story clearly in a short verbal presentation
 
 ::: callout-important
 This is an **individual assignment**.
@@ -117,7 +118,25 @@ Conclusion (5 marks):
 * Includes academic citation (here or other section) (1 mark)
 * Summarises the findings (2 marks)
 
-### Part D: Technical work
+### Part D: Recorded data-story briefing (5 marks)
+
+Record an individual **3--5 minute** verbal presentation that communicates the data story from your blog post to its intended audience. You may use the figures and tables from your blog post as visual support, but the recording should be led by your spoken explanation rather than by text on screen.
+
+Upload this recording as your assignment submission on Moodle as a video file.
+
+Your briefing should:
+
+* introduce the problem or question;
+* explain the most important finding(s), referring to relevant visual evidence; and
+* end with a clear conclusion or implication for the audience.
+
+#### Marking rubric for Part D
+
+* Clear, accurate explanation of the data story and its main finding(s) (2 marks)
+* Logical structure suited to the intended audience (1 mark)
+* Clear, concise verbal delivery within the time limit (2 marks)
+
+### Part E: Technical work
 
 Publish your website using _GitHub pages_.
 
@@ -129,10 +148,10 @@ To do this, you will need to:
 * Change the visibility of your repository to _Public_
 * Publish your website using either `quarto publish` or by having the site directory as part of your repo
 
-#### Marking rubric for Part D
+#### Marking rubric for Part E
 
 * Working link (1 mark)
 * Pages set up correctly (1 mark)
 * Website HTML files correctly on version control (1 mark)
 
-**Maximum grade**: 4 + 3 + 10 + 3 = 20 marks
+**Maximum grade**: 4 + 3 + 17 + 5 + 3 = 32 marks

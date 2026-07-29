@@ -196,17 +196,8 @@ Materials are designed to develop your **hard and soft skills**.
 
 * **Week 4**: *Assessment 1* (25%) Breaking down key communication concepts in articles
 * **Week 7**: *Assessment 2* (25%) Writing your first communication piece
-* **Week 10**: *Assessment 3* (20%) Creating your own blog, styling and adding content
+* **Week 10**: *Assessment 3* (25%) Creating your own blog, styling and adding content, and a recorded data-story briefing
 * **Week 14**: *Assessment 4* (25%) Turning your findings into a dashbaord
-* **Oral Presentations**: (5%) Starting in Week 2, each week several presentations in the workshop
-
-## Course assessments - Oral Presentations
-
-Everyone will give a _5 minute_ presentation in the workshop, starting in Week 2.
-
-Please sign up to a presentation topic here:
-
-![](images/gsheet-qrcode.png){fig-align="center"}
 
 ## 🏁 Expectations [Part 1]{.f4}
 
@@ -733,4 +724,3 @@ reprex::reprex(session_info = TRUE)
   * [Making data mean more through storytelling](https://www.youtube.com/watch?v=6xsvGYIxJok)
 
 :::
-
