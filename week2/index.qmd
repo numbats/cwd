@@ -1,6 +1,6 @@
 ---
 pagetitle: "ETC5523: Communicating with Data"
-subtitle: "Basic communication theory and practice"
+subtitle: "Structure, evidence and attention across formats"
 author: "Michael Lydeamore"
 email: "michael.lydeamore@monash.edu"
 date: "Week 2"
@@ -44,8 +44,6 @@ knitr::opts_chunk$set(
   #cache = TRUE,
   cache.path = "cache/"
 )
-library(tidyverse)
-library(kableExtra)
 ```
 
 ## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
@@ -95,9 +93,10 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 ::: incremental
 
-* Apply cognitive principles for better presentation slides
-* (Re)structure and (re)design presentation slides to effectively communicate information in the data
-* Develop slides with Quarto revealjs
+* Analyse what an audience knows, cares about, can do and needs next.
+* Turn an analytical finding into a **claim, evidence and implication**.
+* Compare how reports, journalism, presentations and dashboards organise attention.
+* Design and briefly deliver a data story suited to its audience.
 
 :::
 
@@ -111,126 +110,263 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 ::: incremental
 
-* After data analysis, you have to market the results or persuade others to take action because of the results.
-* We are focussing on slides as visual and voice is better to communicate data than voice alone. 
-* We focus on using reveal.js (through Quarto) to create slides as it is easier medium to use if you have many data results or code to show.
+* The same analysis may become a report, article, briefing, website or app.
+* Those formats give the communicator and audience different amounts of control.
+* The evidence must remain honest, but its selection, order and explanation must change.
 
 :::
 :::
 
-## Typical Structure for Reports or Articles
+# One finding, many forms
 
-![](images/paper-pyramid.svg){fig-align="center"}
-
-## Typical Structure for Journalism
-
-![](images/journalism-pyramid.svg){fig-align="center"}
-
-## For Presentations
-
-![](images/presentation-hourglass.svg){fig-align="center"}
-
-[Aim for the [hourglass structure]{.monash-blue}!]{.f1}
-
-
-# Planning
-
-## Type and length of presentation?
-
-```{r}
-#| echo: false
-expand.grid(Type = c("Informal meeting", 
-                    "Lightning talk",
-                    "Seminar",
-                    "Sales pitch",
-                    "Lecture",
-                    "Other"),
-            length = c("3 mins", 
-                       "10 mins", 
-                       "30 mins", 
-                       "60 mins")) %>%
-  mutate(val = ifelse(Type=="Lecture" & length=="60 mins",
-                      "", " ")) %>% 
-  pivot_wider(Type, 
-              names_from = length, 
-              values_from = val) %>% 
-  knitr::kable(align = "lcccc", escape = FALSE)
-```
-
-
-
-
-## Who is your audience?
-
-🧑‍🚒🧑‍🚀👩‍🎨👩‍💻👩‍🌾
+## Our running example
 
 ::: {.columns}
-::: {.column width='50%'}
-* Colleagues or peers
-* Managers
-* Technical professionals
-* Salespeople
+::: {.column width="46%"}
+
+### Finding
+
+India is now the third most common country of birth among Australian residents.
+
+### Evidence
+
+The 2021 Census ranks India behind Australia and England, and ahead of China and New Zealand.
+
 :::
-::: {.column width='50%'}
-* Students
-* Policymaker
-* Journalist
-* Public
+::: {.column width="50%"}
+
+### Possible implication
+
+Descriptions of Australia's population that rely on older migration patterns may now misrepresent who lives here.
+
+::: callout-note
+
+The implication is plausible, but it still needs context and must not claim more than the evidence supports.
+
+:::
+
 :::
 :::
 
-## Audiences {.smaller}
+## Evidence made visible
 
-**Audiences as consumers**
+![](images/ex1-3.png){fig-align="center" width="82%"}
 
-An audience is a group of individuals who consume news content produced by media outlets. They are the recipients of information and entertainment disseminated through various platforms such as print, broadcast, and digital media. Bryant, J., & Oliver, M. B. (2009). Media effects: Advanced theories and research. Routledge.
+::: notes
 
-**Audience as active participants**
+This example will recur throughout the lecture. The chart itself is not raw
+analysis: it already contains choices about title, categories, scale, labels and
+emphasis.
 
-An audience is a dynamic group of individuals who actively engage with news content, interpreting, and responding to it in various ways. They are co-creators of meaning and contribute to shaping the news agenda through feedback and interaction. Jensen, K. B. (2015). The participatory news audience: Engaging citizens in news and democracy. Routledge.
+:::
 
-**Audience as a market**
+## Analysis is not yet communication
 
-An audience is a group of potential consumers who represent a target market for news media organizations. They are valued for their attention, which can be monetized through advertising, subscriptions, and other revenue streams. Napoli, P. M., & McChesney, R. W. (2011). The business of media: Economics, law, and policy. Routledge.
-
-## 💡 Create ideas, not slides!
+Before choosing a format, decide:
 
 ::: incremental
 
-* 🪄 Start with content instead of fussing over with slides
-* 🪧 What do you want audience to take away or take action on?
-* 📘 What stories can you tell?
-* ✨ What headline is specific, memorable and concisely describes your talk?
+1. **Audience:** who needs this?
+2. **Purpose:** what should change?
+3. **Claim:** what should they understand?
+4. **Evidence:** why should they believe it?
+5. **Implication:** why does it matter?
 
 :::
 
-. . . 
+. . .
 
-::: {.center .f1}
+[Only then choose the form.]{.f1 .monash-blue}
 
-Plan[, Plan]{.fragment}[, Plan]{.fragment}
+## A practical audience brief
+
+::: {.columns}
+::: {.column width="48%"}
+
+### What do they know?
+
+What context, terminology and uncertainty can be assumed?
+
+### What do they care about?
+
+Which consequences connect the finding to their priorities?
+
+:::
+::: {.column width="48%"}
+
+### What can they do?
+
+Can they decide, investigate, share, question or explore?
+
+### What do they need next?
+
+What detail or action makes the communication useful?
+
+:::
+:::
+
+## Same evidence, different jobs {.smaller}
+
+| Form | Audience's job | A useful opening |
+|---|---|---|
+| Technical report | evaluate and decide | conclusion and qualification |
+| News story | understand why this matters now | headline and lead |
+| Presentation | follow an argument in real time | orienting question or claim |
+| Dashboard | investigate a relevant slice | guided overview and controls |
+
+. . .
+
+The “best” structure depends on how the audience will use the communication.
+
+# Structure follows use
+
+## Reports and articles
+
+![](images/paper-pyramid.svg){fig-align="center"}
+
+The reader can pause, scan, return and inspect detail.
+
+## Journalism
+
+![](images/journalism-pyramid.svg){fig-align="center"}
+
+Lead with what is most important; later detail may never be read.
+
+## Presentations
+
+![](images/presentation-hourglass.svg){fig-align="center"}
+
+Orient the audience, develop the evidence, then land the conclusion.
+
+## Structures are expectations, not laws
+
+::: incremental
+
+* A familiar structure reduces the audience's work.
+* Purpose may justify departing from the default.
+* Signpost unusual structures so the audience can still follow.
+* Do not force the evidence into a dramatic arc it cannot support.
 
 :::
 
-## Finding a story {.smaller}
+## Who controls the path?
 
-Newsgathering is the process of finding a story, identifying sources, determining research required, collecting/producing assets required to create the story
+::: {.columns}
+::: {.column width="48%"}
 
-To find a story we use a variety of sources including:
+### More author-led
 
-::: {.incremental}
+* a recorded briefing
+* a live presentation
+* a news story
+* an executive summary
 
-* Social media
-* Community/local government
-* Government agencies
-* Courts
-* Contacts
-* Other media
-* Sensory journalism
+The author selects the order and emphasis.
+
+:::
+::: {.column width="48%"}
+
+### More audience-led
+
+* a long technical report
+* a website
+* an interactive visualisation
+* a dashboard
+
+The audience chooses where to pause, branch or explore.
+
+:::
+:::
+
+. . .
+
+More control creates more opportunity—and more responsibility for guidance.
+
+# Build the message
+
+## Claim → evidence → implication
+
+::: {.columns}
+::: {.column width="31%"}
+
+### Claim
+
+What should the audience understand?
+
+> India is now the third most common country of birth.
+
+:::
+::: {.column width="31%"}
+
+### Evidence
+
+Why should they believe it?
+
+> The Census ranks India behind Australia and England.
+
+:::
+::: {.column width="31%"}
+
+### Implication
+
+Why does it matter for this audience?
+
+> Older descriptions of the population may need revising.
+
+:::
+:::
+
+## The implication must be earned
+
+::: incremental
+
+* An implication connects evidence to a consequence, decision or next question.
+* It is not permission to manufacture urgency or certainty.
+* State important limitations and alternative explanations.
+* Match the strength of the language to the strength of the evidence.
 
 :::
 
-# Applying Cognitive Psychology to Presentations
+. . .
+
+[“So what?” and “How sure are we?” belong together.]{.f1}
+
+## Create ideas before files
+
+Before opening PowerPoint, Quarto or any other tool:
+
+::: incremental
+
+* write the claim in one sentence;
+* identify the evidence that earns it;
+* decide the implication for this audience;
+* sketch the order on paper; and
+* remove material that does not serve that path.
+
+:::
+
+## Where data stories come from
+
+Look for an evidence-supported:
+
+::: {.columns}
+::: {.column width="48%"}
+
+* **change** over time;
+* **difference** between groups;
+* **relationship** between measures;
+
+:::
+::: {.column width="48%"}
+
+* **exception** to an expected pattern;
+* **consequence** for people or decisions;
+* **uncertainty** that changes interpretation.
+
+:::
+:::
+
+# Applying cognitive principles
 
 ## Keep it simple
 
@@ -252,7 +388,7 @@ We can only absorb so much information at a time.
 Embrace [empty spaces]{.f-headline} in your slides!
 
 
-## Be audience-centered
+## Be audience-centred
 
 ::: incremental
 * Don't make your audience captives and waste their time away <i class="fa-solid fa-handcuffs"></i>
@@ -276,312 +412,471 @@ Embrace [empty spaces]{.f-headline} in your slides!
 :::
 
 
-## {}
+# Designing the audience's attention
 
-
-::: {.center .monash-bg-blue  style="height:30%;width:100%;vertical-align: middle;"}
-
-::: {.vcenter .f-headline .monash-white}
-
-**VISUALISE**
-
-:::
-
-:::
-
-
-::: {.center .monash-bg-green2 .fragment style="height:30%;width:100%;vertical-align: middle; "}
-
-::: {.vcenter .f-headline .monash-white}
-
-**UNIFY**
-
-:::
-
-:::
-
-
-::: {.center .monash-bg-orange2 .fragment  style="height:30%;width:100%;vertical-align: middle;"}
-
-::: {.vcenter .f-headline .monash-white}
-
-**FOCUS**
-
-:::
-
-:::
-
-
-## Color 
+## Slides compete with the speaker
 
 ::: incremental
 
-* [**Visualise**.]{.monash-blue} Color matters so select carefully and strategically.
-* [**Unify**.]{.monash-green2} Be consistent with color use throughout the presentation.
-* [**Focus**.]{.monash-orange2} use color to draw your audience's attention to specific parts of your slides
+* Your audience cannot carefully read a slide and carefully listen to you at the same time.
+* A slide should **support the current idea**, not store everything you know.
+* Good design makes the intended order of attention obvious.
 
 :::
 
+. . .
+
+::: callout-important
+
+## Four decisions for every slide
+
+**State the claim → show the evidence → explain the implication → direct attention**
+
+:::
+
+## [1]{.circle .monash-bg-blue .monash-white} State the claim
+
+Compare:
+
+::: {.columns}
+::: {.column width="45%"}
+
+### Topic label
+
+> Birthplace
+
+:::
+::: {.column width="55%"}
+
+### Takeaway headline
+
+> India is now the third most common country of birth among Australian residents
+
+:::
+:::
+
+. . .
+
+A sentence headline tells the audience **what to conclude**. The rest of the
+slide must earn that conclusion.
+
+## [2]{.circle .monash-bg-green2 .monash-white} Show the evidence
+
+::: incremental
+
+* Put the evidence on the same slide as the claim it supports.
+* Prefer a visual, example or short quotation to a second explanation of the same idea.
+* Label evidence directly where possible; do not make the audience hunt between a legend, footnote and graphic.
+* Include enough source and context for the claim to be trusted.
+
+:::
+
+. . .
+
+[Visuals are evidence—not decoration.]{.f1}
+
+## [3]{.circle .monash-bg-fuchsia2 .monash-white} Explain the implication
+
+The evidence does not speak for itself.
+
+::: incremental
+
+* Say what changed, who is affected or which decision is now different.
+* Keep the implication close to the evidence that supports it.
+* Distinguish an observed result from an interpretation or recommendation.
+* Make uncertainty visible when it changes what the audience should conclude.
+
+:::
+
+. . .
+
+[Do not make the audience perform the final inference alone.]{.f1}
+
+## [4]{.circle .monash-bg-orange2 .monash-white} Direct attention
+
+Use a small number of signals:
+
+::: {.columns}
+::: {.column width="50%"}
+
+* position
+* size
+* contrast
+
+:::
+::: {.column width="50%"}
+
+* spacing
+* colour
+* sequence
+
+:::
+:::
+
+. . .
+
+If everything is emphasised, [nothing is emphasised]{.monash-red2}.
+
+## Colour should explain the reading order
 
 ::: flex
 
-
-![](images/ex1-1.png){.ba width="30%" .pa3 .fragment}
+![](images/ex1-1.png){.ba width="30%" .pa3}
 ![](images/ex1-2.png){.ba width="30%" .pa3 .fragment}
 ![](images/ex1-3.png){.ba width="30%" .pa3 .fragment}
 
 :::
 
-## Type
-
-
 ::: incremental
 
-* [**Visualise**.]{.monash-blue} Consider choices for text carefully.
-* [**Unify**.]{.monash-green2} Be consistent with your use of type, e.g. use only 1-2 fonts for slides. 
-* [**Focus**.]{.monash-orange2} Use large text sizes. Minimum font size of 28 points is recommended.
+* Neutral colour lets the evidence establish a baseline.
+* Many colours create competing categories.
+* One contrast colour connects the headline to the evidence.
 
 :::
 
+## Type is infrastructure
 
 ::: flex
 
-
-![](images/ex1-3.png){.ba width="30%" .pa3 .fragment}
+![](images/ex1-3.png){.ba width="30%" .pa3}
 ![](images/ex2-2.png){.ba width="30%" .pa3 .fragment}
 ![](images/ex2-3.png){.ba width="30%" .pa3 .fragment}
 
 :::
 
+::: incremental
 
-## Text Slides
+* Use type large enough to read from the back of the room.
+* Create hierarchy with size and weight before adding another font.
+* Choose legibility over personality for body text and labels.
 
+:::
+
+## A final test: remove competition
+
+For every element, ask:
 
 ::: incremental
 
-* [**Visualise**.]{.monash-blue} When possible, convert text to visuals.
-* [**Unify**.]{.monash-green2} Maintain consistency across presentation using similar layouts and structure.
-* [**Focus**.]{.monash-orange2} Use hierarchy and layering technique to direct audience's attention.
+1. Does it help the audience understand the point?
+2. Does it provide necessary evidence or context?
+3. Does it help them know where to look next?
 
 :::
 
+. . .
 
-## Data Visualisation Slides
+If not, remove it. [Empty space is working space for attention.]{.monash-blue}
 
-::: incremental
-
-* [**Visualise**.]{.monash-blue} Make use of preattentive processing and other cognitive principles to make it easier for the audience to absorb the information in the data.
-* [**Unify**.]{.monash-green2} Link text and visuals, e.g. legends directly in graphs.
-* [**Focus**.]{.monash-orange2} Remove or minimise non-essential elements.
-
-:::
-
-## Image Slides
-
-
-::: incremental
-
-* [**Visualise**.]{.monash-blue} Use large, high resolution images that fill entire slide.
-* [**Unify**.]{.monash-green2} Be consistent in image use across slides.
-* [**Focus**.]{.monash-orange2} Link text and images to draw audience's attention.
-
-:::
-
-## Headlines {.smaller}
-
-1. Capture the essence of the story: Headlines should accurately reflect the main point of the article, not a rehash of the lead
-2. Keep it concise: Newspaper headlines have limited space. We aim for under 12 words for maximum impact. Eight is perfect
-3. Use strong verbs: Active verbs create a sense of urgency and grab the reader's attention.
-4. Emphasise action and conflict:  People are naturally drawn to stories with action and conflict. We highlight these elements in headlines
-5. Keep it clear and specific: Avoid vague or ambiguous language. The reader should understand the gist of the story from the headline alone
-
-## Headlines {.smaller}
-
-6. Target your audience:  Consider your readers. Everything produced is for a specific audience
-7. Use active voice:  Active voice makes the headline more engaging and easier to read.
-8. Consider using numbers or statistics:  Numbers can add intrigue and highlight the significance of the story, but don’t get swamped with numbers
-9. Puns can be powerful (use sparingly):  A well-crafted pun can be memorable and eye-catching, but avoid puns that are too obscure or force a connection
-10. Proofread meticulously: Typos or grammatical errors in a headline can be glaring and unprofessional. Double-check your work before submitting it
-
-## Intros & Leads {.smaller}
-
-1. The most important part of the story and the very first sentence
-2. Contains who, what, when and where (at the least)
-3. One sentence
-4. Fewer than 25 words
-5. Aim for present tense, always active voice
-6. Hard, fast, and to the point
-7. Never lead with the date eg. On July 27, the Prime Minister said
-8. Most important point to the very front
-
-## Writing concisely {.smaller}
-
-::: {.fragment}
-Remove at least four words:
-
-> The Prime Minister said that the only way forward was for cuts to the budget cuts
-:::
-
-::: {.fragment}
-Remove at least 11 words:
-
-> The Victorian Premier called on the Leader of the Opposition Leader to open up all of their accounting for the police so that they could start to investigate
-:::
-
-::: {.fragment}
-Remove at least 14 words:
-
-> Emergency Services were called to the scene to make sure that the airlifted the faimly was airlifted from the location to safety and taken immediately to The Alfred Hospital in the Melbourne suburb of Prahran.
-:::
-
-## Data Journalism
-
-Three types of data journalism:
-
-1. Data that enriches a story: a story on the spike in number of bicycle thefts in one town where the total number is shown and compared to the previous analysis period. The story can then be told by using a case study to humanise the story
-
-2. Stories discovered through data: an examination of a data set that finds a trend or anomaly. The exploration of that trend or anomaly yields a new story. Often, this story is again best humanised with a case study
-
-3. Exploring the data: offering up dashboards and whole data sets to the audience to do their own research/personalisation etc.
-
-## Data Journalism activity
-
-Crime Statistics Victoria (CSV) data is available [here](https://www.crimestatistics.vic.gov.au/crime-statistics/latest-crime-data-by-area).
-
-Let's write a headline
-
-## Data Slides
-
-::: incremental
-
-* Data slides are not about the data but the **meaning of the data**
-* **Avoid decorating data**
-* **Articulate the conclusions** you want your audience to adopt
-
-:::
-
-. . . 
-
-[1]{style="border-radius:50%;background:#006DAE;color:white;width:1.2em;height:1.2em;display:inline-block;text-align:center;font-weight:bold;padding-bottom:3px;"} Tell the truth 
-
-. . . 
-
-[2]{style="border-radius:50%;background:#006DAE;color:white;width:1.2em;height:1.2em;display:inline-block;text-align:center;font-weight:bold;padding-bottom:3px;"} Get to the point   
-
-. . . 
-
-[3]{style="border-radius:50%;background:#006DAE;color:white;width:1.2em;height:1.2em;display:inline-block;text-align:center;font-weight:bold;padding-bottom:3px;"} Highlight what's important 
-
-. . . 
-
-  
-[4]{style="border-radius:50%;background:#006DAE;color:white;width:1.2em;height:1.2em;display:inline-block;text-align:center;font-weight:bold;padding-bottom:3px;"} Keep it simple  
-
-
-
-
-
-# The 3-second rule 
-
-The message should be effectively processed in 3 seconds
-
-
-. . . 
-
-[Don't take it as an absolute rule!]{.monash-red2}
-
-# The technical nitty gritty
-
-
-## Technical set-ups and tools
-
-::: incremental
-
-* Aspect ratio (4:3 or 16:9)
-* Adaptors (HDMI, VGA, DVI, etc)
-* USB Drive 
-* Sound 
-* Other
-
-:::
-
-## Presentation Software Tools
-
-::: incremental
-
-* Powerpoint (Microsoft) or Keynote (Apple)
-* Canva 
-* Google Slides
-* Beamer (LaTeX)
-* [Reveal.js](https://revealjs.com/) (HTML)
-  - [via online editor](https://slides.com/)
-  - [via Quarto](https://quarto.org/docs/presentations/revealjs/)
-
-:::
-
-# Reveal.js with Quarto {background="#006DAE"}
-
-## These slides are made with reveal.js via Quarto! 
+## Match the treatment to the content {.smaller}
 
 ::: {.columns}
-::: {.column width='50%'}
-```{r, comment = ""}
-cat(readLines("index.qmd"), sep = "\n")
-```
-:::
-::: {.column width='50%'}
-<iframe src="index.html" width="100%" height="350px"></iframe>
+::: {.column width="28%"}
+
+### Text
+
+* trim and group
+* reveal in sequence
+* avoid decorative icons
 
 :::
+::: {.column width="28%"}
+
+### Data
+
+* takeaway title
+* direct labels
+* selective emphasis
+* honest scales and uncertainty
+
+:::
+::: {.column width="28%"}
+
+### Images
+
+* crop to the relevant detail
+* use sufficient resolution
+* explain why it is evidence
+
+:::
 :::
 
-
-All lecture slides Qmd files are [here](https://github.com/numbats/cwd/tree/master/lectures).
-
-## Reveal.js with Quarto 
+## Across slides: create continuity
 
 ::: incremental
 
-* ... **is just markdown** with some more special syntax
-* E.g. a first or second level header (`#` or `##`) or `---` starts a new slide.
-* E.g. column layouts:
+* Reuse layouts so the audience does not have to relearn the slide.
+* Give repeated colours and visual forms a stable meaning.
+* Use section breaks and signposts to show where the argument is going.
+* Let the deck feel coherent, but vary the design when the content needs a different treatment.
 
-::: fragment
-```
-:::: {.columns}
-
-::: {.column width="40%"}
-Left column
 :::
 
-::: {.column width="60%"}
-Right column
+# Borrowing from journalism
+
+## A headline makes a promise
+
+A useful headline or slide title is:
+
+::: incremental
+
+* **specific:** it states the subject and the change;
+* **concise:** every word helps the audience predict the story;
+* **active:** a strong verb shows what happened; and
+* **honest:** the body can support the promise without qualification by surprise.
+
 :::
 
-::::
-```
+. . .
+
+> **Topic:** Birthplace<br>
+> **Claim:** India is now the third most common birthplace among Australian residents
+
+## The lead pays off the promise
+
+::: callout-note
+
+## Headline
+
+India is now the third most common birthplace among Australian residents
+
+:::
+
+. . .
+
+::: callout-important
+
+## Lead
+
+The 2021 Census ranks India behind only Australia and England as a country of birth, and ahead of China and New Zealand.
+
+:::
+
+. . .
+
+The headline gives the claim; the lead supplies evidence and context.
+
+## Concision is selection
+
+Compare:
+
+::: {.columns}
+::: {.column width="48%"}
+
+### Before
+
+> The 2021 Census data shows that there are a number of changes that can be observed in relation to the countries in which Australian residents were born.
+
+:::
+::: {.column width="48%"}
+
+### After
+
+> India is now the third most common country of birth among Australian residents.
+
 :::
 :::
 
-## {}
+. . .
 
-<iframe src="https://quarto.org/docs/presentations/revealjs/" width="100%" height="600px"></iframe>
+Week 4 develops the editing techniques. For now: [lead with the claim]{.monash-blue}.
+
+## From telling a story to enabling exploration
+
+::: incremental
+
+1. **Data enriches a story:** selected evidence adds scale or context.
+2. **Data reveals a story:** analysis discovers a change, difference or exception.
+3. **Data becomes the experience:** an app lets the audience explore within designed constraints.
+
+:::
+
+. . .
+
+The author gives up control of the path, [not responsibility for guidance]{.monash-red2}.
+
+## Activity: one finding, three decisions
+
+Crime Statistics Victoria data are available [here](https://www.crimestatistics.vic.gov.au/crime-statistics/latest-crime-data-by-area).
+
+In pairs:
+
+::: incremental
+
+1. identify one defensible **claim**;
+2. name the **evidence** required to support it;
+3. write an **implication** for a chosen audience; and
+4. decide whether an article, slide or interactive display best serves that audience.
+
+:::
 
 
-## Week 3 Lesson 
+
+
+
+# The three-second test
+
+At first glance, can the audience tell:
+
+::: incremental
+
+* what this slide is about?
+* where to look first?
+* what the evidence is doing?
+
+:::
+
+. . .
+
+This is a diagnostic, [not a literal time limit]{.monash-red2}.
+
+. . .
+
+[A slide only works in the conditions in which it is delivered.]{.f1}
+
+# From slide to briefing
+
+## Slides and speakers divide the work
+
+::: {.columns}
+::: {.column width="48%"}
+
+### The slide
+
+* anchors the claim;
+* makes evidence visible;
+* directs attention; and
+* preserves essential labels and sources.
+
+:::
+::: {.column width="48%"}
+
+### The speaker
+
+* supplies context;
+* explains the evidence;
+* qualifies the interpretation; and
+* lands the implication and transition.
+
+:::
+:::
+
+. . .
+
+If you read the slide aloud, [one of you is redundant]{.monash-red2}.
+
+## A 60-second data story
+
+::: {.columns}
+::: {.column width="30%"}
+
+### 10 seconds
+
+**Orient**
+
+What question or problem are we addressing?
+
+:::
+::: {.column width="36%"}
+
+### 35 seconds
+
+**Explain**
+
+What is the claim, and what evidence earns it?
+
+:::
+::: {.column width="30%"}
+
+### 15 seconds
+
+**Land**
+
+What is the implication for this audience?
+
+:::
+:::
+
+## Practice: make the audience do less work
+
+Using the birthplace example:
+
+::: incremental
+
+1. choose an audience;
+2. prepare a 60-second explanation without writing a script;
+3. point to the evidence rather than reading labels aloud;
+4. finish with an implication; and
+5. ask your partner to repeat the takeaway in one sentence.
+
+:::
+
+. . .
+
+Their response is **feedback**: revise what did not get through.
+
+# Deliver to a real audience
+
+## Accessibility is audience-centred design
+
+::: incremental
+
+* Use text large enough for the viewing conditions.
+* Maintain strong contrast and never use colour as the only signal.
+* Describe the relevant pattern instead of saying “as you can see”.
+* Caption recorded speech and provide text alternatives where appropriate.
+* Avoid motion, sound or interaction that does not serve the message.
+
+:::
+
+## Live or recorded: protect the message {.smaller}
+
+::: {.columns}
+::: {.column width="48%"}
+
+### Check the conditions
+
+* display, aspect ratio and room size
+* microphone, sound and lighting
+* recording frame and screen legibility
+* links, media, animation and live code
+
+:::
+::: {.column width="48%"}
+
+### Check the fallback
+
+* local copy of all assets
+* PDF or static export
+* required adaptor or second device
+* captions or transcript
+* a plan for explaining a failed demo
+
+:::
+:::
+
+. . .
+
+Rehearse the **communication**, not merely whether the file opens.
+
+
+## Week 2 Lesson
 
 
 ::: callout-important
 
 ## Summary
 
-* We looked at some cogntive principles for better presentation slides
-* We reviewed some slide structure and design to make communication more effective 
-* We looked at how to develop slides using Quarto revealjs
+* Begin with what the audience **knows, cares about, can do and needs next**.
+* Build the message as **claim → evidence → implication** before choosing a format.
+* Reports, journalism, presentations and dashboards structure attention differently because the audience uses them differently.
+* In a briefing, the slide makes evidence visible while the speaker supplies context, qualification and implication.
+* Accessibility, rehearsal, feedback and fallbacks are part of communication—not technical extras.
 
 :::
 
-## Week 3 Lesson 
+## Week 2 Lesson
 
 ::: callout-tip
 
@@ -598,6 +893,47 @@ Note: the book below is not available on Monash library.
 
 * Presentation zen: simple idea on presentation design and delivery by Garr Reynolds<sup>*</sup>
 
-[<sup>*</sup> These books are made more for corporate presentations and some advice are not suitable for technical presentations.]{.f4}
+[<sup>*</sup> These books are oriented toward corporate presentations, so assess their advice in the context of technical communication.]{.f4}
 
 :::
+
+# Appendix: tools and Quarto {visibility="uncounted"}
+
+## Choose a tool that fits the job
+
+* **PowerPoint, Keynote, Canva or Google Slides:** quick visual authoring and collaboration
+* **Beamer:** equation-heavy, PDF-first workflows
+* **Reveal.js:** browser-based slides with flexible layouts and interaction
+* **Quarto + Reveal.js:** reproducible slides combining prose, code, data and output
+
+. . .
+
+Choose the least complicated tool that preserves the communication you need.
+
+## Reveal.js with Quarto
+
+These slides are made with Reveal.js through Quarto.
+
+::: incremental
+
+* The source is Markdown with additional layout and presentation options.
+* A first- or second-level heading starts a new slide.
+* Code, output and figures can be generated from the same reproducible source.
+* HTML output supports links, fragments, embedded media and interactive content.
+
+:::
+
+## A minimal Quarto slide
+
+````markdown
+---
+title: "My data story"
+format: revealjs
+---
+
+## The claim goes in the title
+
+The evidence and explanation go here.
+````
+
+See the [Quarto Reveal.js documentation](https://quarto.org/docs/presentations/revealjs/) for layouts, themes and presentation options.

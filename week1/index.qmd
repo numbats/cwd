@@ -190,14 +190,22 @@ Materials are designed to develop your **hard and soft skills**.
   
 * _Seek help early and often_!
 
-## 💯 Course assessments
+## 💯 Course assessments {.smaller}
 
+The assessments build one communication practice in stages:
 
+::: incremental
 
-* **Week 4**: *Assessment 1* (25%) Breaking down key communication concepts in articles
-* **Week 7**: *Assessment 2* (25%) Writing your first communication piece
-* **Week 10**: *Assessment 3* (25%) Creating your own blog, styling and adding content, and a recorded data-story briefing
-* **Week 14**: *Assessment 4* (25%) Turning your findings into a dashbaord
+* **Week 4 — inspect:** identify how published articles, blogs and presentations are structured.
+* **Week 7 — translate:** turn academic research into an executive-focused technical report.
+* **Week 10 — publish and present:** adapt the report into a blog and recorded data-story briefing.
+* **Week 14 — make it reusable and explorable:** package the work, document it and build an interactive app.
+
+:::
+
+. . .
+
+Each assessment is worth **25%**.
 
 ## 🏁 Expectations [Part 1]{.f4}
 
@@ -235,8 +243,8 @@ An active learner doesn’t passively sponge up information — that doesn’t w
 
 ## Aim
 
-* Basic communication theory and its relevancy with communicating with data
-* Demonstrate communication competency by selecting appropriate behaviour based on audience and self monitoring
+* Explain how basic communication theory applies to communicating with data
+* Demonstrate communication competence by selecting appropriate behaviour for an audience and monitoring its effect
 * Identify and apply rhetorical elements to improve data storytelling 
 * Clearly articulate and express technical problems for others to help you
 
@@ -246,9 +254,35 @@ An active learner doesn’t passively sponge up information — that doesn’t w
 
 ## Why
 
-* Effective communication with data is a blend of hard and soft skills 
-* You need the hard skills to process and understand the data 
-* But you also need the soft skills to get the message across to others
+* Analysis is only useful when another person can understand, trust or use it.
+* Communication choices are embedded in technical work: tables, plots, reports, documentation and interfaces.
+* The course develops one practice across many different forms.
+
+:::
+
+## The model we will use
+
+::: {.center}
+
+[**Audience + purpose**]{.monash-blue}<br>
+Who is this for, and what should change?
+
+<i class="fas fa-arrow-down"></i>
+
+[**Claim → evidence → implication**]{.monash-green2}<br>
+What should they understand, why should they believe it, and why does it matter?
+
+<i class="fas fa-arrow-down"></i>
+
+[**Form + delivery → feedback + revision**]{.monash-orange2}<br>
+How can they use it, and what tells us whether it got through?
+
+:::
+
+::: notes
+
+Preview the model here. We will return to it after communication theory,
+rhetoric and the reproducible-example case.
 
 :::
 
@@ -267,7 +301,7 @@ To effectively communicate, we must realize that we are all different in the way
 
 If you practice, it will get better.
 
-## Why should you listen to me though?
+## Why should you listen to me though? {.smaller}
 
 I've had a lot of practice.
 
@@ -286,20 +320,22 @@ To less technical audiences:
 * Many more high level meetings with government and industry stakeholders
 :::
 
-## Why should you listen to me though?
+## What did I just do?
 
-Communication has got me a lot of where I am now.
+I selected evidence about my experience for a particular audience.
 
-::: {.fragment .blockquote}
+::: incremental
 
-A good economist isn't right all the time, but they are very good at explaining when they are wrong
+* **Purpose:** establish why this lecture may be worth your attention.
+* **Ethos:** build credibility using relevant experience.
+* **Selection:** omit experience that does not help that purpose.
+* **Risk:** credibility claims still need to be judged critically.
 
 :::
 
+. . .
 
-::: {.fragment}
-#### If you can do technical work _and_ tell people about it, you will be in high demand {.center}
-:::
+[Communication is a skill—and this was a communication choice.]{.f1}
 
 
 
@@ -361,13 +397,11 @@ Communication is often thought of as discrete, independent acts but in fact it i
 
 ::: incremental 
 
-* **There is no single, ideal way to communicate**
-* Competence is situational and relational (where, what and who)
-* Ability to **select the most appropriate behaviour** in a particular situation 
-* Skill to **perform behaviour** not just knowing them
-* **Empathy** or perspective taking 
-* **Cognitive complexity** -- ability to construct a variety of framework for viewing an issue
-* **Self-monitoring** -- paying close to your own behaviour and use this to shape your behaviour
+* There is **no single ideal way** to communicate: competence is situational and relational.
+* Select behaviour appropriate to the **audience, purpose and context**.
+* Be able to perform that behaviour, not merely describe it.
+* Use **perspective taking** and **cognitive complexity** to see plausible alternatives.
+* **Self-monitor** the response and use feedback to adapt.
 
 :::
 
@@ -401,7 +435,7 @@ How does your communication strategy change for different types of communication
 * We notice some messages more and ignore others, e.g. we tend to notice messages that are:
    * **intense**, 
    * **repetitious**, and 
-   * **constrastive**.
+   * **contrastive**.
 * **Motives** also determine what information we select from environment
 
 :::
@@ -418,11 +452,11 @@ How does your communication strategy change for different types of communication
 
 
 
-# Rhetorics
+# Rhetoric
 
 The art of effective or persuasive speaking or writing
 
-## Rhetorical Triangle
+## Three rhetorical appeals
 
 <center>
 <img src="images/rhetorical-triangle.png">
@@ -430,65 +464,72 @@ The art of effective or persuasive speaking or writing
 
 ::: notes
 
-Ethos - Writer. Make it clear why people listen to you
-Pathos - Audience. Appeal to the audience to listen to you. Engage them.
-Logos - Context. Audience will put things in context for them. Make sure it will make sense. (Example)
+Ethos appeals through credibility and trustworthiness.
+Pathos appeals through values, stakes and emotion.
+Logos appeals through reasoning and evidence.
 
-:::
-<!-- 
-## Rhetorical Situation 
-
-
-::: {.floating .circle style="top:10%;left:4%;animation-delay:-4.3s;"}
-Writer or Speaker
-:::
-
-
-::: {.floating .circle style="top:11%;left:24%;animation-delay:-0.1s;"}
-Purpose
-:::
-
-::: {.floating .circle style="top:21%;left:44%;animation-delay:-3.4s;"}
-Message
-:::
-
-
-::: {.floating .circle style="top:15%;left:64%;animation-delay:-2.1s;"}
-Audience
-:::
-
-
-::: {.floating .circle style="top:13%;left:84%;animation-delay:-4.2s;"}
-Context
-::: -->
-
-
-
-## {}
-
-::: blockquote
-
-No one ever made a decision because of a number. They need a story.
-
-[-- Daniel Kahneman]{.fr}
-:::
-
-
-::: blockquote
-
-Maybe stories are just data with a soul.
-
-[-- Brene Brown]{.fr}
+These appeals can overlap. They are choices within a rhetorical situation, not
+fixed labels for the writer, audience and context.
 
 :::
 
-## Hans Rosling 
+## The rhetorical situation
+
+Before choosing words, visuals or software, ask:
+
+::: {.columns}
+::: {.column width="48%"}
+
+* **Speaker/source:** what establishes responsibility and credibility?
+* **Audience:** what do they know, value and have power to do?
+* **Purpose:** what should change after the communication?
+
+:::
+::: {.column width="48%"}
+
+* **Message:** what is the central claim and supporting evidence?
+* **Context:** what constraints, conventions and competing messages matter?
+* **Form:** what medium makes an appropriate response possible?
+
+:::
+:::
+
+## Watch like a communicator
+
+As you watch, identify:
+
+::: incremental
+
+1. the intended audience and purpose;
+2. the central claim;
+3. the evidence selected to support it;
+4. how voice and visuals divide the work; and
+5. the response the speaker is trying to create.
+
+:::
+
+## Hans Rosling
 
 <iframe height="80%" width="100%" src="https://www.youtube.com/embed/hVimVzgtD6w?start=148" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-## With good communication...
+## Debrief the choices
 
-<iframe width="100%" height="80%" src="https://www.youtube.com/embed/8S0FDjFBj8o?si=ftxOBxegx5hnTOv9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+::: incremental
+
+* What could the audience understand from the visual before hearing the explanation?
+* What did the speaker add that the visual could not?
+* Where did credibility, reasoning and stakes appear?
+* What was simplified—and did that simplification preserve the evidence?
+
+:::
+
+. . .
+
+[A compelling form does not replace an honest claim. It helps the claim get through.]{.f1}
+
+## A communication masterclass
+
+<iframe height="80%" width="100%" src="https://www.youtube.com/watch?v=8S0FDjFBj8o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Communicating *your problem*
 
@@ -634,7 +675,7 @@ ggplot(trees, aes(Height, Volume)) +
 </label>
 
 
-If the question is **asked in an public forum** or similar:
+If the question is **asked in a public forum** or similar:
 
 <label class="checkbox-container">Can people who can answer your question find your question? E.g. does the post have appropriate tags or keywords to reach the right experts?
 <input type="checkbox"><span class="checkmark"></span>
@@ -685,7 +726,7 @@ reprex::reprex(session_info = TRUE)
 ```
 
 
-* Once you run the above command, your clipboard contains the formatted code and output for you to paste into places like [GitHub issues](https://docs.github.com/en/enterprise/2.15/user/articles/creating-an-issue), [Stackoverflow](https://stackoverflow.com/) and forums powered by [Discourse](https://www.discourse.org/), e.g. [RStudio Community](https://community.rstudio.com/).
+* Once you run the above command, your clipboard contains the formatted code and output for you to paste into places like [GitHub issues](https://docs.github.com/en/enterprise/2.15/user/articles/creating-an-issue), [Stack Overflow](https://stackoverflow.com/) and forums powered by [Discourse](https://www.discourse.org/), e.g. [RStudio Community](https://community.rstudio.com/).
 * For general code questions, I suggest that you post to the community forums rather than Moodle.
 
 ## Communicating with Data
@@ -697,6 +738,133 @@ reprex::reprex(session_info = TRUE)
 
 </center>
 
+# A map for the course
+
+## Communication is a cycle of choices {.smaller}
+
+::: {.center}
+
+[**Audience + purpose**]{.monash-blue}<br>
+Who is it for, and what should change?
+
+<i class="fas fa-arrow-down"></i>
+
+[**Claim → evidence → implication**]{.monash-green2}<br>
+What, why believe it, and why does it matter?
+
+<i class="fas fa-arrow-down"></i>
+
+[**Form + delivery**]{.monash-orange2}<br>
+What helps people access and use it?
+
+<i class="fas fa-arrow-down"></i>
+
+[**Feedback + revision**]{.monash-fuchsia2}<br>
+What got through, and what should change next?
+
+:::
+
+::: notes
+
+This is the spine of the unit. Feedback returns us to the audience, purpose or
+any other earlier choice.
+
+:::
+
+## The medium changes; the problem does not
+
+::: {.columns}
+::: {.column width="48%"}
+
+**Shape the message**
+
+* presentations and data stories
+* articles and reports
+* tables and visualisations
+
+:::
+::: {.column width="48%"}
+
+**Make the message usable**
+
+* websites and styling
+* packages and documentation
+* interactive apps and dashboards
+
+:::
+:::
+
+. . .
+
+Each output is an **interface between your analysis and an audience**.
+
+## One analysis, many legitimate forms
+
+Suppose your analysis finds that a program improved an outcome, with substantial
+uncertainty.
+
+::: incremental
+
+* A **manager** may need the decision, likely benefit and risk.
+* An **analyst** may need assumptions, diagnostics and reproducible code.
+* The **public** may need context, consequences and plain language.
+* **Future you** may need documentation explaining what was done and why.
+
+:::
+
+. . .
+
+[The evidence stays honest; the selection, order and form change.]{.f1}
+
+## Audience-centred does not mean audience-pleasing
+
+::: {.columns}
+::: {.column width="48%"}
+
+**Adapt**
+
+* language and level of detail
+* order and emphasis
+* examples and medium
+* the action you make possible
+
+:::
+::: {.column width="48%"}
+
+**Do not distort**
+
+* uncertainty or limitations
+* relevant context
+* scale or comparisons
+* what the evidence can support
+
+:::
+:::
+
+## Asking for help was not a detour
+
+A reproducible example makes the same communication choices:
+
+::: incremental
+
+* **Audience:** someone who does not share your computer or context
+* **Purpose:** enable them to diagnose one problem
+* **Message:** expected behaviour versus observed behaviour
+* **Evidence:** minimal code, data, output and session information
+* **Form and delivery:** a self-contained example in a place they can access
+
+:::
+
+## The question to carry through the course
+
+::: {.center .vcenter}
+
+[What should this audience]{.f1}<br>
+[understand, believe or do—]{.f1 .monash-blue}<br>
+[and what form will help them get there?]{.f1}
+
+:::
+
 ## Week 1 Lesson  {.scrollable}
 
 
@@ -704,10 +872,11 @@ reprex::reprex(session_info = TRUE)
 
 ## Summary
 
-* Communication is a symbolic, ongoing process that requires **_getting through_** to other parties
-* There is no single ideal way to communicate -- communication competence depends on situation and relations but a competent communicator can select and perform appropriate behaviour based on **seeing other people's perspectives** and **understanding their own behaviour**
-* We discussed about the **elements of rhetorics** and how it relates to telling a compelling data story
-* We looked at the case study with communicating your problem to ask for help
+* Communication is not the transfer of information; it succeeds when a message **gets through** to a particular audience.
+* There is no single ideal form. Competence means selecting and performing an appropriate response to the **audience, purpose and context**.
+* Across this course, we will move through **audience and purpose → claim, evidence and implication → form and delivery → feedback and revision**.
+* Adapting a message must not distort the evidence: the form may change, but the analysis must remain honest.
+* A reproducible request for help is our first example of making technical work understandable and usable by someone else.
 
 :::
 
