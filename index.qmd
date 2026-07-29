@@ -17,7 +17,7 @@ This unit develops teamwork skills, through instruction on reproducibility and v
 ## Teachers
 
 * [**Michael Lydeamore**](https://www.michaellydeamore.com). Chief Examiner. Email: [michael.lydeamore@monash.edu](mailto:michael.lydeamore@monash.edu)
-* [**Fonti Kar**]. Email: [fonti.kar@monash.edu](mailto:fonti.kar@monash.edu)
+* [**Fonti Kar**](https://fontikar.github.io/). Email: [fonti.kar@monash.edu](mailto:fonti.kar@monash.edu)
 
 ```{r}
 #| label: load_packages
@@ -62,7 +62,6 @@ schedule |>
         Topic = if_else(!Show, Topic, glue::glue('[{{Topic}}](./week{{Week}}/index.html){target="_blank"}', .open = "{{", .close = "}}")),
         Workshop = if_else(!Show_Workshop, "", glue::glue('[{{< fa pen >}}](./week{{{Week}}}/workshop/index.html){target="_blank"}', .open = "{{{", .close = "}}}")),
         Tutorial = if_else(!Show_Tutorial, "", glue::glue('[{{< fa list-check >}}](./week{{{Week}}}/tutorial/index.html){target="_blank"}', .open = "{{{", .close = "}}}")),
-        Reference = if_else(!Show, Reference, glue::glue("[{Reference}]({Reference_URL})")),
         Assessments = if_else(is.na(Assignment), Assignment, glue::glue("[{Assignment}]({File})"))
     ) |>
     select(-Show, -Show_Tutorial, -Show_Workshop) |>
