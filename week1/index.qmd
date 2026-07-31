@@ -215,7 +215,7 @@ Each assessment is worth **25%**.
 * **_Minimum_** total expected workload is 144 hours, that's 12 hours each week or **8.5 hours of self study per week**
 * Check the [unit homepage](https://cwd.numbat.space/) and unit Moodle page
 * ETC5513 (or equivalent) is a prerequisite → you need to catch up _fast_ if you're not confident
-* Install the latest [R](https://cloud.r-project.org/) and [RStudio IDE](https://www.rstudio.com/products/rstudio/download/) (or your chosen IDE that has the ability to run R code)
+* Install the latest [R](https://cloud.r-project.org/) and [Positron](https://positron.posit.co/) (or your chosen IDE that has the ability to run R code)
 
 :::
 
