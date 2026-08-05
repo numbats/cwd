@@ -8,8 +8,8 @@ project:
     - "*-supp.qmd"
     - "assignments/assignment-2-papers/*.pdf"
     - "week10/tutorial/solar_data.csv"
-    - "data/melb-airport-max-temp-data.csv"
-    - "data/melb-airport-min-temp-data.csv"
+    - "week1/tutorial/data/melb-airport-max-temp-data.csv"
+    - "week1/tutorial/data/melb-airport-min-temp-data.csv"
     - "data/census-birthplace.csv"
     - "data/census-birthplace-by-sex.csv"
 
