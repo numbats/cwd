@@ -45,7 +45,7 @@ In this assessment, you will be creating a personal website, including informati
 
 ::: {.callout-important}
 
-You must join the GitHub classroom here: [https://classroom.github.com/a/pM7OZP_9](https://classroom.github.com/a/pM7OZP_9). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
+You must join the Classroom50 Assignment here: [https://classroom50.org/ETC5523-2026/etc5523/assignments/assignment-3/accept](https://classroom50.org/ETC5523-2026/etc5523/assignments/assignment-3/accept). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
 
 :::
 
