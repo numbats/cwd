@@ -69,7 +69,7 @@ The listing page will automatically generate, and you do not need to make any ch
 
 In the about page (`about.qmd`), make the following changes:
 
-* Add a photo of you
+* Add a photo (or some representation) of you
 * Write a short biography
 * Change the GitHub button to link to your GitHub, and add any other buttons of your choosing
 
