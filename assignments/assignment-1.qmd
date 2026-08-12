@@ -79,8 +79,8 @@ You can see an example article breakdown (using a List A article) [here](example
 -   [World, 15 Million Tweets Later (Robert Lesser)](https://observablehq.com/@rlesser/wordle-twitter-exploration)
 -   [The Welch-Berlekamp Algorithm for Correcting Errors in Data (Jeremy Kun)](https://www.jeremykun.com/2015/09/07/welch-berlekamp/)
 -   [How does ChatGPT Work? (Gergely Orosz)](https://blog.pragmaticengineer.com/how-does-chatgpt-work/)
--   [How Many People Can You Remember? (Mona Chalabi)](https://fivethirtyeight.com/features/how-many-people-can-you-remember/)
--   [What's the most common name in America? (Mona Chalabi)](https://fivethirtyeight.com/features/whats-the-most-common-name-in-america/)
+-   [The climate crisis is expensive: net zero is cheaper for Australia than not doing more](https://www.theguardian.com/news/ng-interactive/2025/nov/15/the-climate-crisis-is-expensive-net-zero-is-cheaper-for-australia-than-not-doing-more)
+-   [Social media ban trial data reveals racial bias in age checking software: just how inaccurate is it?](https://www.theguardian.com/news/2025/sep/19/how-accurate-are-age-checks-for-australias-under-16s-social-media-ban-what-trial-data-reveals)
 
 #### List C (Presentations/Video):
 
