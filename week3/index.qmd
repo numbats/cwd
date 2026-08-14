@@ -1036,131 +1036,154 @@ Build and deliver it:
 
 :::
 
-# If there is time: optional web features
 
-## Netlify can host a rendered static site
+# Some cool Quarto stuff
 
-::: {.columns}
-::: {.column width="52%"}
+## `webR`
 
-1. Render the complete site.
-2. Identify the output directory.
-3. Deploy it through Netlify.
-4. Open the public URL and test it.
+`webR` is a web server for R that allows you to run R code in the browser
 
-:::
-::: {.column width="42%"}
+[Check out the REPL](https://webr.r-wasm.org/latest/)
 
-### One publishing route
+## `webR` with Quarto
 
-```bash
-quarto publish netlify
-```
+* Community-developed extension to run R code in the browser
+* Works with HTML, RevealJS presentations, websites, blogs ```{python}
 
-Always open the deployed site and test more than the home page.
-
-:::
+::: {.fragment}
+* Is how the [startr.numbat.space](https://startr.numbat.space/) website works
 :::
 
-::: notes
-[Sources]
-
-- Quarto website publishing overview: https://quarto.org/docs/websites/
-:::
-
-## `webR` can move R computation into the browser
-
-`webR` runs R through WebAssembly inside a web browser.
-
-::: incremental
-
-* readers can execute examples without installing R;
-* interactive computation can sit beside explanation; and
-* the extra capability also adds loading, testing and accessibility responsibilities.
-
-:::
-
-. . .
-
-[Explore the webR REPL](https://webr.r-wasm.org/latest/)
-
-::: notes
-[Sources]
-
-- webR documentation: https://docs.r-wasm.org/webr/latest/
-:::
-
-## A Quarto extension can add `webR` cells
+## Setup
 
 ```yaml
 ---
-title: "Interactive R example"
-format: html
+title: "Your slide title"
+format: revealjs
+engine: knitr
 filters:
   - webr
+webr:
+  channel-type: "post-message"
 ---
 ```
+
+And run:
 
 ```bash
 quarto add coatless/quarto-webr
 ```
 
-````markdown
+## An example slide:
+
 ```{{webr-r}}
+#| context: interactive
 summary(lm(mpg ~ wt, data = mtcars))
 ```
-````
 
-::: notes
-[Sources]
+## An example slide:
 
-- quarto-webr extension: https://github.com/coatless-quarto/r-wasm
-- webR documentation: https://docs.r-wasm.org/webr/latest/
-:::
+```{webr-r}
+#| context: interactive
+summary(lm(mpg ~ wt, data = mtcars))
+```
 
-## Mermaid turns text into a diagram
+## Preload packages
+
+You can specify packages to install in YAML:
+
+```yaml
+webr:
+  packages: ['palmerpenguins', 'ggplot2']
+  show-startup-message: false
+```
+
+and then use them as per normal:
+
+```webr-r
+library(ggplot2)
+library(palmerpenguins)
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, colour = species)) +
+  geom_point() +
+  labs(title = "Penguin bill dimensions")
+```
+
+## Result:
+
+```{webr-r}
+#| context: interactive
+library(ggplot2)
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, colour = species)) +
+  geom_point() +
+  labs(title = "Penguin bill dimensions")
+```
+
+## Mermaid Diagrams
+
+At some poinmt you'll almost certainly need to draw a flow diagram. Quarto can do this using [Mermaid](https://mermaid.js.org/).
+
+```{{mermaid}}
+%%| echo: false
+graph LR
+    A[Data Sources] --> B[Extract]
+    B --> C[Staging Area]
+    C --> D[Clean & Transform]
+    D --> E[Data Quality Checks]
+    
+    %% Branch: some data skips transformation
+    C --> E
+    
+    E --> F[Load]
+    F --> G[Data Warehouse]
+    
+    %% Consumption paths
+    G --> H[Reports & Dashboards]
+    G --> I[Analytics & Modeling]
+    
+    %% Feedback loop from analytics to transform
+    I --> D
+```
+
+## Mermaid diagrams
 
 ```{mermaid}
 %%| echo: false
-%%{init: {'themeVariables': {'fontSize': '28px'}}}%%
-flowchart LR
-  A[Question] --> B[Analysis]
-  B --> C[Claim]
-  C --> D[Evidence]
-  D --> E[Implication]
-  E --> F[Reader action]
+graph LR
+    A[Data Sources] --> B[Extract]
+    B --> C[Staging Area]
+    C --> D[Clean & Transform]
+    D --> E[Data Quality Checks]
+    
+    %% Branch: some data skips transformation
+    C --> E
+    
+    E --> F[Load]
+    F --> G[Data Warehouse]
+    
+    %% Consumption paths
+    G --> H[Reports & Dashboards]
+    G --> I[Analytics & Modeling]
+    
+    %% Feedback loop from analytics to transform
+    I --> D
 ```
 
-::: notes
-[Sources]
+## Maps
 
-- Quarto diagrams documentation: https://quarto.org/docs/authoring/diagrams.html
-:::
-
-## The diagram remains reproducible source
-
-````markdown
-```{{mermaid}}
-flowchart LR
-  A[Question] --> B[Analysis]
-  B --> C[Claim]
-  C --> D[Evidence]
-  D --> E[Implication]
-  E --> F[Reader action]
-```
-````
-
-. . .
-
-Use a diagram when relationships are easier to understand spatially than as prose.
-
-## Use an interactive map when location is analytically relevant
-
-```r
+```{{r}}
 library(leaflet)
+library(dplyr)
 
-locations |>
-  leaflet() |>
+# Create a data frame of locations
+locations <- tibble::tribble(
+  ~name,                           ~lat,       ~lng,
+  "Melbourne CBD",                 -37.8136,  144.9631,
+  "Monash University (Clayton)",   -37.8768,  145.0450,
+  "University of Melbourne",       -37.7964,  144.9633
+)
+
+# Make the map
+leaflet(locations) |>
   addTiles() |>
   addMarkers(
     lng = ~lng,
@@ -1169,45 +1192,30 @@ locations |>
   )
 ```
 
-::: incremental
+## Maps
 
-Before adding a map, ask:
+```{r}
+#| echo: false
+library(leaflet)
+library(dplyr)
 
-* What question becomes easier to answer?
-* What should the first view emphasise?
-* What information appears on demand?
+# Create a data frame of locations
+locations <- tibble::tribble(
+  ~name,                           ~lat,       ~lng,
+  "Melbourne CBD",                 -37.8136,  144.9631,
+  "Monash University (Caulfield)", -37.8768,  145.0450,
+  "University of Melbourne",       -37.7964,  144.9633
+)
 
-:::
-
-## Optional features still need a communication job
-
-::: {.columns}
-::: {.column width="31%"}
-
-### `webR`
-
-Useful when running code changes understanding.
-
-:::
-::: {.column width="31%"}
-
-### Mermaid
-
-Useful when relationships need a visible structure.
-
-:::
-::: {.column width="31%"}
-
-### Maps
-
-Useful when location is essential to the question.
-
-:::
-:::
-
-. . .
-
-[Add an optional feature only when it helps the audience complete a defined task.]{.f3 .monash-blue}
+# Make the map
+leaflet(locations) |>
+  addTiles() |>
+  addMarkers(
+    lng = ~lng,
+    lat = ~lat,
+    popup = ~name
+  )
+```
 
 ## Resources
 
