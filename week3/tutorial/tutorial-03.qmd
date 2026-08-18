@@ -1,0 +1,264 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 3: Build and test a web data story"
+author: "Michael Lydeamore"
+date: "Week 3"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+
+```{r setup, include = FALSE, eval = file.exists("setup.R")}
+source("setup.R")
+```
+
+```{r}
+#| echo: false
+#| eval: !expr file.exists("tutorial.css")
+htmltools::includeCSS("tutorial.css")
+```
+
+```{r}
+#| include: false
+checkbox <- function(text) {
+  paste0('<label class="checkbox-container"><input type="checkbox"> ', text, '<span class="checkmark"></span>
+</label>')
+}
+```
+
+## 🎯 Objectives
+
+By the end of this tutorial, you will be able to:
+
+* turn a supported claim into a standalone Quarto webpage;
+* connect a headline, lede and visual to the same comparison;
+* separate essential context from methods detail; and
+* render and test a small website as a reader.
+
+::: {.callout-note}
+This is a **40-minute tutorial**. The data preparation and plotting code are supplied so that you can concentrate on shaping, building and testing the story.
+:::
+
+## 1. Start with the evidence and choose the story (8 minutes)
+
+The data come from the [Public Libraries Victoria 2024-25 Annual Statistical Survey](https://www.plv.org.au/resources/). A **branch visit** is an in-person visit to a branch library.
+
+The supplied code below loads a prepared extract, selects the published statewide totals and calculates visits per person and the percentage change.
+
+```{r prepare-library-data}
+#| echo: true
+
+library(tidyverse)
+
+library_visits <- read_csv(
+  "data/plv-library-visits.csv",
+  show_col_types = FALSE
+)
+
+victoria_visits <- library_visits |>
+  filter(service == "Victoria (Total)") |>
+  mutate(
+    financial_year = factor(
+      financial_year,
+      levels = c("2022-23", "2023-24", "2024-25")
+    ),
+    visits_per_person = branch_visits / municipal_population,
+    visit_label = scales::label_number(
+      scale = 1e-6,
+      suffix = "m",
+      accuracy = 0.1
+    )(branch_visits)
+  ) |>
+  arrange(financial_year)
+
+visit_change <- victoria_visits |>
+  summarise(
+    first_year_visits = first(branch_visits),
+    last_year_visits = last(branch_visits),
+    percentage_change = last_year_visits / first_year_visits - 1
+  )
+```
+
+
+These figures give you two possible angles:
+
+| Measure | 2022-23 | 2024-25 | Change |
+|---|---:|---:|---:|
+| In-person branch visits | 20.1 million | 24.2 million | +20.3% |
+| Municipal population | 6.62 million | 6.98 million | +5.4% |
+| Branch visits per person | 3.04 | 3.47 | +14.1% |
+
+::: {.callout-warning}
+The figures count **visits**, not unique visitors. They exclude mobile-library, delivery, outreach and online use. They show that use changed, but not why it changed.
+:::
+
+### Choose an angle
+
+Decide which result your page will lead with:
+
+* total branch visits rose by about one-fifth; or
+* branch visits per person increased, so the rise was larger than population growth.
+
+Write four short notes:
+
+1. **Audience:** who needs to know?
+2. **Claim:** what exact result will you state?
+3. **Evidence:** which values support it?
+4. **Qualification:** what must the reader not infer?
+
+Then draft a headline of no more than **12 words** and a lede of no more than **35 words**.
+
+::: {.unilur-solution}
+## One possible opening
+
+**Headline:** Victorian public library branch visits rose by one-fifth
+
+**Lede:** Victorian public library services reported 24.2 million in-person branch visits in 2024-25, up 20% from 20.1 million in 2022-23; the population covered by the survey grew by about 5%.
+
+The claim is about change in recorded visits. It is not a claim about unique visitors or the cause of the increase.
+:::
+
+## 2. Create the website (5 minutes)
+
+In RStudio, choose **File > New Project > New Directory > Quarto Website** and name the project `library-story`.
+
+Alternatively, use a terminal:
+
+```bash
+quarto create project website library-story
+```
+
+Replace `_quarto.yml` with:
+
+```yaml
+project:
+  type: website
+
+website:
+  title: "Victorian public library story"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Story
+      - href: methods.qmd
+        text: Methods
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+```
+
+Create `methods.qmd` beside `index.qmd`. Create a `data` folder, then [download the prepared PLV extract](data/plv-library-visits.csv) into it as `plv-library-visits.csv`.
+
+```text
+library-story/
+├── _quarto.yml
+├── index.qmd
+├── methods.qmd
+└── data/
+    └── plv-library-visits.csv
+```
+
+## 3. Write the story page (12 minutes)
+
+Replace `index.qmd` with this opening:
+
+```markdown
+---
+title: "[Your result-bearing headline]"
+author: "[Your name]"
+date: today
+---
+
+[Your lede of no more than 35 words.]
+```
+
+Copy the two R code chunks from **Start with the evidence** below your lede. Keep the figure label `fig-library-visits`; you may change both chunks to `echo: false` once they work.
+
+Below the figure, add:
+
+```markdown
+## [A heading that states a finding]
+
+[Explain what @fig-library-visits shows, why it matters to your
+audience, and what the data cannot establish.]
+
+[Read how the visits were measured](methods.qmd).
+```
+
+Your paragraph should:
+
+* interpret the comparison rather than repeat every value;
+* define the measure as in-person branch visits;
+* mention the most important limitation; and
+* avoid causal language.
+
+::: {.unilur-solution}
+## Possible interpretation
+
+### Branch visits increased faster than population
+
+In-person branch visits increased by 20.3% over the two years, while the population covered by the survey increased by 5.4%. Visits per person therefore rose from 3.04 to 3.47. The annual totals do not explain what caused the increase and do not include online or mobile-library use.
+:::
+
+## 4. Add the methods page (7 minutes)
+
+Paste this starter into `methods.qmd`, then replace the bracketed text:
+
+```markdown
+---
+title: "How the visits were measured"
+---
+
+The data come from the [Public Libraries Victoria Annual Statistical
+Survey](https://www.plv.org.au/resources/) and cover the financial
+years 2022-23 to 2024-25.
+
+## Measure
+
+A branch visit is an in-person visit to a branch library. The figures
+count visits rather than unique visitors. [Explain why that matters.]
+
+## Coverage and limitation
+
+The analysis uses the published Victorian total. It excludes mobile
+libraries, collection deliveries, outreach activities and online use.
+[State one conclusion the data cannot support.]
+
+[Return to the Victorian public library visits story](index.qmd).
+```
+
+Keep the source, comparison and material limitation on the story page. Put fuller definitions and extraction details here. Leave software operations and unused service rows out of the reader's main path.
+
+## 5. Render and test (8 minutes)
+
+Preview the site:
+
+```bash
+quarto preview
+```
+
+Open both pages from the navigation and narrow the browser window. Then give a partner **20 seconds** on the story page and ask:
+
+1. What changed, and by how much?
+2. What does "visit" mean?
+3. What can the data not establish?
+4. Can you find the methods and return to the story?
+
+Record the answers without explaining your intention. Revise one element they misunderstood, then render the complete project:
+
+```bash
+quarto render
+```
+
+`r checkbox("The claim, lede and visual use the same comparison")`
+
+`r checkbox("The source, measure and limitation are easy to find")`
+
+`r checkbox("The figure cross-reference and navigation work")`
