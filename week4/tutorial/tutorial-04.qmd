@@ -13,10 +13,6 @@ format:
 
 execute:
   cache: false
-
-knitr:
-  opts_chunk:
-    fig.path: "tutorial-04-figures/"
 ---
 
 
