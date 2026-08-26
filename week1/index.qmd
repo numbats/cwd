@@ -409,7 +409,7 @@ Communication is often thought of as discrete, independent acts but in fact it i
 
 ## [Types]{.monash-blue} of communication
 
--   **Intrapersonal** [-- communicating with one-self]{.fragment}
+-   **Intrapersonal** [-- communicating with oneself]{.fragment}
 -   **Dyadic/interpersonal** [-- two people interacting]{.fragment}
 -   **Small group** [-- two or more people interacting with group membership]{.fragment}
 -   **Public** [-- a group too large for all to contribute]{.fragment}

@@ -891,7 +891,7 @@ Note: the books below are freely available online via Monash Library.
 
 Note: the book below is not available on Monash library. 
 
-* Presentation zen: simple idea on presentation design and delivery by Garr Reynolds<sup>*</sup>
+* Presentation zen: simple ideas on presentation design and delivery by Garr Reynolds<sup>*</sup>
 
 [<sup>*</sup> These books are oriented toward corporate presentations, so assess their advice in the context of technical communication.]{.f4}
 

@@ -334,13 +334,13 @@ gtsummary::tbl_merge(tbls = list(t1, t2),
   * variables in the data,
   * the number of observations for each variable, 
   * missing values (if any),
-  * the distribution, e.g. in the form of five number of summaries or counts/percentages for categorical variables. 
+  * the distribution, e.g. in the form of five-number summaries or counts/percentages for categorical variables. 
   
 :::
 
 ## <i class="fas fa-table"></i> Descriptive summary statistics 
 
-* For numerical variables, you may have a **correlation table** which displays the correlation coefficients of every pair of variables. Because it is symmetrical, you can omit out the upper triangle.
+* For numerical variables, you may have a **correlation table** which displays the correlation coefficients of every pair of variables. Because it is symmetrical, you can omit the upper triangle.
 
 ```{r correlation-table, echo = FALSE}
 options(knitr.kable.NA = '')
@@ -642,7 +642,7 @@ mtcars |>
 
 ::: incremental
 
-* Besides the contents of table, a table may be accompanied with: **_table header_**, **_caption_**, **_footnotes_** and/or **_source notes_**.
+* Besides the contents of the table, a table may be accompanied with: **_table header_**, **_caption_**, **_footnotes_** and/or **_source notes_**.
 * The conventions of how and what to write will depend on your audience and medium of report
 * Generally if you are *communicating* information, your caption should:
   * [summarise the take-away message]{.monash-blue}, in other words, why should the audience care about this table?
@@ -659,7 +659,7 @@ mtcars |>
 
 * There are many packages that make table in R, including ones that wrangle the data for you to make specialised table output. E.g. `knitr::kable`, `kableExtra`, `formattable`, `gt`, `DT`, `pander`, `xtable`, `stargazer`.
 
-* You can read the documentation for each packages to make the table you want (I mainly use `knitr::kable`, `kableExtra` and `DT`).
+* You can read the documentation for each package to make the table you want (I mainly use `knitr::kable`, `kableExtra` and `DT`).
 
 * Whatever package you use, it's important that you understand the output and how it works with the medium you are trying to display the table.
 
@@ -839,7 +839,7 @@ DT::datatable(mtcars, options = list(pageLength = 4))
 
 . . . 
 
-* When you want to **_show exact values_** or the **_accuracy of the values are important_** to convey.
+* When you want to **_show exact values_** or the **_accuracy of the values is important_** to convey.
 
 . . . 
 
@@ -847,7 +847,7 @@ DT::datatable(mtcars, options = list(pageLength = 4))
 
 
 
-## <i class="fas fa-table red"></i> Case study  heatmap table with `formattable` 
+## <i class="fas fa-table red"></i> Case study: heatmap table with `formattable` 
 
 ```{r}
 #| output-location: fragment

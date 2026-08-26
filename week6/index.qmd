@@ -178,7 +178,7 @@ Data visualization is **part art** and **part science**. The challenge is to get
 
 ## Communication
 
-Effective data visualisation means to design your data plot to effectively use human visual system to improve cognition about a targeted information from the data.
+Effective data visualisation means to design your data plot to effectively use the human visual system to improve cognition about a targeted information from the data.
 
 :::
 
@@ -393,7 +393,7 @@ df2 %>%
 
 . . . 
 
-The legend and the line order is different...
+The legend and the line order are different...
 
 
 ## India has overtaken China and New Zealand to become the third largest country of birth for Australian residents, 2021 census data has found
@@ -641,7 +641,7 @@ dfsex %>%
        title = "Top 5 countries of birth outside Australia by sex")
 ```
 
-Can you tell which birth place have more women than men amongst the Australian residents?
+Can you tell which birth place has more women than men amongst the Australian residents?
 
 
 ## Law of Proximity
@@ -663,7 +663,7 @@ gprox
 
 **Data story**
 
-Census 2021 shows far more women born in Phillipines and China migrate to Australia than men born in their respective countries, whilst more men born in India migrate to Australia than women born in India.
+Census 2021 shows far more women born in Philippines and China migrate to Australia than men born in their respective countries, whilst more men born in India migrate to Australia than women born in India.
 
 
 ## Law of Similarity
@@ -771,7 +771,7 @@ colorspace::hcl_palettes("Diverging", plot = TRUE, n = 7)
 
 ## Colorblindness 
 
-Colorblindness affect roughly 1 in 8 men.
+Colorblindness affects roughly 1 in 8 men.
 
 ```{r, fig.width = 12}
 colorblindr::cvd_grid(gprox)
@@ -788,10 +788,10 @@ Check your color choices using the [`colorblindr`](https://github.com/clauswilke
 
 ## Summary
 
-* We went some examples of constructing data plots to illustrate your data story
+* We went through some examples of constructing data plots to illustrate your data story
 * We looked at some plot types and elementary perceptual tasks 
 * We examined the empirical results of the information retrieval from elementary perceptual tasks
-* We studied at some cognitive concepts, like preattentive processing and Gestalt principles, for data visualisation 
+* We studied some cognitive concepts, like preattentive processing and Gestalt principles, for data visualisation 
 * We saw the different types of color palettes and considered color choices for colorblind audiences 
 
 :::

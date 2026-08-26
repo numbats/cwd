@@ -237,7 +237,7 @@ Be pretty broad in your search. Some examples (from today):
 
 ::: {.incremental}
 - You can probably do anything that mentions the word "data" and doesn't require an enormous amount of experience
-- This would include jobs like Business Analyst, Data Analyst, Data Scientist, Data Engineer, Reporting Analyst, Data Engineer, and probably more
+- This would include jobs like Business Analyst, Data Analyst, Data Scientist, Data Engineer, Reporting Analyst, and probably more
 - If they ask for Python, you can probably still do it. You know _some_ Python already and you have deep knowledge in a language you can apply to _any_ other language.
 :::
 
@@ -329,13 +329,13 @@ Use formal language, and be gender neutral whenever possible.
 
 Dear Sir/Madam,
 
-I wish to apply for the position of Lecturer in Business Analytics. I would relish the challenge and the exception opportunity to learn provided by this position. 
+I wish to apply for the position of Lecturer in Business Analytics. I would relish the challenge and the exceptional opportunity to learn provided by this position. 
 
 I am currently a postdoctoral research fellow at Monash University, where my focus is on constructing network models of patient transfers to predict and later control the spread of antimicrobial resistance. I was awarded my PhD in 2019 from The University of Melbourne, supervised by Prof James McCaw, Prof Jodie McVernon and Dr Patricia Campbell. My project is focused on constructing mathematical models of Scabies and Group A Streptococcus transmission in remote Indigenous communities in northern Australia. I have previously completed a Masters of Philosophy at The University of Adelaide, where I constructed a household-based model of influenza transmission and modelled the use of antivirals. My experience in these projects has given me a strong background in statistical modelling and operational research.
 
 During the COVID-19 pandemic, I created and led the modelling and forecasting team, which later became the COVID-19 Analytics Team. My time working in this team allowed me to improve my skills in communicating to non-experts, as well as in leading and supervising a team that consisted of vastly different experience and skill levels.
 
-Each of my research projects has been heavily collaborative, often involving colleagues across mathematics and statistics, epidemiology, public health and bioinfomatics. This has allowed me to develop my communication skills, both written and verbal, to a variety of target audiences.
+Each of my research projects has been heavily collaborative, often involving colleagues across mathematics and statistics, epidemiology, public health and bioinformatics. This has allowed me to develop my communication skills, both written and verbal, to a variety of target audiences.
 
 I have lead authored four publications which appeared in peer-reviewed journals, and made substantial contributions to four others, often with coauthors across a wide variety of research interests. This indicates my ability to work well in a team and to communicate my work effectively.
 
@@ -354,7 +354,7 @@ Michael Lydeamore
 
 ## Online presence
 
-For analysts, an online portfolio is becoming increasingly useful. This used to be restricted to just softwar engineers, but given the way we now think about data analysis, you can see why the portfolio might be useful.
+For analysts, an online portfolio is becoming increasingly useful. This used to be restricted to just software engineers, but given the way we now think about data analysis, you can see why the portfolio might be useful.
 
 ::: {.incremental}
 - GitHub profile
@@ -391,7 +391,7 @@ Some tips:
 - Practice your elevator pitch (30 second summary of who you are and what you do)
 - Every event you attend, try to meet 3 new people
 - Follow around people you know and use their connections
-- _Never_ point our your weaknesses!
+- _Never_ point out your weaknesses!
 :::
 
 :::

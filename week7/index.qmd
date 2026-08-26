@@ -180,7 +180,7 @@ From here this all got too confusing and so now we have "living standards"
 
 * HTML files have the extension `.html`.
 * HTML files are often rendered using a web browser via an URL.
-* HTML files are just text files that follows a special syntax that alerts web browsers how to render it.
+* HTML files are just text files that follow a special syntax that alerts web browsers how to render it.
 
 ## <i class="fab fa-html5 monash-orange2"></i>  Simple HTML example 
 
@@ -310,7 +310,7 @@ The breakdown of this HTML syntax:
 <td style="text-align:right;padding-right:30px;">header level 1:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;h1><span class="monash-gray50">content</span>&lt;/h1></span></td>
 </tr>
 <tr class="fragment">
-<td style="text-align:right;padding-right:30px;">header level 2:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;h2><span class="monash-gray50">content</span>&lt;/h2></span> (note: only up to 6 levels)</td></td>
+<td style="text-align:right;padding-right:30px;">header level 2:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;h2><span class="monash-gray50">content</span>&lt;/h2></span> (note: only up to 6 levels)</td>
 </tr>
 <tr class="fragment">
 <td style="text-align:right;padding-right:30px;">italic:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;i><span class="monash-gray50">content</span>&lt;/i></span></td>
@@ -576,7 +576,7 @@ h1 {
 
 ##  `r js` JavaScript (JS) {#js}
 
-* JS is a programming language and enable interactive components in HTML documents.
+* JS is a programming language and enables interactive components in HTML documents.
 * You can insert JS into a HTML document in two ways:
 
 ::: fragment
@@ -694,7 +694,7 @@ format:
 ---
 ```
 
-where `header.html`, `before_body.html`, `after_body.html` includes the JS code, e.g. 
+where `header.html`, `before_body.html`, `after_body.html` include the JS code, e.g. 
 
 ```
 <script src="myjava.js"></script>
@@ -711,7 +711,7 @@ document.getElementById("p1").innerHTML = "content";
 * [jQuery](https://jquery.com/) is a widely used JS library for object selection and manipulation.<sup>1</sup>
 * [MathJax](https://www.mathjax.org/) is a JS library for displaying mathematics.<sup>1</sup>
 * [Font Awesome](https://fontawesome.com/) inserts icons to web using their CSS.^[Sometimes included in certain Rmd HTML documents.]
-* [D3.js](https://d3js.org/) is one of the most popular JS library for interactive data visualisation.   
+* [D3.js](https://d3js.org/) is one of the most popular JS libraries for interactive data visualisation.   
 
 
 
@@ -790,7 +790,7 @@ Different clients may work differently! E.g. Internet Explorer and Chrome may re
 
 ## 🔎 Inspect Element [LIVE DEMO]{.f4}
 
-Below GIF shows interactive use of Inspect Element^[Or called Inspect.] available from the menu in most web browsers when you right click on the web page^[Note: this is for inspection and doesn't actual make changes to the files.]:
+Below GIF shows interactive use of Inspect Element^[Or called Inspect.] available from the menu in most web browsers when you right click on the web page^[Note: this is for inspection and doesn't actually make changes to the files.]:
 
 ![](images/inspect-element.gif){fig-align="center" width="60%"}
 

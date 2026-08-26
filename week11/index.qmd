@@ -6,7 +6,7 @@ email: "michael.lydeamore@monash.edu"
 date: "Week 11"
 department: "Department of Econometrics and Business Statistics"
 unit-url: "cwd.numbat.space"
-footer: "ETC5523 Week 10"
+footer: "ETC5523 Week 11"
 format: 
   revealjs:
     logo: images/monash-one-line-black-rgb.png
@@ -246,7 +246,7 @@ if (interactive()) {
   * the full list of Rd tags are found [here](https://roxygen2.r-lib.org/articles/rd.html)
 - `devtools::document()` converts the Rd tags to appropriate sections of `.Rd` files written in the `man/` folder
 
-## Documenting `solarash` package 
+## Documenting `solardash` package 
 
 `R/cleaning.R`
 ```r
@@ -334,7 +334,7 @@ library(solarash)
 ## Vignette: a long-form documentation
 
 - Some documentation doesn't fit as a package or function documentation.
-- You may want to built a vignette (article) for these cases.
+- You may want to build a vignette (article) for these cases.
 
 . . . 
 
@@ -395,7 +395,7 @@ I believe it is where things are heading, so it is worth trying out, even if it 
   - `Depends`: Specify the version of R that the package will work with or package that it is dependent on (e.g. for ggplot2 extension packages, it depends on ggplot2).
   - `Imports`: External packages that are imported to use in your package. Most external packages are in this category.
   - `Suggests`: Packages that are not strictly needed but are nice to have, i.e. you use them in examples or vignettes. 
-- You can add easily add this via `usethis::use_package()`
+- You can easily add this via `usethis::use_package()`
 
 # Sharing {background-color="#006DAE"}
 
@@ -428,7 +428,7 @@ or for existing repo, run from the terminal:
 
 ```{zsh}
 #| eval: false
-#| code-code-line-numbers: false
+#| code-line-numbers: false
 git remote add origin https://github.com/user/repo.git
 ```
 
@@ -502,7 +502,7 @@ First, modify `_pkgdown.yml` file
 
 ```yaml
 template:
-  boostrap: 5
+  bootstrap: 5
 ```
 
 And then the world is your customising oyster:
@@ -701,7 +701,7 @@ system("grep -c examples man/*Rd", intern = TRUE) |>
   grep(":0$", x = _, value = TRUE)
 ```
 * Make sure your description doesn't start with "This package ..."
-* Makes sure you have a `BugReports` and `URL` with `devtools::use_github_links()`
+* Make sure you have a `BugReports` and `URL` with `devtools::use_github_links()`
 :::
 
 # Submit it! {background-color="#006DAE"}
@@ -723,7 +723,7 @@ They are helpful and although they may reject your package, they will give you f
 ::: nonincremental
 
 - Package documentation is important to let others know about the goal of the package, what your function does, and how to use your package.
-- Sharing your package by making it easy to install, commiting to good documentation, and making the documentation accessible helps to build trust to use your package.
+- Sharing your package by making it easy to install, committing to good documentation, and making the documentation accessible helps to build trust to use your package.
 - You can make package development and distribution easy with `usethis`, `devtools`, `roxygen2`, and `pkgdown`.
 
 :::

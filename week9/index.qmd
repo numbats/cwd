@@ -123,7 +123,7 @@ Open-ended dialogue between the user and the computer
 
 ::: incremental
 
-* Enable audience to some degree **co-author narrative**, i.e. narratives moves away from being author-guided to audience-driven.
+* Enable audience to some degree **co-author narrative**, i.e. narratives move away from being author-guided to audience-driven.
 * **Leverage user interaction techniques** to improve user experience, e.g. 
    * Show details on demand
    * Reduce overall cognitive load
@@ -183,7 +183,7 @@ A measure of how well the user can convey an interaction intent to the computer.
 
 ## Efficiency [(Desired Condition)]{.monash-gray50}
 
-The balance of benefits and costs for using an interactive visualisation approach. E.g. does the human effort of building the interactive visualisation outweigh its benefits? Are the efforts of users to interact with it offset the information gained for users?
+The balance of benefits and costs for using an interactive visualisation approach. E.g. does the human effort of building the interactive visualisation outweigh its benefits? Are the efforts of users to interact with it offset by the information gained for users?
 
 :::
 :::
@@ -196,7 +196,7 @@ The balance of benefits and costs for using an interactive visualisation approac
 * **Exploration** promotes undirected search
 * **Description** characterises observations by associated data elements
 * **Explanation** identifies contributing causes behind an observation 
-* **Confirmation** find concrete evidences for or against a hypothesis 
+* **Confirmation** finds concrete evidence for or against a hypothesis 
 * **Presentation** communicates results of a confirmed analysis
 
 :::   
@@ -211,7 +211,7 @@ The balance of benefits and costs for using an interactive visualisation approac
 
 ## Example: How you will die 
 
-[https://flowingdata.com/2016/01/19/how-you-will-die/](https://flowingdata.com/2016/01/19/how-you-will-die/")
+[https://flowingdata.com/2016/01/19/how-you-will-die/](https://flowingdata.com/2016/01/19/how-you-will-die/)
 
 ![](images/how-you-will-die.png){fig-align="center"}
 
@@ -578,11 +578,11 @@ server | ui
 
 # Debugging
 
-* `browser()` + breaking points
+* `browser()` + breakpoints
 
 # How to deploy your Shiny app?
 
-[shinyapps.io](shinyapps.io)
+[shinyapps.io](https://www.shinyapps.io/)
 
 
 ## Week 9 Lesson 
@@ -594,7 +594,7 @@ server | ui
 
 * We went through the benefits of interactivity for communicating data 
 * We considered how to design displays for web apps
-* You learnt how to use make web apps using `shiny`
+* You learnt how to make web apps using `shiny`
 
 
 :::

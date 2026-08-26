@@ -1048,7 +1048,7 @@ Build and deliver it:
 ## `webR` with Quarto
 
 * Community-developed extension to run R code in the browser
-* Works with HTML, RevealJS presentations, websites, blogs ```{python}
+* Works with HTML, RevealJS presentations, websites, blogs
 
 ::: {.fragment}
 * Is how the [startr.numbat.space](https://startr.numbat.space/) website works
@@ -1120,7 +1120,7 @@ ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, colour = species)) +
 
 ## Mermaid Diagrams
 
-At some poinmt you'll almost certainly need to draw a flow diagram. Quarto can do this using [Mermaid](https://mermaid.js.org/).
+At some point you'll almost certainly need to draw a flow diagram. Quarto can do this using [Mermaid](https://mermaid.js.org/).
 
 ```{{mermaid}}
 %%| echo: false

@@ -6,7 +6,7 @@ email: "michael.lydeamore@monash.edu"
 date: "Week 8"
 department: "Department of Econometrics and Business Statistics"
 unit-url: "cwd.numbat.space"
-footer: "ETC5523 Week 9"
+footer: "ETC5523 Week 8"
 format: 
   revealjs:
     logo: images/monash-one-line-black-rgb.png
@@ -98,7 +98,7 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 * Documentation informs users of how to use your package 
 * Adopting best practice development workflow will make package development easier 
-* Testing can increase the trust worthiness of the package
+* Testing can increase the trustworthiness of the package
 * Distributing your package is needed for adoption of your package by others
 
 
@@ -285,7 +285,7 @@ plot_census_data <- function() {
 
 ## Code commenting {auto-animate="true"}
 
-Comments in code _are communication_. There's no need to re-state very clear code, but if you are doing anything even mildly complicated, changes are you won't be able to understand the code quickly.
+Comments in code _are communication_. There's no need to re-state very clear code, but if you are doing anything even mildly complicated, chances are you won't be able to understand the code quickly.
 
 Example:
 
@@ -300,7 +300,7 @@ palmerpenguins::penguins |>
 
 ## Code commenting {auto-animate="true"}
 
-Comments in code _are communication_. There's no need to re-state very clear code, but if you are doing anything even mildly complicated, changes are you won't be able to understand the code quickly.
+Comments in code _are communication_. There's no need to re-state very clear code, but if you are doing anything even mildly complicated, chances are you won't be able to understand the code quickly.
 
 Example:
 
@@ -554,7 +554,7 @@ Often this will need multiple rounds of feedback (like all writing).
 
 To include your custom print method in the package, you have to register an _S3 object_. This is out of scope for the unit, but if you are interested, you can read more in the [R packages manual](https://r-pkgs.org/dependencies-in-practice.html#imports-and-exports-related-to-s3).
 
-## Week 9 Lesson 
+## Week 8 Lesson 
 
 
 ::: callout-important
@@ -564,7 +564,7 @@ To include your custom print method in the package, you have to register an _S3 
 ::: nonincremental
 
 - Package documentation is important to let others know about the goal of the package, what your function does, and how to use your package.
-- Sharing your package by making it easy to install, implementing unit tests, commiting to good documentation, and making the documentation accessible helps to build trust to use your package.
+- Sharing your package by making it easy to install, implementing unit tests, committing to good documentation, and making the documentation accessible helps to build trust to use your package.
 - You can make package development and distribution easy with `usethis`, `devtools`, and `roxygen2`.
 
 :::
