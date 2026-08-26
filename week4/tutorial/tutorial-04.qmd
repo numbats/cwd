@@ -13,6 +13,10 @@ format:
 
 execute:
   cache: false
+
+knitr:
+  opts_chunk:
+    fig.path: "tutorial-04-figures/"
 ---
 
 
@@ -34,11 +38,23 @@ checkbox <- function(text) {
 }
 ```
 
+[🎞️ Tutorial slides](tutorial-04-slides.html){target="_blank"}
+
 ## 🎯 Objectives
 
 * Rewrite a report to improve clarity and structure
 * Practice writing an executive summary
 
+## Introduction 
+
+Good analysis buried in bad writing has no impact. As analysts, we need o tailor our communication outputs to our specific audiences while emphasising key findings and recommendations. 
+
+## 👥 Exercise 
+
+You will be given a report that is poorly structured and written by a colleague. Your task is to rewrite the report into a **1-pager for a non-technical CEO. 
+
+- Improve the clarity and structure, and
+- Write an executive summary that clearly communicates the key findings of the report. 
 
 <!-- Instructor note: This document is intentionally bad. Give to students to restructure, rewrite the executive summary, fix the caption, and write about the figure in text. -->
 

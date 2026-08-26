@@ -1,0 +1,145 @@
+---
+pagetitle: "ETC5523: Communicating with Data"
+subtitle: "Writing Clearly and Concisely"
+author: "Michael Lydeamore"
+email: "michael.lydeamore@monash.edu"
+date: "Week 4"
+department: "Department of Econometrics and Business Statistics"
+unit-url: "cwd.numbat.space"
+footer: "ETC5523 Week 4"
+format: 
+  revealjs:
+    logo: images/monash-one-line-black-rgb.png
+    slide-number: true
+    multiplex: false
+    theme: ../../assets/monash.scss
+    show-slide-number: all
+    show-notes: false
+    controls: true
+    width: 1280
+    height: 720
+    css: [../../assets/tachyons-addon.css, ../../assets/custom.css]
+    include-after-body: "../../assets/after-body.html"
+execute:
+  echo: true
+---
+
+```{r, include = FALSE}
+current_file <- knitr::current_input()
+basename <- gsub(".[Rq]md$", "", current_file)
+
+knitr::opts_chunk$set(
+  fig.path = sprintf("images/%s/", basename),
+  fig.width = 6,
+  fig.height = 4,
+  fig.align = "center",
+  out.width = "100%",
+  fig.retina = 3,
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  cache.path = "cache/"
+)
+
+fa_file <- function(ext) {
+  glue::glue('<span class="fa-layers fa-fw"><i class="fas fa-file"></i><span class="fa-layers-text fa-inverse" data-fa-transform="shrink-11 down-3" style="font-weight:900;color:#e3e3e3;">{ext}</span></span>')
+}
+```
+
+## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
+
+### `r rmarkdown::metadata$subtitle`
+
+Lecturer: *`r rmarkdown::metadata$author`*
+
+`r rmarkdown::metadata$department`
+
+::: tl
+<br>
+
+<ul class="fa-ul">
+
+<li>
+
+[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`
+
+</li>
+
+<li>
+
+[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`
+
+</li>
+
+<li>
+
+[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
+
+</li>
+
+</ul>
+
+<br>
+:::
+
+
+```{css}
+/*| echo: false */
+
+.statement {
+  text-align: center;
+  font-size: 1em;
+  font-weight: bold;
+  color: #ff3b3b;
+}
+
+```
+
+## Framing
+
+::: {.incremental}
+* Front-load your key metrics
+* Anchor in time and context / cause
+* Remove filler
+* Try and read in under 10 seconds
+:::
+
+## Executive Summaries - BLUF Structure
+
+**B**ottom **L**ine **U**p **F**ront is a popular structure:
+
+::: {.incremental}
+1. [Bottom line]{.monash-blue}: outcome in one sentence, one key number.
+2. [Drivers]{.monash-blue}: 1-2 causes, selective numbers
+3. [Implications]{.monash-blue}: risk/uncertainty, impact
+4. [Action]{.monash-blue}: what to do next, and by when
+:::
+
+## Common pitfalls:
+
+* Weather report summaries: Make sure to say "so what"
+* Jargon and metrics without context
+* Laundry list of numbers
+* Burying the ask
+
+## Consider writing techniques:
+
+* Signposting: "The key takeaway is that..."
+* Old to new: "Compared to last year, this year..." 
+* Internal summaries:
+* Repeat keywords
+* Transition gracefully
+
+
+## What is a good caption?
+
+::: {.incremental}
+* Who/what/when, unit/denominator, and critical caveats
+* State the [takeaway]{.monash-blue}
+* <= 3 numbers, avoiding method details unless essential
+:::
+
+::: {.fragment}
+Checklist: Scope · Takeaway · Units/denominators · Selective Numbers · Caveats
+:::

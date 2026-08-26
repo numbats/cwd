@@ -6,3 +6,4 @@ site_libs/
 week2/ETC5523 Week Two Workshop_ Journalism and Data.pptx
 
 **/*.quarto_ipynb
+/week4/tutorial/tutorial-04-figures/
