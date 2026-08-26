@@ -51,7 +51,7 @@ Good analysis buried in bad writing has no impact. As analysts, we need o tailor
 
 ## 👥 Exercise 
 
-You will be given a report that is poorly structured and written by a colleague. Your task is to rewrite the report into a **1-pager for a non-technical CEO. 
+You will be given a report that is poorly structured and written by a colleague. Your task is to rewrite the report into a **1-pager for a non-technical CEO**. 
 
 - Improve the clarity and structure, and
 - Write an executive summary that clearly communicates the key findings of the report. 
