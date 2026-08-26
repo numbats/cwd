@@ -11,6 +11,7 @@ project:
     - "week3/tutorial/data/plv-library-visits.csv"
     - "week1/tutorial/data/melb-airport-max-temp-data.csv"
     - "week1/tutorial/data/melb-airport-min-temp-data.csv"
+    - "week4/tutorial/tutorial-04_files/figure-html/fig-signups-2025-1.png"
     - "data/census-birthplace.csv"
     - "data/census-birthplace-by-sex.csv"
 
