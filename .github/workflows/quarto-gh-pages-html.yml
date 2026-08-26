@@ -53,6 +53,11 @@ jobs:
       - name: Render Quarto Project
         uses: quarto-dev/quarto-actions/render@v2
 
+      - name: Copy Week 4 tutorial figure
+        run: |
+          mkdir -p _site/week4/tutorial/tutorial-04_files/figure-html
+          cp week4/tutorial/tutorial-04_files/figure-html/fig-signups-2025-1.png _site/week4/tutorial/tutorial-04_files/figure-html/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
