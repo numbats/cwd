@@ -12,190 +12,329 @@ format:
 
 ## 🎯 Objectives
 
-* create new functions and generic methods
-* understand and follow guidelines for best way to communicate with tables
-* construct regression, descriptive, and interactive tables with R Markdown
-* deconstruct and manipulate "novel" model objects
-* modify the look of *HTML tables* produced by R Markdown or Quarto
+* extract model information with accessor functions and `broom`
+* build, critique and refine regression and descriptive tables with `gtsummary` and `kableExtra`
+* apply communication choices for precision, units, alignment and labels
+* select and interpret the results that matter for a stated audience
 
 
 ::: {.callout-note collapse="true"}
 
 # Preparation
 
-Install the R-packages
+Install the R-packages (once per machine):
 
 ``` r
-install.packages(c("broom", "DT", "kableExtra", "palmerpenguins", "modelsummary", "gtsummary"))
+install.packages(c("broom", "carData", "gtsummary", "kableExtra", "tidyverse"))
 ```
+
+The `Salaries` data are in the `carData` package — no separate download is needed.
 
 :::
 
+::: {.callout-note}
+
+## Data: Academic salaries
+
+The `Salaries` data set in `carData` contains 9-month salaries for 397 college faculty in the US (`carData::Salaries`). Variables:
+
+* `salary` — 9-month salary (USD)
+* `rank` — `AsstProf`, `AssocProf`, `Prof`
+* `discipline` — `A` (theoretical) or `B` (applied)
+* `yrs.since.phd` — years since PhD
+* `yrs.service` — years of service
+* `sex` — `Female` / `Male`
+
+We use one model throughout the tutorial so you can see the full workflow from model object to communicative table.
+
+```{r}
+#| echo: true
+#| message: false
+library(tidyverse)
+library(carData)
+library(broom)
+library(gtsummary)
+library(kableExtra)
+
+data(Salaries, package = "carData")
+glimpse(Salaries)
+```
+
+:::
 
 ## 👥 Exercise 5A
 
-**Reporting regression tables**
-
-Create regression tables, respecting the standard guidelines of presentation for tables, with models `lm1` and `rlm1` below using `modelsummary`, `gtsummary` or otherwise. 
+**From model object to communicative regression table**
 
 ```{r}
-library(palmerpenguins)
-library(MASS)
-lm1 <- lm(bill_length_mm ~ species + bill_depth_mm + flipper_length_mm + body_mass_g + sex, data = penguins)
-rlm1 <- rlm(bill_length_mm ~ . , data = penguins)
+#| echo: true
+fit <- lm(salary ~ rank + yrs.since.phd + sex, data = Salaries)
 ```
+
+`fit` contains much more than a printed summary. Your audience is a technically competent, time-poor head of school who wants to know whether rank and sex are associated with salary after adjusting for time since PhD.
+
+### A1. Extract the right pieces
+
+Using `fit`, compare what you get from:
+
+* `coef(fit)` and `confint(fit)` / `summary(fit)` 
+* `broom::tidy(fit, conf.int = TRUE)` and `broom::glance(fit)` and `broom::augment(fit)` (first 6 rows)
+
+Which `broom` verb gives you: 
+
+1. one row per term, 
+2. one row per model, 
+3. one row per observation? 
+
+Why is `tidy(fit, conf.int = TRUE)` a better starting point for a table than copying values from `summary(fit)`?
 
 ::: unilur-solution
-
 ```{r}
-lm1 <- lm(bill_length_mm ~ species + bill_depth_mm + flipper_length_mm + body_mass_g + sex, data = penguins)
-rlm1 <- rlm(bill_length_mm ~ . , data = penguins)
-modelsummary::modelsummary(models = list(lm1, rlm1))
+coef(fit)
+confint(fit)
+summary(fit)
+
+tidy(fit, conf.int = TRUE)
+glance(fit)
+head(augment(fit))
 ```
 
+* `tidy` — one row per term (estimate, SE, CI, p-value). This is the table-ready form.
+* `glance` — one row per model (R², AIC, n, etc.).
+* `augment` — one row per observation (fitted, residual, influence).
+
+`tidy()` returns a data frame you can filter, rename and pipe into a table without manual copying. It preserves units and uncertainty together and works consistently across model classes. `summary()` is for console inspection, not for communication.
 :::
 
+### A2. Start from a default table
 
-## 🛠️ Exercise 5B
-
-**Interactive data tables**
-
-Produce the same table that you find below using `DT` using the `penguins` data in the `palmerpenguins` package.
-
-```{r}
-#| echo: false
-
-library(palmerpenguins)
-library(tidyverse)
-library(DT)
-
-penguins %>% 
-  group_by(species) %>% 
-  summarise(
-    fivenum = list(setNames(as.vector(summary(na.omit(bill_length_mm))),
-                   c("Min", "Q1", "Median", "Mean", "Q3", "Max")))) %>% 
-  unnest_wider(fivenum) %>% 
-  datatable(escape = FALSE,
-            options = list(paging = FALSE,
-                           dom = "t")) %>% 
-  formatRound(columns = c("Min", "Q1", "Mean", "Median", "Q3", "Max"), digits = 2)
-```
-
-::: unilur-solution
+Build the default regression table with `gtsummary`:
 
 ```{r}
 #| eval: false
-
-
-library(palmerpenguins)
-library(tidyverse)
-library(DT)
-
-penguins %>% 
-  group_by(species) %>% 
-  summarise(
-    fivenum = list(setNames(as.vector(summary(na.omit(bill_length_mm))),
-                   c("Min", "Q1", "Median", "Mean", "Q3", "Max")))) %>% 
-  unnest_wider(fivenum) %>% 
-  datatable(escape = FALSE,
-            options = list(paging = FALSE,
-                           dom = "t")) %>% 
-  formatRound(columns = c("Min", "Q1", "Mean", "Median", "Q3", "Max"), digits = 2)
-```
-
-:::
-
-## 👥 Exercise 5C - Challenge
-
-**Working with robust linear models**
-
-Consider the artificial data in the object `df`. There are two obvious outliers. Which observations are the outliers?
-
-```{r}
-#| message: false
-#| warning: false
-
-library(tidyverse)
-library(broom)
-library(palmerpenguins)
-library(MASS)
-df <- tibble(x = 1:20, y = c(1:18, 49:50))
-ggplot(df, aes(x, y)) + 
-  geom_point(size = 2) + theme_bw(base_size = 12)
-
-```
-
-A simple linear model where parameters are estimated using least squares estimate are not robust to outliers. Below we fit two models: 
-
-1. a linear model with least square estimates contained in `fit_lm` and 
-2. a robust linear model contained in `fit_rlm`. 
-
-To explain briefly, a robust linear model down-weights the contribution of the observations that are outlying observations to estimate parameters.
-
-```{r}
 #| echo: true
-
-fit_lm <- lm(y ~ x, data = df) 
-fit_rlm <- rlm(y ~ x, data = df) 
+tbl_regression(fit, intercept = TRUE)
 ```
 
-Below is a modification to the `augment` method from the `broom` package to extract some model-related values and the weights from the iterated re-weighted least squares.
+Render it (run it yourself). Then critique it for the head-of-school audience:
 
-```{r}
-#| echo: true
-augment.rlm <- function(fit, ...) {
-   broom:::augment.rlm(fit) %>% 
-    mutate(w = fit$w)
-}
-
-augment(fit_rlm)
-```
-
-Here is a plot to compare the two model fits, and to give some understanding of these weights. What do you notice about the weights?
-
-Can you 
-
-a) recreate this plot using the functions in this question and
-b) improve the plot to better undertstand the differences in the model and the weights?
-
-```{r}
-ggplot(augment(fit_rlm), aes(x, y, color = w)) + 
-  geom_point(size = 2) + 
-  geom_smooth(method = "lm", se = FALSE, color = "#C8008F") +
-  geom_smooth(method = "rlm", se = FALSE, color = "#027EB6") + 
-  annotate("text", x = 20.5, y = c(21, 31), 
-           label = c("rlm", "lm")) + 
-  theme_bw(base_size = 12) + 
-  labs(title = "Robust vs. non-robust linear models") + 
-  scale_color_continuous(type = "viridis")
-```
+1. Which row answers the substantive question? Is the intercept useful here?
+2. Can the labels be understood without seeing the R code?
+3. Does every column (e.g. p-values) need to be shown?
+4. Is the displayed precision appropriate for salaries in dollars?
 
 ::: unilur-solution
-
-We can see that the two outlier observations on the right-hand side of the plot have a much smaller weight (`w`) in the robust linear regression model.
-
-We can also see that the robust linear regression model follows the _majority_ of points much closer than the linear model.
-
-The plot highlights the differences between the linear model and the robust linear model well, but it is hard to see the value of the points (i.e. their weight). One simple improvement is to change the order the layers are drawn, and put the dots on top:
-
-```{r rlm}
-#| message: false
-#| warning: false
+```{r}
 #| echo: true
-
-ggplot(augment(fit_rlm), aes(x, y, color = w)) + 
-  geom_smooth(method = "lm", se = FALSE, color = "#C8008F") +
-  geom_smooth(method = "rlm", se = FALSE, color = "#027EB6") + 
-  geom_point(size = 2) + 
-  annotate("text", x = 20.5, y = c(21, 31), 
-           label = c("rlm", "lm")) + 
-  theme_bw(base_size = 12) + 
-  labs(title = "Robust vs. non-robust linear models") + 
-  scale_color_continuous(type = "viridis")
-
+tbl_regression(fit, intercept = TRUE)
 ```
 
-Now we can see the colours of the points much clearer.
-
+Critique: the intercept (expected salary when `rank=AsstProf`, `yrs.since.phd=0`, `sex=Female`) is not substantively interesting and distracts from the comparisons of interest. Labels such as `rank` and `yrs.since.phd` need plain English and units. P-values add little for this audience; the confidence interval already conveys uncertainty around the size of each difference. Precision should be to the nearest dollar (or nearest $100) with comma grouping, not many decimal places.
 :::
 
+### A3. Refine the table for its purpose
+
+Refine the table by adapting the lecture workflow:
+
+* hide the intercept (`intercept = FALSE`),
+* give plain labels with units,
+* round to an appropriate precision,
+* hide p-values for this audience,
+* embolden variable labels.
+
+```{r}
+#| eval: false
+tbl_regression(
+  fit,
+  intercept = FALSE,
+  label = list(
+    rank ~ "Rank",
+    yrs.since.phd ~ "Years since PhD",
+    sex ~ "Sex"
+  ),
+  estimate_fun = label_style_number(digits = 0, big.mark = ",")
+) |>
+  modify_column_hide(columns = p.value) |>
+  bold_labels()
+```
+
+Render the refined table. What changed and why?
+
+::: unilur-solution
+```{r}
+tbl_regression(
+  fit,
+  intercept = FALSE,
+  label = list(
+    rank ~ "Rank",
+    yrs.since.phd ~ "Years since PhD",
+    sex ~ "Sex"
+  ),
+  estimate_fun = label_style_number(digits = 0, big.mark = ",")
+) |>
+  modify_column_hide(columns = p.value) |>
+  bold_labels()
+```
+
+Changes: intercept removed, labels are audience-readable with no code names, estimates shown as whole dollars with `1,000` grouping (salaries do not warrant decimals), p-value hidden because the interval is the relevant uncertainty for this purpose, and bold labels aid scanning. The table now prioritises the comparisons the head of school asked about: rank and sex adjusted for time since PhD.
+
+You could also use `estimate_fun = label_style_sigfig(digits = 3)` if you prefer significant-figure control; for salaries on the order of $50k–$150k, 0 decimal places and a comma is the key choice.
+:::
+
+### A4. Write the take-away sentence
+
+Using the refined table (or `tidy(fit, conf.int = TRUE)`), write **one sentence** for the head of school that:
+
+* names the comparison (e.g. Prof vs AsstProf, or Male vs Female, holding yrs.since.phd constant),
+* states the size in dollars with its 95% confidence interval,
+* avoids claiming causation ("associated with", not "caused by").
+
+::: unilur-solution
+One possible sentence (using Prof vs AsstProf; numbers will match your run):
+
+> After adjusting for years since PhD and sex, full professors earned an estimated $47,636 more (95% CI: $38,960 to $56,311) than assistant professors, on average.
+
+Or for sex (note the interval includes zero):
+
+> After adjusting for rank and years since PhD, male faculty earned an estimated $5,147 more than female faculty (95% CI: –$2,794 to $13,087), on average — an imprecise difference that is compatible with no association after adjusting for these factors.
+
+Both make the unit (USD), the reference category, and the uncertainty explicit, and do not claim the model has established a causal effect. See `week5/index.qmd` “Interpret the result before formatting it” for the lecture wording template.
+:::
+
+## 🛠️ Exercise 5B
+
+**Descriptive tables and communication polish**
+
+### B1. A descriptive summary that makes comparison easy
+
+Produce a descriptive summary by sex using the same workflow as the lecture’s `by = cyl` example. Adapt it for Salaries:
+
+```{r}
+#| eval: false
+#| echo: true
+Salaries |>
+  select(salary, yrs.since.phd, yrs.service, rank, discipline, sex) |>
+  tbl_summary(
+    by = sex,
+    label = list(
+      salary ~ "Salary (USD)",
+      yrs.since.phd ~ "Years since PhD",
+      yrs.service ~ "Years of service"
+    ),
+    statistic = all_continuous() ~ "{mean} ({sd})",
+    digits = all_continuous() ~ 0,
+    missing = "no"
+  ) |>
+  bold_labels()
+```
+
+Questions:
+
+1. Why might `"{mean} ({sd})"` be reasonable for `salary` here, and when would `"{median} ({p25}, {p75})"` be preferred?
+2. What does `missing = "no"` do, and when would you set it to `"ifany"`?
+3. How do the column labels and `digits` choices reflect the communication principles for precision and units?
+
+::: unilur-solution
+```{r}
+Salaries |>
+  select(salary, yrs.since.phd, yrs.service, rank, discipline, sex) |>
+  tbl_summary(
+    by = sex,
+    label = list(
+      salary ~ "Salary (USD)",
+      yrs.since.phd ~ "Years since PhD",
+      yrs.service ~ "Years of service"
+    ),
+    statistic = all_continuous() ~ "{mean} ({sd})",
+    digits = all_continuous() ~ 0,
+    missing = "no"
+  ) |>
+  bold_labels()
+```
+
+1. Mean (SD) is reasonable if distributions are roughly symmetric; `salary` is somewhat right-skewed but not extremely so (see `summary(Salaries$salary)`). If skew or outliers were strong, median (IQR) would better represent centre/spread without being pulled by high salaries — the same point made in `week5/index.qmd` for `mtcars` (“Mean (SD) is a choice — not an automatic default”).
+2. `missing = "no"` suppresses a “Unknown” row when there are no missings. Use `"ifany"` when missings exist and the audience needs to see how much data are missing — otherwise you hide a data-quality signal.
+3. Labels put units once in the header (“Salary (USD)”), not repeated in every cell. `digits = 0` matches the precision of the raw measure (whole dollars) and avoids implying sub-dollar accuracy. This mirrors the lecture’s “Numerical precision”, “Labels within tables”, and “Column alignment” sections.
+:::
+
+### B2. Polish a table for publication
+
+The code below produces a final-product table badly. It repeats units in every cell, shows 5 decimal places, lacks comma grouping, and misaligns numbers.
+
+```{r}
+#| echo: true
+#| eval: true
+bad <- Salaries |>
+  slice_head(n = 4) |>
+  transmute(
+    Rank = rank,
+    Salary = paste0("$", salary, " USD"),
+    `Years since PhD` = as.character(round(yrs.since.phd + rnorm(4)/1000, 5))
+  )
+
+bad |>
+  kbl(align = "lcc", caption = "First four faculty (poorly formatted)") |>
+  kable_classic(full_width = FALSE)
+```
+
+**Task:** Fix the table using `kableExtra` (as in the lecture). Your polished table should:
+
+* put units once in the column header (e.g. `Salary (USD)`), not in each cell,
+* show salaries as whole dollars with comma grouping (e.g. `139,750`),
+* display years with at most 1 decimal and trailing zeroes where needed,
+* right-align numeric columns and left-align text, centre any spanner if you add one,
+* apply `kable_classic()` styling and add a clear caption.
+
+Hint: `scales::comma()`, `formatC()` or `kbl(digits=, format.args=)` + `column_spec()` help. The lecture’s “Numerical precision”, “Column alignment”, and “Labels within tables” slides show the exact patterns.
+
+::: unilur-solution
+```{r}
+#| message: false
+bad_fixed <- Salaries |>
+  slice_head(n = 4) |>
+  transmute(
+    Rank = rank,
+    `Salary (USD)` = salary,
+    `Years since PhD` = yrs.since.phd
+  )
+
+bad_fixed |>
+  kbl(
+    align = c("l", "r", "r"),
+    caption = "First four faculty — polished for publication",
+    digits = c(NA, 0, 1),
+    format.args = list(big.mark = ",")
+  ) |>
+  kable_classic(full_width = FALSE) |>
+  column_spec(2:3, width = "7em") |>
+  row_spec(0, bold = TRUE)
+```
+
+Alternatives that also earn full marks:
+
+```{r}
+#| eval: false
+# Trailing zeroes explicitly:
+tibble(salary = c(113706.4, 91000, 107300)) |>
+  mutate(salary_fmt = formatC(salary, format = "f", digits = 1, big.mark = ","))
+
+# Or via kableExtra formatting helpers:
+bad_fixed |>
+  kbl(align = "lrr") |>
+  kable_classic(full_width = FALSE)
+```
+
+Key checks: units appear once in headers, numbers are right-aligned, commas aid reading for a 5–6 digit salary (lecture: “1,000,000 is easier than 1000000”), and no “USD” is repeated 397 times.
+:::
+
+::: {.callout-tip}
+
+## Take-away checklist (from lecture)
+
+* Start with the audience’s question, not everything the model produced.
+* Show estimates with uncertainty (CI), units, reference categories, and sample/context — not just p-values.
+* Choose precision, alignment, and labels deliberately; polish with `gtsummary` + `kableExtra`.
+
+Workshop 5 continues this by turning a statistical output into a full results paragraph and a self-contained caption.
+
+:::
