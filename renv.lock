@@ -36,17 +36,6 @@
       ],
       "Hash": "a9d00f59f9c7e613dd4c3e0d27135a03"
     },
-    "Formula": {
-      "Package": "Formula",
-      "Version": "1.2-5",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "stats"
-      ],
-      "Hash": "7a29697b75e027767a53fde6c903eca7"
-    },
     "KernSmooth": {
       "Package": "KernSmooth",
       "Version": "2.23-26",
@@ -183,22 +172,6 @@
         "R"
       ],
       "Hash": "5edb675b7baa6e9a0d86dd2c28de1676"
-    },
-    "bayestestR": {
-      "Package": "bayestestR",
-      "Version": "0.18.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "datawizard",
-        "graphics",
-        "insight",
-        "methods",
-        "stats",
-        "utils"
-      ],
-      "Hash": "ca4a1cadca567b46156e073e6deab1dc"
     },
     "beeswarm": {
       "Package": "beeswarm",
@@ -358,6 +331,16 @@
       ],
       "Hash": "cb2799e0a02c2ac4d0395b0e29bb6799"
     },
+    "carData": {
+      "Package": "carData",
+      "Version": "3.0-6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "c7c7994c2f70d512b0016b6fb34c54e9"
+    },
     "cards": {
       "Package": "cards",
       "Version": "0.8.1",
@@ -403,18 +386,6 @@
         "tibble"
       ],
       "Hash": "f61dbaec772ccd2e17705c1e872e9e7c"
-    },
-    "checkmate": {
-      "Package": "checkmate",
-      "Version": "2.3.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "backports",
-        "utils"
-      ],
-      "Hash": "86cbe221fc19b56242f6c3eb0d4c5ab5"
     },
     "class": {
       "Package": "class",
@@ -615,19 +586,6 @@
       ],
       "Hash": "da9ddede68a6f6e5d3098c0ab81b6e1f"
     },
-    "datawizard": {
-      "Package": "datawizard",
-      "Version": "1.3.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "insight",
-        "stats",
-        "utils"
-      ],
-      "Hash": "82c29732e404f45c41314eab720e52d3"
-    },
     "dbplyr": {
       "Package": "dbplyr",
       "Version": "2.6.0",
@@ -802,21 +760,6 @@
         "zoo"
       ],
       "Hash": "71233b4e8fb32f511e8a12649680d05a"
-    },
-    "formattable": {
-      "Package": "formattable",
-      "Version": "0.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "htmltools",
-        "htmlwidgets",
-        "knitr",
-        "methods",
-        "rmarkdown"
-      ],
-      "Hash": "870d6d5d39b23923d0c816f904075b4c"
     },
     "fracdiff": {
       "Package": "fracdiff",
@@ -1276,19 +1219,6 @@
       ],
       "Hash": "99df65cfef20e525ed38c3d2577f7190"
     },
-    "insight": {
-      "Package": "insight",
-      "Version": "1.5.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "methods",
-        "stats",
-        "utils"
-      ],
-      "Hash": "7b9afd9199b100e5deaa3f91d6faff2b"
-    },
     "isoband": {
       "Package": "isoband",
       "Version": "0.3.0",
@@ -1635,26 +1565,6 @@
       ],
       "Hash": "4f50122dc256b1b6996a4703fecea821"
     },
-    "modelsummary": {
-      "Package": "modelsummary",
-      "Version": "2.6.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "checkmate",
-        "data.table",
-        "generics",
-        "glue",
-        "insight",
-        "methods",
-        "parameters",
-        "performance",
-        "tables",
-        "tinytable"
-      ],
-      "Hash": "300c51ccba8888aa7d24b55bf726228e"
-    },
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-169",
@@ -1738,23 +1648,6 @@
       ],
       "Hash": "6c6861efbc13c1d543749e9c7be4a592"
     },
-    "parameters": {
-      "Package": "parameters",
-      "Version": "0.29.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "bayestestR",
-        "datawizard",
-        "graphics",
-        "insight",
-        "methods",
-        "stats",
-        "utils"
-      ],
-      "Hash": "b574f87f7b4ba68770acb837cfd3fe2c"
-    },
     "patchwork": {
       "Package": "patchwork",
       "Version": "1.3.2",
@@ -1773,22 +1666,6 @@
         "utils"
       ],
       "Hash": "97fc0338dd42af55d170478dfc4c0c03"
-    },
-    "performance": {
-      "Package": "performance",
-      "Version": "0.17.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "bayestestR",
-        "datawizard",
-        "insight",
-        "methods",
-        "stats",
-        "utils"
-      ],
-      "Hash": "d64534ab42928bfe33051fef130d7603"
     },
     "pillar": {
       "Package": "pillar",
@@ -2472,36 +2349,6 @@
       ],
       "Hash": "1f930828d6590af5da47b3ab4fe161e6"
     },
-    "table1": {
-      "Package": "table1",
-      "Version": "1.5.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "Formula",
-        "R",
-        "htmltools",
-        "knitr",
-        "methods",
-        "stats",
-        "yaml"
-      ],
-      "Hash": "14a7a723ac6d381716b54912f70ca797"
-    },
-    "tables": {
-      "Package": "tables",
-      "Version": "0.9.35",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "htmltools",
-        "knitr",
-        "stats",
-        "utils"
-      ],
-      "Hash": "6805fd5d2af68bd7bdd831a47d8268d2"
-    },
     "terra": {
       "Package": "terra",
       "Version": "1.9-34",
@@ -2652,17 +2499,6 @@
         "cpp11"
       ],
       "Hash": "39c40cb1ad47a4cc384a34a22a29463f"
-    },
-    "tinytable": {
-      "Package": "tinytable",
-      "Version": "0.17.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "methods"
-      ],
-      "Hash": "11304b5951755d00e3ad49033580403a"
     },
     "tinytex": {
       "Package": "tinytex",
