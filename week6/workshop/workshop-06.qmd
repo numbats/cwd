@@ -1,6 +1,6 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Workshop 6: Writing around a visualisation"
+subtitle: "Workshop 6: Rebuilding cricket broadcast graphics"
 author: "Michael Lydeamore"
 date: "Week 6"
 format:
@@ -10,81 +10,574 @@ format:
   unilur-html+solution:
     output-file: solution.html
     embed-resources: true
+execute:
+  warning: false
+  message: false
 ---
+
+```{r setup}
+#| include: true
+#| echo: true
+library(tidyverse)
+library(cricketdata)
+
+options(timeout = 300)
+
+# Download the men's ODI ball-by-ball archive, then retain one match.
+balls <- cricketdata::fetch_cricsheet(
+  type = "bbb",
+  gender = "male",
+  competition = "odis"
+) |>
+  filter(match_id == 1384439) |>
+  arrange(innings, actual_delivery) |>
+  mutate(
+    total_runs = runs_off_bat + extras,
+    over = floor(ball) + 1L,
+    # cricketdata imports unused character fields as "", not NA.
+    is_wicket = !is.na(player_dismissed) &
+      str_trim(player_dismissed) != ""
+  ) |>
+  group_by(innings) |>
+  mutate(
+    score_after_ball = cumsum(total_runs),
+    over_position = floor(ball) +
+      round((ball - floor(ball)) * 10) / 6
+  ) |>
+  ungroup()
+
+overs <- balls |>
+  group_by(innings, batting_team, over) |>
+  summarise(
+    over_runs = sum(total_runs),
+    over_wickets = sum(is_wicket),
+    .groups = "drop"
+  ) |>
+  group_by(innings, batting_team) |>
+  mutate(
+    score = cumsum(over_runs),
+    wickets = cumsum(over_wickets)
+  ) |>
+  ungroup()
+
+dismissals <- balls |>
+  filter(is_wicket) |>
+  select(innings, batting_team, over_position,
+         score_after_ball, player_dismissed)
+
+worm <- bind_rows(
+  overs |>
+    select(innings, batting_team, over, score, wickets),
+  tibble(
+    innings = c(1, 2),
+    batting_team = c("India", "Australia"),
+    over = 0L,
+    score = 0,
+    wickets = 0L
+  )
+) |>
+  arrange(innings, over)
+
+team_colours <- c(
+  "Australia" = "#C58A00",
+  "India" = "#0072B2"
+)
+
+theme_broadcast <- function(base_size = 13) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      plot.background = element_rect(fill = "white", colour = NA),
+      panel.background = element_rect(fill = "white", colour = NA),
+      panel.grid.major = element_line(colour = "#D9E2E8", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      text = element_text(colour = "#142B3A"),
+      axis.text = element_text(colour = "#344955"),
+      axis.title = element_text(colour = "#344955"),
+      strip.text = element_text(colour = "#142B3A", face = "bold"),
+      legend.position = "none",
+      plot.title.position = "plot",
+      plot.caption = element_text(colour = "#526773", hjust = 0)
+    )
+}
+```
 
 ## 🎯 Objectives
 
 By the end of this workshop, you will be able to:
 
-* separate observation from interpretation;
-* write a takeaway title, caption and in-text figure reference; and
-* adapt a visual message for different audiences.
+* choose comparisons that answer a viewer's question during a match;
+* reconstruct Manhattan and worm charts from ball-by-ball data; and
+* show wickets without obscuring the pattern of runs.
 
-::: {.callout-note}
-## Fictional data
+::: {.callout-note collapse="true"}
+## Preparation
 
-The chart shows monthly visits to a fictional council's three libraries after Sunday opening began in February. It is supplied as a communication exercise, not as a real source.
+Install the packages before class if needed:
+
+``` r
+install.packages(c("tidyverse", "cricketdata"))
+```
 :::
 
-![Sunday visits recorded by entrance counters at three council libraries, February to July.](library-visits.svg){#fig-library-visits fig-alt="A line chart in which Sunday library visits rise from 790 in February to 2100 in July, with a small decline between May and June."}
+## The broadcast brief
 
-## 1. Quickwrite: observation or explanation? (5 minutes)
+It is the **2023 Men's Cricket World Cup final** in Ahmedabad. India made
+**240 all out**. Australia is chasing 241.
 
-Write five statements about @fig-library-visits. Label each statement:
+You are on the broadcast graphics team. Your audience wants to know:
 
-* **O** if it reports something visible in the chart;
-* **I** if it interprets what the pattern might mean; or
-* **C** if it makes a causal claim.
+> How does Australia's chase compare with India's innings at the same stage?
 
-## 2. Decide the communication goal (5 minutes)
+We will work from Cricsheet ball-by-ball data, accessed through the
+`cricketdata` package. The match ID is `1384439`.
 
-Assume the council is deciding whether to continue the trial. Write:
+## What are we recreating?
 
-1. the one thing the chart makes easiest to see;
-2. one important thing the chart cannot tell us; and
-3. the question a decision-maker should ask next.
+These graphics have long appeared during cricket broadcasts. Look at how they
+encode the match, rather than at the particular colours, logos or decoration.
 
-## 3. Replace the neutral title (8 minutes)
+### Manhattan chart
 
-Write three possible titles:
+![](https://support.nvplay.com/hc/article_attachments/34464981203481){fig-alt="A cricket broadcast Manhattan chart with a pair of narrow bars for each over and small circles marking wickets." width="80%"}
 
-1. a neutral descriptive title;
-2. a takeaway title that states the main pattern; and
-3. an irresponsible title that goes beyond the evidence.
+Each bar shows the **runs scored in one over**, producing a skyline-like view
+of changes in scoring intensity. The two teams can be shown in separate panels
+or as adjacent bars. Circles mark overs in which wickets fell.
 
-Circle the words that make the third title irresponsible. Choose and refine the best responsible title, aiming for no more than 14 words.
+[Reference image: NV Play Streaming Overlay Control Panel.](https://support.nvplay.com/hc/en-gb/articles/34453205002393-Using-the-Streaming-Overlay-Control-Panel){.f4}
 
-## 4. Write the caption (10 minutes)
+### Worm chart
 
-Write a self-contained caption containing:
+![](https://cricamerica.com/wp-content/uploads/2018/10/JamTkr-Worm-Screen-768x432.jpg){fig-alt="A cricket television worm chart comparing two teams with cumulative-run lines and circular wicket markers." width="80%"}
 
-* the overall takeaway;
-* one or two numbers that support it;
-* what is being counted and over what period;
-* the entrance-counter source; and
-* the important limitation that visits are not necessarily unique visitors.
+Each line shows **cumulative runs as the innings progresses**. A steeper section
+means faster scoring; the relative height of the lines compares the teams at
+the same stage. Circles show where wickets interrupted each innings.
 
-## 5. Introduce the figure in prose (7 minutes)
+[Reference image: 2018 Caribbean Premier League broadcast, via CricAmerica.](https://cricamerica.com/understanding-the-tv-screen/){.f4}
 
-Write two sentences suitable for a report. The first should explain why the reader is being shown the figure. The second should interpret the relevant pattern rather than saying only “the line goes up”. Include a cross-reference to @fig-library-visits.
+## 1. Read the moment before drawing (5 minutes)
 
-## 6. Audience pivot (7 minutes)
+After ten overs:
 
-Rewrite your takeaway title for one of these readers:
+| Team | Score | Run rate | Match situation |
+|:--|--:|--:|:--|
+| India | 80/2 | 8.00 | setting the target |
+| Australia | 60/3 | 6.00 | needs 181 from 240 balls (4.53 per over) |
 
-* a library operations manager concerned about staffing; or
-* a community newsletter reader deciding whether the service is useful.
+Discuss with a partner:
 
-Exchange both titles with a partner. Can they identify the intended audience and explain which words gave it away?
+1. Which comparison would a viewer care about: score, wickets, run rate, or
+   required run rate?
+2. Is Australia “behind” after ten overs? Write a one-sentence answer.
+3. Which quantities should be encoded visually, and which belong in text?
 
-## 7. Writer's note (3 minutes)
+::: {.unilur-solution}
+## Discussion notes
 
-Complete: "The chart shows ______, but it does not establish ______."
+Australia is 20 runs behind India's score at the same stage and has lost one
+more wicket. However, it is scoring faster than the required rate. “Behind” is
+therefore ambiguous: the answer depends on whether we mean comparative score,
+resources remaining, or progress towards the target.
+
+This is a useful reason not to force score, wickets and rates onto one set of
+axes. Show the dominant comparison visually and use a direct label or short
+annotation for the other context.
+:::
+
+## 2. Design a live checkpoint graphic (8 minutes)
+
+Choose `checkpoint <- 10`, `20` or `30`. The code below creates the two rows
+available to the graphics producer at that moment.
+
+```{r checkpoint-data}
+#| echo: true
+checkpoint <- 10
+
+snapshot <- overs |>
+  filter(over == checkpoint) |>
+  mutate(label = paste(score, "/", wickets))
+
+snapshot
+```
+
+On paper, or in `ggplot2`, design a compact comparison that could appear
+between overs. It must:
+
+* make the runs easy to compare;
+* retain the wicket context;
+* say that both teams are being compared after the same number of overs; and
+* use direct labels rather than making the viewer search a legend.
+
+Swap checkpoint values. Does the headline remain true?
+
+::: {.unilur-solution}
+## One possible checkpoint graphic
+
+```{r checkpoint-solution}
+checkpoint <- 10
+
+snapshot <- overs |>
+  filter(over == checkpoint) |>
+  mutate(
+    label = paste(score, "/", wickets),
+    batting_team = fct_reorder(batting_team, score)
+  )
+
+ggplot(snapshot, aes(score, batting_team, fill = batting_team)) +
+  geom_col(width = 0.58) +
+  geom_text(
+    aes(label = label),
+    hjust = 1.05,
+    colour = "#071A2B",
+    fontface = "bold",
+    size = 5
+  ) +
+  scale_fill_manual(values = team_colours) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.08))) +
+  labs(
+    x = "Runs", y = NULL,
+    title = paste("After", checkpoint, "overs"),
+    subtitle = "Both innings at the same stage"
+  ) +
+  theme_broadcast()
+```
+
+At 20 overs India still leads, 115/3 to 104/3. At 30 overs the story changes:
+Australia leads 167/3 to 152/4. A graphic designed for a live broadcast needs
+to remain truthful as the match state changes; a fixed takeaway title may not.
+:::
+
+## 3. Rebuild the Manhattan chart (12 minutes)
+
+A Manhattan chart uses bar height to show runs scored in each over. Start with
+the skeleton below.
+
+```{r manhattan-starter}
+#| eval: false
+ggplot(overs, aes(over, over_runs, fill = batting_team)) +
+  # Add one bar per over
+  # Separate the innings so bars never hide one another
+  # Add a mark when over_wickets is greater than zero
+  scale_fill_manual(values = team_colours) +
+  labs(
+    x = "Over", y = "Runs in over",
+    title = "Where did each innings accelerate?"
+  ) +
+  theme_broadcast()
+```
+
+Before coding, decide:
+
+1. Should the two innings be overlaid, dodged or placed in separate panels?
+2. Where can a wicket marker go without being mistaken for more runs?
+3. What does this chart reveal that the ten-over checkpoint cannot?
+
+::: {.unilur-solution}
+## Manhattan solution
+
+### Faceted version
+
+```{r manhattan-solution}
+#| fig-width: 10
+#| fig-height: 5.5
+ggplot(overs, aes(over, over_runs, fill = batting_team)) +
+  geom_col(width = 0.86) +
+  geom_point(
+    data = ~ filter(.x, over_wickets > 0),
+    aes(y = over_runs + 1.2),
+    shape = 21,
+    stroke = 0.7,
+    size = 2.6,
+    colour = "#142B3A"
+  ) +
+  facet_wrap(~ batting_team, ncol = 1) +
+  scale_fill_manual(values = team_colours) +
+  scale_x_continuous(breaks = seq(0, 50, by = 5)) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+  labs(
+    x = "Over", y = "Runs in over",
+    title = "Australia kept the chase moving after an early collapse",
+    subtitle = "India's scoring slowed sharply after the powerplay",
+    caption = "Dots mark overs in which a wicket fell. Source: Cricsheet via cricketdata."
+  ) +
+  theme_broadcast()
+```
+
+Faceting preserves a common horizontal and vertical scale while avoiding
+occlusion. Each wicket dot sits just above its bar, so it is associated with an
+over but cannot be read as part of the bar's magnitude.
+
+### Dodged version
+
+```{r manhattan-solution-dodged}
+#| fig-width: 10
+#| fig-height: 7
+dodge_width <- 0.86
+
+dodged_overs <- overs |>
+  select(batting_team, over, over_runs, over_wickets) |>
+  complete(
+    over = 1:50,
+    batting_team = c("Australia", "India")
+  ) |>
+  mutate(
+    over_wickets = replace_na(over_wickets, 0L),
+    over_block = factor(
+      if_else(over <= 25, "Overs 1–25", "Overs 26–50"),
+      levels = c("Overs 1–25", "Overs 26–50")
+    )
+  )
+
+dodge <- position_dodge2(
+  width = dodge_width,
+  preserve = "single",
+  padding = 0.08
+)
+
+ggplot(dodged_overs, aes(over, over_runs, fill = batting_team)) +
+  geom_col(
+    width = 0.8,
+    position = dodge,
+    na.rm = TRUE
+  ) +
+  geom_point(
+    aes(
+      y = if_else(over_wickets > 0, over_runs + 1.2, NA_real_)
+    ),
+    position = dodge,
+    shape = 21,
+    stroke = 0.7,
+    size = 2.6,
+    colour = "#142B3A",
+    na.rm = TRUE
+  ) +
+  facet_wrap(~ over_block, ncol = 1, scales = "free_x") +
+  scale_fill_manual(values = team_colours, name = NULL) +
+  scale_x_continuous(breaks = seq(0, 50, by = 5)) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+  labs(
+    x = "Over", y = "Runs in over",
+    title = "Australia kept the chase moving after an early collapse",
+    subtitle = "India's scoring slowed sharply after the powerplay",
+    caption = "Dots mark overs in which a wicket fell. Source: Cricsheet via cricketdata."
+  ) +
+  theme_broadcast() +
+  theme(
+    legend.position = "top",
+    legend.justification = "left",
+    strip.text = element_text(hjust = 0)
+  )
+```
+
+The same `position_dodge2()` specification is applied to both geoms. The point
+layer retains every team–over row while assigning `NA` to non-wicket heights;
+this lets `ggplot2` calculate the same team offset before it removes the
+unneeded points. `preserve = "single"` prevents India's bars from becoming
+wider after Australia's innings ends. Splitting the match into two 25-over
+panels makes the paired bars easier to distinguish, while the innings-faceted
+version gives each team more room.
+:::
+
+## 4. Rebuild the worm chart (12 minutes)
+
+A worm chart shows cumulative runs against overs. Use `worm` for the lines and
+`dismissals` for the wicket events.
+
+```{r worm-starter}
+#| eval: false
+ggplot(worm, aes(over, score, colour = batting_team)) +
+  # Add one line for each batting team
+  # Add an offset circle for each row in the dismissals data frame
+  # Directly label each line
+  scale_colour_manual(values = team_colours) +
+  labs(
+    x = "Overs", y = "Runs",
+    title = "When did Australia's chase move ahead?"
+  ) +
+  theme_broadcast()
+```
+
+Your wicket layer will need its own mappings:
+
+``` r
+aes(
+  x = over,
+  y = score,
+  fill = batting_team,
+  colour = batting_team
+)
+```
+
+Ask another pair to read your chart. Can they identify the early danger, the
+crossover and the winning moment without you explaining them?
+
+::: {.unilur-solution}
+## Worm solution
+
+```{r worm-solution}
+#| fig-width: 10
+#| fig-height: 5.5
+ggplot(worm, aes(over, score, colour = batting_team)) +
+  geom_line(linewidth = 1.35) +
+  geom_point(
+    data = dismissals,
+    aes(
+      x = over_position,
+      y = score_after_ball + 4,
+      fill = batting_team
+    ),
+    inherit.aes = FALSE,
+    shape = 21,
+    size = 2.8,
+    stroke = 0.7,
+    colour = "#142B3A"
+  ) +
+  geom_hline(
+    yintercept = 241,
+    linewidth = 0.5,
+    linetype = "dashed",
+    colour = "#7A8D99"
+  ) +
+  annotate(
+    "text", x = 49.5, y = 246,
+    label = "Target: 241", hjust = 1,
+    colour = "#344955", size = 3.7
+  ) +
+  scale_colour_manual(values = team_colours, name = NULL) +
+  scale_fill_manual(values = team_colours, guide = "none") +
+  scale_x_continuous(breaks = seq(0, 50, by = 5)) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.08))) +
+  labs(
+    x = "Overs", y = "Cumulative runs",
+    title = "Australia recovered from 47/3 to overhaul India's 240",
+    subtitle = "A 192-run partnership changed the shape of the chase",
+    caption = "Source: Cricsheet via cricketdata."
+  ) +
+  guides(
+    colour = guide_legend(override.aes = list(linewidth = 1.5))
+  ) +
+  theme_broadcast() +
+  theme(
+    legend.position = "inside",
+    legend.position.inside = c(0.13, 0.82),
+    legend.background = element_rect(
+      fill = scales::alpha("white", 0.92),
+      colour = "#B8C5CC"
+    ),
+    legend.text = element_text(colour = "#142B3A", face = "bold"),
+    legend.margin = margin(5, 8, 5, 8)
+  )
+```
+
+The line makes the changing run-rate visible through its slope. Wickets are
+events rather than magnitudes, so points are a better encoding than a second
+axis. The worm reveals the early collapse and later crossover more clearly than
+the Manhattan chart; the Manhattan chart better reveals volatile individual
+overs.
+:::
+
+## 5. Broadcast review (8 minutes)
+
+Choose either your Manhattan or worm chart. Give it a final editorial pass:
+
+1. Write a takeaway title of no more than 14 words.
+2. Add a subtitle that supplies essential match context rather than repeating
+   the title.
+3. Check that colour is not the only way to identify wickets or teams.
+4. Remove one element that does not help a viewer answer the broadcast question.
+5. Write one sentence describing what your graphic still cannot tell us.
+
+::: {.callout-note}
+## Fast finisher: freeze the broadcast
+
+Create the worm as it would have appeared after 10, 20 or 30 overs of the chase.
+Filter both innings to that checkpoint and rewrite the title for what was known
+**at that moment**. Do not use knowledge of the final result.
+:::
 
 ::: {.unilur-solution}
 ## Instructor notes
 
-A defensible title is **Sunday library visits more than doubled by July**. “Sunday opening attracts 1,300 new library users” is indefensible: the counters record visits, not unique people, and the chart alone does not establish what caused the increase.
+Suggested running time is 5 + 8 + 12 + 12 + 8 minutes, with five minutes for
+transitions or a whole-class comparison of designs.
 
-Use the irresponsible-title step to make overclaiming visible and discuss how titles frame the reader's interpretation before they inspect the axes.
+The 2023 World Cup final is useful because the encodings tell complementary
+stories. India led by 20 runs after ten overs, but Australia was already above
+the required rate. Australia moved ahead between overs 20 and 30 and won at
+241/4 after 43 overs. Their first three wickets make the chase look precarious;
+the long wicket-free section then becomes the dominant feature of the worm.
+
+A defensible limitation is that neither chart attributes the change to batting,
+bowling, pitch conditions or tactics. Both show what happened, not why it
+happened.
 :::
+
+## Supplied data-preparation code
+
+Keep this code for reference. You do **not** need to recreate it during the
+workshop.
+
+```{r supplied-code}
+#| eval: false
+library(tidyverse)
+library(cricketdata)
+
+balls <- cricketdata::fetch_cricsheet(
+  type = "bbb",
+  gender = "male",
+  competition = "odis"
+) |>
+  filter(match_id == 1384439) |>
+  arrange(innings, actual_delivery) |>
+  mutate(
+    total_runs = runs_off_bat + extras,
+    over = floor(ball) + 1L,
+    # Blank dismissal fields are empty strings in cricketdata's CSV import.
+    is_wicket = !is.na(player_dismissed) &
+      str_trim(player_dismissed) != ""
+  ) |>
+  group_by(innings) |>
+  mutate(
+    score_after_ball = cumsum(total_runs),
+    over_position = floor(ball) +
+      round((ball - floor(ball)) * 10) / 6
+  ) |>
+  ungroup()
+
+overs <- balls |>
+  group_by(innings, batting_team, over) |>
+  summarise(
+    over_runs = sum(total_runs),
+    over_wickets = sum(is_wicket),
+    .groups = "drop"
+  ) |>
+  group_by(innings, batting_team) |>
+  mutate(
+    score = cumsum(over_runs),
+    wickets = cumsum(over_wickets)
+  ) |>
+  ungroup()
+
+dismissals <- balls |>
+  filter(is_wicket) |>
+  select(innings, batting_team, over_position,
+         score_after_ball, player_dismissed)
+
+worm <- bind_rows(
+  overs |>
+    select(innings, batting_team, over, score, wickets),
+  tibble(
+    innings = c(1, 2),
+    batting_team = c("India", "Australia"),
+    over = 0L,
+    score = 0,
+    wickets = 0L
+  )
+) |>
+  arrange(innings, over)
+```
+
+Data: [Cricsheet](https://cricsheet.org/) via the
+[`cricketdata`](https://pkg.robjhyndman.com/cricketdata/) R package.
+Match: India v Australia, ICC Men's Cricket World Cup final, 19 November 2023.

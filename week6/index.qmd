@@ -25,15 +25,29 @@ execute:
 ---
 
 ```{r, include = FALSE}
+#| label: setup
 current_file <- knitr::current_input()
 basename <- gsub(".[Rq]md$", "", current_file)
 library(tidyverse)
 library(patchwork)
+library(here)
+library(kableExtra)
+library(scales)
+library(colorspace)
+library(carData)
+# colorblindr is GitHub-only: remotes::install_github("clauswilke/colorblindr")
+# plotrix, ggtext, glue used via :: below
 df <- read_csv(here::here("data/census-birthplace.csv"))
 df2021 <- df %>% 
   filter(census == 2021) %>% 
   filter(!birth %in% c("Total")) %>% 
   select(-census)
+
+workflow_birthplace <- df2021 %>%
+  filter(!birth %in% c("Australia", "Other", "Not Stated")) %>%
+  slice_max(count, n = 5) %>%
+  mutate(birth = fct_reorder(birth, percentage))
+
 df2 <- df %>% 
   filter(census %in% c(2021, 2016)) %>% 
   filter(!birth %in% c("Total")) %>% 
@@ -67,7 +81,6 @@ knitr::opts_chunk$set(
   dev = "svg",
   dev.args = list(bg = "transparent")
 )
-library(colorspace)
 ```
 
 ## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
@@ -127,8 +140,8 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 ## Aim
 
-* Apply principles and practices for data visualisation that effectively and efficiently convey intended messages to viewers
-* Use data visualisation to create effective data stories 
+* Apply data-visualisation principles to communicate a message clearly and efficiently
+* Use data visualisation to create effective data stories
 
 
 :::
@@ -139,20 +152,20 @@ Lecturer: *`r rmarkdown::metadata$author`*
 
 ## Why
 
-* "A picture is worth a thousand words".
+* "A picture is worth a thousand words."
 * Data visualisation can make large, complex data more accessible, understandable and usable.
 
 :::
 
 
 
-## Data Visualisation
+## Data visualisation
 
 ::: blockquote
 
-Data visualization is **part art** and **part science**. The challenge is to get the art right without getting the science wrong and vice versa. 
+Data visualization is **part art** and **part science**. The challenge is to get the art right without getting the science wrong and vice versa.
 
--- Claus O. Wilke, Fundamentals of Data Visualization
+-- Claus O. Wilke, *Fundamentals of Data Visualization*
 
 :::
 
@@ -162,8 +175,8 @@ Data visualization is **part art** and **part science**. The challenge is to get
 
 ## Role
 
-* A data visualization has to accurately communicate the data to the intended audience. 
-* A data visualization must not mislead or distort information from the data. 
+* A data visualisation must communicate the data accurately to its intended audience.
+* A data visualisation must not mislead or distort the information in the data.
 
 :::
 
@@ -178,28 +191,28 @@ Data visualization is **part art** and **part science**. The challenge is to get
 
 ## Communication
 
-Effective data visualisation means to design your data plot to effectively use the human visual system to improve cognition about a targeted information from the data.
+Effective data visualisation uses the human visual system to help an audience understand a particular message in the data.
 
 :::
 
 . . . 
 
 
-* I interchangeably use the terms data visualisation, plot, data plot, graphic, statistical graphic, and figure.
+* In this lecture, the terms data visualisation, plot, graphic, statistical graphic and figure are used interchangeably.
 
 
-## Birth place from the 2021 Australian Census {.scrollable auto-animate=true}
+## Place of birth in the 2021 Australian Census {.scrollable auto-animate=true}
 
 ```{r}
 df2021 %>% 
   mutate(count = scales::comma(count, 1),
          percentage = scales::comma(percentage, 0.1)) %>% 
-  knitr::kable(col.names = c("Birth place", "Count", "%"),
+  knitr::kable(col.names = c("Place of birth", "Count", "%"),
                align = "lrr") %>% 
   kableExtra::kable_classic(full_width = FALSE)
 ```
 
-## Birth place from the 2021 Australian Census {auto-animate=true}
+## Place of birth in the 2021 Australian Census {auto-animate=true}
 
 ```{r census2021-part1, fig.width = 12, fig.height = 4}
 df2021 %>% 
@@ -212,10 +225,10 @@ df2021 %>%
 
 . . . 
 
-Which birth place is the third largest among people in Australia?
+Which country of birth is the third most common among Australian residents?
 
 
-## Birth place from the 2021 Australian Census {auto-animate=true}
+## Place of birth in the 2021 Australian Census {auto-animate=true}
 
 ```{r census2021-part2, fig.width = 12, fig.height = 4}
 df2021 %>% 
@@ -231,7 +244,7 @@ df2021 %>%
 
 <i class="fa-solid fa-face-meh" style=" transform: rotate(-45deg)"></i> Can you read the labels without tilting your head?
 
-## Birth place from the 2021 Australian Census {auto-animate=true .scrollable}
+## Place of birth in the 2021 Australian Census {auto-animate=true .scrollable}
 
 ```{r census2021-part4, fig.height = 12, fig.width = 4}
 df2021 %>% 
@@ -247,7 +260,7 @@ df2021 %>%
 
 What's the data story? 
 
-## India now third most common place of birth of Australian residents, census results show {auto-animate=true}
+## India became the third most common country of birth in 2021 {.smaller auto-animate=true}
 
 ::: flex
 
@@ -278,8 +291,8 @@ df2021 %>%
   theme(text = element_text(size = 18),
         axis.text.y = element_text(size = 8),
         plot.title.position = "plot") + 
-  labs(y = "Birth place", x = "Number of Australian residents\n", caption = "Data source: Australian Census 2021",
-       title = "Top 5 countries of birth outside Australia")
+  labs(y = "Place of birth", x = "Number of Australian residents\n", caption = "Data source: Australian Census 2021",
+       title = "Five most common countries of birth outside Australia")
 ```
 
 
@@ -289,11 +302,11 @@ df2021 %>%
 
 <br><br><br>
 
-* The text on the bar shows the percentage out of `r scales::comma(total2021)` Australian residents born in that place.  
+* Each label gives the percentage of `r scales::comma(total2021)` Australian residents born in that country.
 
-* There were `r scales::percent(nsperc2021/100, 0.1)` of Australian residents who did not state their birth place.
+* Place of birth was not stated for `r scales::percent(nsperc2021/100, 0.1)` of Australian residents.
 
-* The top country of birth place is Australia with  `r scales::percent(auperc2021/100, 0.1)` of Australian residents born in Australia.
+* Australia is the most common country of birth: `r scales::percent(auperc2021/100, 0.1)` of residents were born in Australia.
 
 
 <i class="fa-solid fa-newspaper"></i> Story from [The Guardian](https://www.theguardian.com/australia-news/2022/jun/28/india-now-third-most-common-place-of-birth-of-australian-residents-census-results-show).
@@ -304,11 +317,11 @@ df2021 %>%
 :::
 
 
-## Another look {.scrollable}
+## Another look
 
 ::: callout-note
 
-## Data Story 
+## Data story
 
 India has overtaken China and New Zealand to become the third largest country of birth for Australian residents, 2021 census data has found.
 
@@ -316,17 +329,47 @@ India has overtaken China and New Zealand to become the third largest country of
 
 :::
 
+::: {.columns}
+
+::: {.column width="50%"}
+
+### 2016
+
 ```{r}
-df2 %>% 
-  select(-rank) %>% 
+df2 %>%
+  filter(census == 2016) %>%
+  select(-rank, -census) %>%
   mutate(count = scales::comma(count, 1),
          percentage = scales::comma(percentage, 0.1)) %>% 
-  knitr::kable(col.names = c("Birth place", "Count", "%", "Census Year"),
-               align = "lrrr") %>% 
-  kableExtra::kable_classic(full_width = FALSE)
+  knitr::kable(col.names = c("Place of birth", "Count", "%"),
+               align = "lrr") %>%
+  kableExtra::kable_classic(full_width = FALSE) %>%
+  kableExtra::kable_styling(font_size = 18)
 ```
 
-## India has overtaken China and New Zealand to become the third largest country of birth for Australian residents, 2021 census data has found
+:::
+
+::: {.column width="50%"}
+
+### 2021
+
+```{r}
+df2 %>%
+  filter(census == 2021) %>%
+  select(-rank, -census) %>%
+  mutate(count = scales::comma(count, 1),
+         percentage = scales::comma(percentage, 0.1)) %>%
+  knitr::kable(col.names = c("Place of birth", "Count", "%"),
+               align = "lrr") %>%
+  kableExtra::kable_classic(full_width = FALSE) %>%
+  kableExtra::kable_styling(font_size = 18)
+```
+
+:::
+
+:::
+
+## India overtook China and New Zealand by 2021
 
 ```{r census2-part1, fig.width = 8, fig.height = 3}
 df2  %>% 
@@ -334,17 +377,16 @@ df2  %>%
   ggplot(aes(count, birth)) +
   geom_col() + 
   geom_col(data = ~filter(.x, birth=="India"),
-           fill = "#006DAE") + 
+            fill = "#006DAE") +
   geom_text(aes(label = scales::percent(percentage/100, 0.1)),
             nudge_x = -70000, color = "white") +
-  scale_x_continuous(labels = scales::comma) +
   theme(text = element_text(size = 18),
         axis.text.y = element_text(size = 8),
         plot.title.position = "plot") +
   facet_wrap(~census) + 
   scale_x_continuous(labels = scales::comma) +
-  labs(y = "Birth place", x = "Number of Australian residents\n", caption = "Data source: Australian Census 2016 and 2021",
-       title = "Top 5 countries of birth outside Australia")
+  labs(y = "Place of birth", x = "Number of Australian residents\n", caption = "Data source: Australian Census 2016 and 2021",
+        title = "Five most common countries of birth outside Australia")
 ```
 
 
@@ -355,9 +397,9 @@ Does this show that India overtook China and New Zealand?
 
 
 
-## India has overtaken China and New Zealand to become the third largest country of birth for Australian residents, 2021 census data has found
+## India overtook China and New Zealand by 2021 {.smaller}
 
-```{r census2-part2, fig.width = 7, fig.height = 4}
+```{r census2-part2, fig.width = 7, fig.height = 2.9}
 df2 %>% 
   ggplot(aes(factor(census), count, color = birth)) +
   geom_line(aes(group = birth))  +
@@ -366,8 +408,7 @@ df2 %>%
         plot.title.position = "plot") + 
   geom_point() + 
   scale_y_continuous(labels = scales::comma) +
-  labs(y = "Number of \nAustralian residents\n", caption = "Data source: Australian Census 2016 and 2021", x = "Census Year", color = "Birth place",
-       title = "Top 5 countries of birth outside Australia")
+  labs(y = "Number of\nAustralian residents\n", caption = "Data source: Australian Census 2016 and 2021", x = "Census year", color = "Place of birth")
 ```
 
 . . . 
@@ -375,9 +416,9 @@ df2 %>%
 Should we show percentage instead of counts?
 
 
-## India has overtaken China and New Zealand to become the third largest country of birth for Australian residents, 2021 census data has found
+## India overtook China and New Zealand by 2021 {.smaller}
 
-```{r census2-part3, fig.width = 7, fig.height = 4}
+```{r census2-part3, fig.width = 7, fig.height = 2.9}
 df2 %>% 
   ggplot(aes(factor(census), percentage/100, color = birth)) +
   geom_line(aes(group = birth)) + 
@@ -386,8 +427,7 @@ df2 %>%
         axis.text.y = element_text(size = 8),
         plot.title.position = "plot") + 
   scale_y_continuous(labels = scales::percent) +
-  labs(y = "Percentage of\nAustralian residents\n", caption = "Data source: Australian Census 2016 and 2021", x = "Census Year", color = "Birth place",
-       title = "Top 5 countries of birth outside Australia")
+  labs(y = "Percentage of\nAustralian residents\n", caption = "Data source: Australian Census 2016 and 2021", x = "Census year", color = "Place of birth")
 ```
 
 
@@ -396,9 +436,9 @@ df2 %>%
 The legend and the line order are different...
 
 
-## India has overtaken China and New Zealand to become the third largest country of birth for Australian residents, 2021 census data has found
+## India overtook China and New Zealand by 2021 {.smaller}
 
-```{r census2-part4, fig.width = 6.5, fig.height = 4}
+```{r census2-part4, fig.width = 7, fig.height = 2.9}
 df2 %>% 
   arrange(census, birth) %>% 
   mutate(birth = fct_reorder2(birth, census, percentage, last2)) %>% 
@@ -409,8 +449,7 @@ df2 %>%
         axis.text.y = element_text(size = 8),
         plot.title.position = "plot") + 
   scale_y_continuous(labels = scales::percent) +
-  labs(y = "Percentage of\nAustralian residents\n", caption = "Data source: Australian Census 2016 and 2021", x = "Census Year", color = "Birth place",
-       title = "Top 5 countries of birth outside Australia")
+  labs(y = "Percentage of\nAustralian residents\n", caption = "Data source: Australian Census 2016 and 2021", x = "Census year", color = "Place of birth")
 ```
 
 
@@ -418,9 +457,9 @@ df2 %>%
 
 Maybe we can put the labels directly in the plot?
 
-## India has overtaken China and New Zealand to become the third largest country of birth for Australian residents, 2021 census data has found
+## India overtook China and New Zealand by 2021 {.smaller}
 
-```{r census2-part5, fig.width = 6, fig.height = 4}
+```{r census2-part5, fig.width = 7, fig.height = 3}
 df2 %>% 
   arrange(census, birth) %>% 
   ggplot(aes(factor(census), percentage/100, color = birth)) +
@@ -438,58 +477,141 @@ df2 %>%
                                               birth=="New Zealand" ~ percentage - 0.05,
                                               TRUE ~ percentage))}, 
             hjust = 0, nudge_x = 0.05) +
-  labs(y = "Percentage of\nAustralian residents\n", caption = "Data source: Australian Census 2016 and 2021", x = "Census Year", color = "Birth place",
-       title = "Top 5 countries of birth outside Australia")
+  labs(y = "Percentage of\nAustralian residents\n", caption = "Data source: Australian Census 2016 and 2021", x = "Census year", color = "Place of birth")
 ```
 
 
 
-# What plot type to use?
+# Choosing a plot
 
-## 🛒 Data Visualisation Catalogue
+## 🛒 What do you want to show? {.smaller}
 
-<i class="fa-solid fa-triangle-exclamation"></i> Non-exhaustive
+Start with the question you want the visualisation to answer.
 
-<img src="images/vis-barplot-horizontal.svg"><img src="images/vis-barplot-vertical.svg" `r vis_spacing`><img src="images/vis-piechart.svg" `r vis_spacing`><img src="images/vis-stacked-barplot.svg" `r vis_spacing`><img src="images/vis-grouped-barplot.svg" `r vis_spacing`><img src="images/vis-stacked-percentage-barplot.svg" `r vis_spacing`>
+::: {.columns}
 
-<img src="images/vis-histogram.svg"><img src="images/vis-density.svg" `r vis_spacing`><img src="images/vis-boxplot.svg" `r vis_spacing`><img src="images/vis-violin.svg" `r vis_spacing`><img src="images/vis-beeswarm.svg" `r vis_spacing`><img src="images/vis-dot.svg" `r vis_spacing`>
+::: {.column width="50%"}
 
-<img src="images/vis-scatter.svg"><img src="images/vis-hex.svg" `r vis_spacing`><img src="images/vis-bubble.svg" `r vis_spacing`><img src="images/vis-line.svg" `r vis_spacing`><img src="images/vis-heatmap.svg" `r vis_spacing`><img src="images/vis-map.svg" `r vis_spacing`>
+**Compare values**
+
+For example, compare the five most common overseas countries of birth in 2021.
+
+<center><img src="images/vis-barplot-horizontal.svg" width="45%"></center>
+
+:::
+
+::: {.column width="50%"}
+
+**Show change over time**
+
+For example, show India overtaking China and New Zealand between 2016 and 2021.
+
+<center><img src="images/vis-line.svg" width="45%"></center>
+
+:::
+
+:::
+
+## 🛒 What do you want to show? {.smaller}
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+**Show a distribution**
+
+For example, examine how salaries vary within each academic rank.
+
+<center><img src="images/vis-histogram.svg" width="30%"><img src="images/vis-boxplot.svg" width="30%" `r vis_spacing`></center>
+
+:::
+
+::: {.column width="50%"}
+
+**Show a relationship**
+
+For example, examine the relationship between years since PhD and salary.
+
+<center><img src="images/vis-scatter.svg" width="48%"></center>
+
+:::
+
+:::
+
+## 🤔 Revisiting the Census example
+
+* The data type, audience and medium also affect the choice of plot.
+
+* The ordered horizontal bar chart makes values and labels easy to compare.
+
+. . .
+
+* The line chart emphasises change between the two Census years.
+
+. . .
+
+* Direct labels remove the need to look back and forth between the lines and a legend.
+
+. . .
+
+* Pie charts would make these comparisons harder because they encode values as angles and areas.
 
 
+## <i class="fas fa-project-diagram blue"></i> Composite plots {.smaller}
 
+* A plot can combine **multiple geometries** in one panel:
 
-## <i class="fas fa-project-diagram blue"></i> Composite plots
-
-* Your data plot may be made from **multiple plot types**:
-
-```{r box-plus-violin, fig.height = 2.5}
-ggplot(palmerpenguins::penguins, aes(species, bill_length_mm)) + 
-  geom_violin() + geom_boxplot(width = 0.1) +
-  labs(x = "Species", y = "Bill length (mm)")
+```{r box-plus-violin, fig.height = 3}
+ggplot(Salaries, aes(rank, salary)) +
+  geom_violin(fill = "grey92", color = "grey40") +
+  geom_boxplot(width = 0.12, fill = "white", outlier.alpha = 0.6) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "Rank", y = "Salary (USD)",
+       caption = "Data: carData::Salaries; nine-month salary")
 ```
 
+::: fragment
 
-## <i class="fas fa-project-diagram blue"></i> Composite plots
+The violin shows the shape of each distribution, while the box plot shows its median and interquartile range.
 
-* Your data plot may be composed of **multiple subplots**:
+:::
+
+
+## <i class="fas fa-project-diagram blue"></i> Composite plots {.smaller}
+
+* A figure can also combine **multiple plots**:
+
 ```{r patchwork, fig.height = 4, fig.width = 10}
-g1 <- ggplot(palmerpenguins::penguins, aes(species, bill_length_mm, fill = species)) +
-  geom_violin() + 
-  scale_fill_discrete_qualitative() + 
-  guides(fill = FALSE) + 
-  labs(x = "", y = "Bill length (mm)")
-g2 <- ggplot(palmerpenguins::penguins, aes(bill_depth_mm, bill_length_mm)) + 
-  geom_point(aes(color = species)) + 
-  scale_color_discrete_qualitative() + 
-  labs(x = "Bill depth (mm)", y = "",
-       color = "Species") + 
+g1 <- ggplot(Salaries, aes(rank, salary, fill = rank)) +
+  geom_violin(alpha = 0.9) +
+  geom_boxplot(width = 0.12, fill = "white", alpha = 0.8, outlier.size = 0.8) +
+  scale_fill_discrete_qualitative(palette = "Dark 3") +
+  scale_y_continuous(labels = scales::comma) +
+  guides(fill = "none") +
+  labs(x = "", y = "Salary (USD)")
+
+g2 <- ggplot(Salaries, aes(yrs.since.phd, salary)) +
+  geom_point(aes(color = rank), alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "grey30", linewidth = 0.6) +
+  scale_color_discrete_qualitative(palette = "Dark 3") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "Years since PhD", y = "",
+        color = "Rank") +
   theme(axis.text.y = element_blank())
-g1 + g2 + plot_layout(guides = "collect")
+
+g1 + g2 + plot_layout(guides = "collect") +
+  plot_annotation(caption = "Data: carData::Salaries. Left: distribution by rank; right: relationship with years since PhD",
+                  theme = theme(plot.caption = element_text(hjust = 0, size = 9)))
 ```
 
+::: fragment
 
-## Why is a 3D pie chart considered a "bad plot"?
+The two plots answer different questions about the same outcome. Together, they show how salary varies by academic rank and years since PhD.
+
+:::
+
+
+## Why is a 3D pie chart a poor choice?
 
 ```{r pie3d, fig.height = 5, fig.width = 5}
 par(bg = 'transparent', fg = 'black')
@@ -520,15 +642,15 @@ Pie charts are a very bad way of displaying information. The eye is good at judg
 
 . . . 
 
-* This comes from empirical research of Cleveland & McGill (1984) among others.
+* This recommendation is supported by the empirical research of Cleveland and McGill (1984), among others.
 
 ::: aside
 
-Cleveland, William S., and Robert Mc Gill. (1984) “Graphical Perception: Theory, Experimentation, and Application to the Development of Graphical Methods.”
+Cleveland, William S., and Robert McGill. (1984) “Graphical Perception: Theory, Experimentation, and Application to the Development of Graphical Methods.”
 
 :::
 
-##  Elementary Perceptual Tasks
+## Elementary perceptual tasks {.smaller}
 
 <i class="fa-solid fa-triangle-exclamation"></i> Non-exhaustive
 
@@ -543,68 +665,51 @@ Cleveland, William S., and Robert Mc Gill. (1984) “Graphical Perception: Theor
 <img src="images/task-color-hue-1.svg"><img src="images/task-color-chroma-1.svg" `r vis_spacing1`><img src="images/task-color-luminance-1.svg" `r vis_spacing1`><img src="images/task-color-saturation-1.svg" `r vis_spacing1`><img src="images/task-color-shade-1.svg" `r vis_spacing1`>
 
 
-# Retrieving information from graphs
+## Retrieving information from graphs
 
-Of the 10 elementary perception tasks, Cleveland & McGill (1984) found the accuracy ranked as follows...
+Cleveland and McGill (1984) tested how accurately people judge values from different encodings.
 
-## Rank 1
+Position tended to be judged most accurately, colour and volume least accurately — but the exact ordering varies with the task, data size and design (see Heer and Bostock, 2010).
 
-<img src="images/task-position-common-scale-1.svg">
+## More accurate encodings {.smaller}
 
-Example
+<img src="images/task-position-common-scale-1.svg"><img src="images/task-position-non-aligned-scale-1.svg" `r vis_spacing1`><img src="images/task-length-1.svg" `r vis_spacing1`><img src="images/task-direction-1.svg" `r vis_spacing1`>
 
-<img src="images/vis-scatter.svg"> <img src="images/vis-barplot-horizontal.svg">
+Examples
 
-## Rank 2
+<img src="images/vis-scatter.svg"> <img src="images/vis-barplot-horizontal.svg"> <img src="images/vis-stacked-barplot.svg" `r vis_spacing1`>
 
-<img src="images/task-position-non-aligned-scale-1.svg">
+Position on a common scale and length/direction support more accurate value judgments in these experiments. Bar and scatter plots build on this.
 
-Example
+## Less accurate encodings {.smaller}
 
-<img src="images/vis-stacked-barplot.svg">
+<img src="images/task-angle-1.svg"><img src="images/task-area-1.svg" `r vis_spacing1`><img src="images/task-volume-1.svg" `r vis_spacing1`><img src="images/task-curvature-1.svg" `r vis_spacing1`><img src="images/task-color-shade-1.svg" `r vis_spacing1`><img src="images/task-color-saturation-1.svg" `r vis_spacing1`>
 
-## Rank 3
+Angle, area, volume and colour are generally judged less accurately for extracting precise values. They remain useful for other purposes, such as using colour to group categories.
 
-<img src="images/task-length-1.svg"> <img src="images/task-direction-1.svg"> <img src="images/task-angle-1.svg">
+## Examples of less accurate encodings {.smaller}
 
-Example
+Examples
 
-<img src="images/vis-piechart.svg">
+<img src="images/vis-piechart.svg"> <img src="images/vis-bubble.svg" `r vis_spacing1`> <img src="images/vis-volchart-1.svg" `r vis_spacing1`> <img src="images/vis-heatmap.svg">
 
+These encodings can reveal patterns, but they make precise comparisons harder than position or length on a common scale.
 
-## Rank 4
+::: aside
 
-<img src="images/task-area-1.svg">
+Cleveland, William S., and Robert McGill. (1984) “Graphical Perception.” Heer, Jeffrey, and Michael Bostock. (2010) “Crowdsourcing Graphical Perception.”
 
-Example
-
-<img src="images/vis-bubble.svg">
-
-## Rank 5
-
-<img src="images/task-volume-1.svg"> <img src="images/task-curvature-1.svg">
-
-Example
-
-<img src="images/vis-volchart-1.svg">
-
-## Rank 6
-
-<img src="images/task-color-shade-1.svg"> <img src="images/task-color-saturation-1.svg">
-
-Example
-
-<img src="images/vis-map.svg"> <img src="images/vis-heatmap.svg">
+:::
 
 ## Preattentive processing
 
 . . . 
 
-* Viewers can notice certain features are absent or present without focussing their attention on particular regions.
+* Viewers can notice that certain features are present or absent without focusing attention on a particular area.
 
 . . . 
 
-* Which plot helps you to distinguish the data points?
+* Which plot makes the data points easiest to distinguish?
 
 <center>
 <img src="images/preattentive-1.svg">
@@ -619,14 +724,14 @@ Healey, Christopher G., and James T. Enns (2012) “Attention and Visual Memory 
 
 :::
 
-# Gestalt Principles
+# Gestalt principles
 
 * "Gestalt" is German for form or shape.
-* A set of laws to address the natural compulsion to find order in disorder by perceiving a series of individual elements as a whole.
+* Gestalt principles describe how people perceive a collection of individual elements as a whole.
 
-## Law of Proximity
+## Law of proximity
 
-* By placing elements closer together, it makes it easier for you to group elements together as well as make comparisons.
+* Placing elements close together makes them easier to group and compare.
 
 . . . 
 
@@ -636,15 +741,15 @@ dfsex %>%
   geom_col() + 
   facet_wrap(~sex, nrow = 1) +
   scale_x_continuous(labels = scales::comma) + 
-  labs(y = "Birth place", x = "Number of Australian Residents",
-       caption = "Data Source: Australian Census 2021",
-       title = "Top 5 countries of birth outside Australia by sex")
+  labs(y = "Place of birth", x = "Number of Australian residents",
+       caption = "Data source: Australian Census 2021",
+       title = "Five most common countries of birth outside Australia, by sex")
 ```
 
-Can you tell which birth place has more women than men amongst the Australian residents?
+For which countries of birth are there more women than men among Australian residents?
 
 
-## Law of Proximity
+## Law of proximity
 
 
 ```{r gestalt-proximity2, fig.height = 2, fig.width = 8}
@@ -652,9 +757,9 @@ gprox <- dfsex %>%
   ggplot(aes(count, birth, fill = sex)) + 
   geom_col(position = "dodge") + 
   scale_x_continuous(labels = scales::comma) + 
-  labs(y = "Birth place", x = "Number of Australian Residents",
-       caption = "Data Source: Australian Census 2021",
-       title = "Top 5 countries of birth outside Australia by sex",
+  labs(y = "Place of birth", x = "Number of Australian residents",
+       caption = "Data source: Australian Census 2021",
+       title = "Five most common countries of birth outside Australia, by sex",
        fill = "Sex")
 gprox
 ```
@@ -663,10 +768,10 @@ gprox
 
 **Data story**
 
-Census 2021 shows far more women born in Philippines and China migrate to Australia than men born in their respective countries, whilst more men born in India migrate to Australia than women born in India.
+Among Australian residents born in the Philippines or China, women outnumber men. Among residents born in India, men outnumber women.
 
 
-## Law of Similarity
+## Law of similarity
 
 * When objects share similar attributes, they are perceived as being part of the same group. 
 
@@ -684,9 +789,9 @@ dfsex %>%
   ggplot(aes(count, birth, fill = sex)) + 
   geom_col(position = "dodge") + 
   scale_x_continuous(labels = scales::comma) + 
-  labs(y = "Birth place", x = "Number of Australian Residents",
-       caption = "Data Source: Australian Census 2021",
-       title = "Top 5 countries of birth outside Australia by sex",
+  labs(y = "Place of birth", x = "Number of Australian residents",
+       caption = "Data source: Australian Census 2021",
+       title = "Five most common countries of birth outside Australia, by sex",
        fill = "Sex") +
   theme(axis.text.y = ggtext::element_markdown())
 ```
@@ -694,9 +799,9 @@ dfsex %>%
 . . . 
 
 
-Notice that the countries are colored by their continent (`r span("#006DAE", "Europe")`, `r span("#C8008F", "Asia")`, and `r span("#008A25", "Oceania")`).
+Notice that the countries are coloured by continent (`r span("#006DAE", "Europe")`, `r span("#C8008F", "Asia")` and `r span("#008A25", "Oceania")`).
 
-## Law of Closure
+## Law of closure
 
 * Objects collected within a boundary-like structure are perceived as a group.
 
@@ -713,16 +818,16 @@ dfsex %>%
   ggplot(aes(count/1000, birth, fill = sex)) + 
   geom_col(position = "dodge") + 
   scale_x_continuous(labels = scales::comma) + 
-  labs(y = "Birth place", x = "Number of Australian Residents ('000s)",
-       caption = "Data Source: Australian Census 2021",
-       title = "Top 5 countries of birth outside Australia by sex",
+  labs(y = "Place of birth", x = "Number of Australian residents (thousands)",
+       caption = "Data source: Australian Census 2021",
+       title = "Five most common countries of birth outside Australia, by sex",
        fill = "Sex") +
   facet_wrap(~group, scales = "free") +
   theme(axis.text.y = ggtext::element_markdown())
 ```
 
 
-# Color space
+# Colour space
 
 ::: {.f3 .monash-gray80}
 
@@ -740,7 +845,7 @@ _Computational Statistics & Data Analysis_ 53(9)
 
 ## Qualitative palettes
 
-* Designed for categorical variable with no particular ordering 
+* Designed for categorical variables with no inherent ordering
 
 
 ```{r, fig.height = 4, fig.width = 8, echo = TRUE}
@@ -750,7 +855,7 @@ colorspace::hcl_palettes("Qualitative", plot = TRUE, n = 7)
 
 ## Sequential palettes
 
-* Designed for ordered categorical variable or number going from low to high (or vice-versa) 
+* Designed for ordered categories or numeric values that move from low to high, or vice versa
 
 
 ```{r, fig.height = 4, fig.width = 10, echo = TRUE}
@@ -759,49 +864,294 @@ colorspace::hcl_palettes("Sequential", plot = TRUE, n = 7)
 ```
 
 
-## Diverging palettes
+## Diverging palettes {.smaller}
 
-* Designed for ordered categorical variable or number going from low to high (or vice-versa) with a neutral value in between
+* Designed for ordered categories or numeric values that diverge from a meaningful neutral value
 
 
-```{r, fig.height = 6, fig.width = 8, echo = TRUE}
+```{r, fig.height = 4.5, fig.width = 8, echo = TRUE}
 #| code-line-numbers: false
 colorspace::hcl_palettes("Diverging", plot = TRUE, n = 7)
 ```
 
-## Colorblindness 
+## Colour-vision deficiency {.smaller}
 
-Colorblindness affects roughly 1 in 8 men.
+Colour-vision deficiency affects roughly one in eight men.
 
 ```{r, fig.width = 12}
 colorblindr::cvd_grid(gprox)
 ```
 
-Check your color choices using the [`colorblindr`](https://github.com/clauswilke/colorblindr) package or otherwise. 
+Check your colour choices with the [`colorblindr`](https://github.com/clauswilke/colorblindr) package or another colour-vision simulator.
+
+
+# Putting it all together
+
+## A practical design workflow
+
+::: {.columns}
+
+::: {.column width="33%"}
+
+### 1. Diagnose
+
+* What is the message?
+* Who is the audience?
+* What comparison must they make?
+
+:::
+
+::: {.column width="33%"}
+
+### 2. Redesign
+
+* Choose an encoding
+* Create visual hierarchy
+* Remove distractions
+
+:::
+
+::: {.column width="33%"}
+
+### 3. Evaluate
+
+* Check honesty
+* Check accessibility
+* Test whether the message is clear
+
+:::
+
+:::
+
+
+## Diagnose the first draft {.smaller}
+
+::: {.columns}
+
+::: {.column width="62%"}
+
+```{r workflow-draft, fig.width = 7, fig.height = 3.5}
+ggplot(workflow_birthplace, aes(birth, percentage, fill = birth)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    x = NULL, y = "Percentage", fill = "Place of birth",
+    title = "Birthplaces"
+  )
+```
+
+:::
+
+::: {.column width="38%"}
+
+**What makes this difficult to use?**
+
+. . .
+
+* The purpose is unclear
+* Labels are difficult to scan
+* The legend repeats the axis
+* Every country receives equal emphasis
+* The population, year and source are missing
+
+:::
+
+:::
+
+
+## Define the message and audience
+
+::: {.callout-note}
+
+### Audience
+
+A general reader who has not seen the Census table.
+
+:::
+
+. . .
+
+::: {.callout-important}
+
+### Message
+
+India became the third most common country of birth among Australian residents in 2021, overtaking China and New Zealand.
+
+:::
+
+. . .
+
+The words **became** and **overtaking** mean that the visual must show change, not only the 2021 ranking.
+
+
+## Match the comparison to the encoding {.smaller}
+
+| Question | Evidence needed | Useful encoding |
+|---|---|---|
+| What ranked third in 2021? | Values from 2021 | Ordered bars |
+| What changed between censuses? | Values from 2016 and 2021 | Lines or paired points |
+| Did the share change? | A common denominator | Percentage of residents |
+
+. . .
+
+::: {.callout-tip}
+
+The headline determines the comparison the chart must make possible.
+
+:::
+
+
+## Activity: redesign the first draft {.smaller}
+
+::: {.columns}
+
+::: {.column width="55%"}
+
+```{r workflow-activity, fig.width = 7, fig.height = 3.3}
+ggplot(workflow_birthplace, aes(birth, percentage, fill = birth)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    x = NULL, y = "Percentage", fill = "Place of birth",
+    title = "Birthplaces"
+  )
+```
+
+:::
+
+::: {.column width="45%"}
+
+Working with a partner:
+
+1. Write the message as one sentence.
+2. Identify the comparison the chart should support.
+3. Sketch a redesign.
+4. Justify two design choices using perception, Gestalt principles or accessibility.
+
+**Time: four minutes**
+
+:::
+
+:::
+
+
+## Create hierarchy and remove distractions {.smaller}
+
+::: {.columns}
+
+::: {.column width="68%"}
+
+```{r workflow-redesign, fig.width = 8, fig.height = 3.8}
+ggplot(workflow_birthplace, aes(percentage / 100, birth)) +
+  geom_col(fill = "grey75", width = 0.7) +
+  geom_col(
+    data = ~filter(.x, birth == "India"),
+    fill = "#006DAE", width = 0.7
+  ) +
+  geom_text(
+    aes(label = scales::percent(percentage / 100, accuracy = 0.1)),
+    hjust = -0.15, size = 4.5
+  ) +
+  scale_x_continuous(
+    labels = scales::percent,
+    expand = expansion(mult = c(0, 0.16))
+  ) +
+  coord_cartesian(clip = "off") +
+  labs(
+    x = "Percentage of Australian residents", y = NULL,
+    title = "India ranked third among all countries of birth",
+    subtitle = "Australia ranked first and is omitted from this chart",
+    caption = "Source: Australian Census 2021"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+:::
+
+::: {.column width="32%"}
+
+* Order supports comparison
+* Horizontal labels are easy to scan
+* Colour directs attention
+* Direct labels remove legend lookup
+* Title and source add context
+
+:::
+
+:::
+
+
+## Evaluate before publishing
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+### Evidence
+
+* Does the title match the data shown?
+* Is the denominator clear?
+* Could the axis exaggerate a difference?
+* Are important groups or time points missing?
+
+:::
+
+::: {.column width="50%"}
+
+### Communication
+
+* Is the intended comparison easy?
+* Is colour carrying meaning by itself?
+* Are labels legible at presentation size?
+* Can the source and time period be found?
+
+:::
+
+:::
+
+
+## The five-second test
+
+Show the visual to someone unfamiliar with the analysis for five seconds, then hide it.
+
+. . .
+
+Ask them:
+
+1. What was the main message?
+2. What comparison did the chart ask you to make?
+3. What evidence do you remember?
+
+. . .
+
+If their answers differ from your intention, revise the visual—not the viewer.
 
 
 
-## Week 6 Lesson 
+## Week 6 lesson {.smaller}
 
 
 ::: callout-important
 
 ## Summary
 
-* We went through some examples of constructing data plots to illustrate your data story
-* We looked at some plot types and elementary perceptual tasks 
-* We examined the empirical results of the information retrieval from elementary perceptual tasks
-* We studied some cognitive concepts, like preattentive processing and Gestalt principles, for data visualisation 
-* We saw the different types of color palettes and considered color choices for colorblind audiences 
+* Start with the message, then choose a plot that makes the relevant comparison clear.
+* Position and length support more accurate comparisons than angles, areas and colour intensity.
+* Preattentive features and Gestalt principles help guide an audience's attention.
+* Choose a palette suited to the data and check that it remains accessible to people with colour-vision deficiency.
+* Diagnose, redesign and test a visual before publishing it.
 
 :::
 
-## Week 6 Lesson 
-
+## Week 6 resources {.smaller}
 
 ::: callout-tip
 
-## Resources
+### Resources
 
 * [From Data to Viz](https://www.data-to-viz.com/)
 * [The R Graph Gallery](https://r-graph-gallery.com/)
