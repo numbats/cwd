@@ -34,12 +34,11 @@ week <- as.integer(1 + ((Sys.Date() - as_date(start_semester))/7))
 
 ## Weekly schedule
 
-* 1 hour workshop, Mondays 10am-11am each week
-* 2 hour seminar, Monday 6pm-8pm each week
+* 2 hour seminar, Friday 2pm-4pm each week
+* 1 hour workshop, Friday 4pm-5pm each week
 * 1.5 hour tutorial, one of:
-  * Monday 12pm-1pm
-  * Monday 1pm-2pm
-  * Monday 2pm-3pm
+  * Wednesday 12pm-1pm
+  * Wednesday 1pm-2pm
 
 ## Consultation
 
