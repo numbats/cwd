@@ -52,19 +52,14 @@ schedule <- schedule |>
     select(Week, Date, everything())
 
 # Add assignment details
-lastmon <- function(x) {
-    7 * floor(as.numeric(x - 1 + 4) / 7) + as.Date(1 - 4, origin = "1970-01-01")
-}
-
 assignments <- read_csv(here::here("assignments.csv")) |>
     mutate(
-        Date = lastmon(Due),
         Moodle = paste0("https://learning.monash.edu/mod/assign/view.php?id=", Moodle),
         File = paste0("assignments/", File)
     )
 
 schedule <- schedule |>
-    left_join(assignments, by = "Date") |>
+    left_join(assignments, by = c("Week" = "Due_Week")) |>
     mutate(Week = if_else(is.na(Week) & Date > "2025-05-20", 13, Week))
 
 show_assignments <- function(week) {
