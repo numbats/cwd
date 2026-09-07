@@ -215,7 +215,7 @@ Swap checkpoint values. Does the headline remain true?
 ## One possible checkpoint graphic
 
 ```{r checkpoint-solution}
-checkpoint <- 10
+checkpoint <- 30
 
 snapshot <- overs |>
   filter(over == checkpoint) |>
@@ -282,16 +282,16 @@ Before coding, decide:
 #| fig-width: 10
 #| fig-height: 5.5
 ggplot(overs, aes(over, over_runs, fill = batting_team)) +
-  geom_col(width = 0.86) +
+  geom_col(width = 0.86, position = position_dodge2(preserve = "single")) +
   geom_point(
     data = ~ filter(.x, over_wickets > 0),
     aes(y = over_runs + 1.2),
     shape = 21,
     stroke = 0.7,
     size = 2.6,
-    colour = "#142B3A"
+    colour = "#142B3A",
+    position = position_dodge2(preserve = "single")
   ) +
-  facet_wrap(~ batting_team, ncol = 1) +
   scale_fill_manual(values = team_colours) +
   scale_x_continuous(breaks = seq(0, 50, by = 5)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +

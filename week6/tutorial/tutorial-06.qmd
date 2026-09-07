@@ -33,6 +33,7 @@ htmltools::includeCSS("tutorial.css")
 - given certain features in the data, create graphics that make the features more pronounced
 - (re)create data plots using `ggplot2` 
 - identify and apply cognitive concepts (e.g. preattentive processing, law of similarity, law of closure, law of proximity), elementary perceptual tasks (e.g. length, position, common scale, angle and so on) and color palettes that make the data plot effective for communicating the intended message
+- critically evaluate whether the evidence shown in a data graphic supports the claim made about it
 
 ::: {.callout-note collapse="true"}
 
@@ -41,10 +42,8 @@ htmltools::includeCSS("tutorial.css")
 1. Install the R-packages
 
 ``` r
-install.packages(c("ggridges", "ggbeeswarm", "ggrepel"))
+install.packages(c("ggridges", "ggbeeswarm"))
 ```
-
-2. Download the birth place data from the 2016 and 2022 Australian Census from Moodle.
 
 :::
 
@@ -179,71 +178,186 @@ The plot shows that there is not a single diamond that is priced less than $5,00
 
 ## 🔧 Exercise 6B
 
-**Birth place among Australian Residents**
+**Do insurance claims tell us who is most at risk? (25--30 minutes)**
 
-Recall the data stories from the lecture shown below. Using the data downloaded under Preparation, recreate the data plot shown below. Explain which concepts make the data plot more effective for the intended story.
+In 2024, AAMI published its *Decade of Driving Report*, based on more than
+4.3 million motor insurance claims lodged from 2014 to 2023. The
+[AAMI report page](https://www.aami.com.au/car-insurance/crash-index.html)
+describes drivers aged 65 and over as its "most at-risk" age group because
+they accounted for 26% of claims. The finding was reported by ABC News under
+the headline:
 
-<img src="../images/tutorial-06-plot1.png" style="border:2px solid black;border-radius:10px;max-width:775px;">
+> [Men and older drivers most at risk of car crashes, insurer finds](https://www.abc.net.au/news/2024-09-19/older-male-drivers-more-likely-car-crashes-aami-insurer-report/104370012)
 
-<img src="../images/tutorial-06-plot2.png" style="border:2px solid black;border-radius:10px;max-width:775px;">
+Your task is not to assume that the claim is right or wrong. Evaluate whether
+the published evidence supports the wording used.
 
+### The available evidence
+
+The report ranks the age groups in this order:
+
+1. 65+ years
+2. 35--44 years
+3. 45--54 years
+4. 55--64 years
+5. 25--34 years
+6. 17--24 years
+
+It reports a percentage only for the first group. The data come from motor
+claims across AAI Limited's portfolio of insurance brands, rather than from a
+census of every Australian driver or crash.
+
+```{r claims-data}
+claims_share <- tibble(
+  age_group = c("Drivers aged 65+", "All other reported age groups"),
+  share_of_claims = c(0.26, 0.74),
+  period = "2014--2023",
+  portfolio = "AAI Limited motor insurance brands"
+)
+
+claims_share
+```
+
+### B1. Diagnose the claim
+
+Discuss the following questions with a partner and record your conclusions.
+
+1. What is the unit counted in the report: people, crashes, insurance claims,
+   or something else?
+2. Does a group's share of all claims measure an individual driver's chance
+   of making a claim? What denominator would be needed to estimate that risk?
+3. Does lodging a claim establish who caused a crash, how severe it was, or
+   whether anyone was injured?
+4. Are the age groups directly comparable? In particular, compare the
+   open-ended 65+ group with the narrower younger groups.
+5. To whom can findings from this portfolio of insurance brands reasonably
+   be generalised?
+6. Write the strongest conclusion that the available evidence does support.
+
+### B2. Rewrite the message
+
+Write a one-sentence headline that states the measure, population and period
+without describing claims share as risk. It should be understandable to a
+general news audience.
+
+### B3. Redesign the evidence
+
+Use `claims_share` to create one simple, publication-ready graphic. Your
+graphic must:
+
+- represent 26% as a share of this insurer portfolio's claims;
+- identify the 2014--2023 period;
+- use direct labels rather than requiring a legend lookup;
+- use colour and visual hierarchy deliberately, without relying on colour
+  alone; and
+- avoid implying that the data estimate crash risk for Australian drivers.
+
+Below the graphic, justify two design choices using the visualisation concepts
+from the lecture. Then write a two- or three-sentence editor's note explaining
+what additional data would be required to estimate risk. Consider comparable
+age bands, a denominator such as policyholder-years or distance driven, a
+clearly defined outcome, and information about fault.
 
 ::: unilur-solution
 
-```{r exB}
-#| fig.height: 4
+### B1. Evidence audit
+
+The observation is an **insurance claim**, not necessarily one person or one
+crash. A crash may produce more than one claim, while some crashes produce no
+claim in this portfolio. The numerator therefore cannot, by itself, estimate
+an individual's probability of crashing or claiming.
+
+The evidence does not establish that drivers aged 65+ caused the incidents or
+that their incidents were more severe. The 65+ group is also open-ended, while
+most comparison groups cover only 10 years. A larger or more broadly defined
+group may account for more claims even if its members have a lower individual
+claim rate. Finally, the portfolio may differ from the wider driving
+population in its customers, products, locations and propensity to claim.
+
+The strongest supported conclusion is:
+
+> Drivers aged 65+ accounted for 26% of motor claims in AAI Limited's
+> insurance portfolio between 2014 and 2023.
+
+That is a useful descriptive result, but these data are insufficient to rank
+age groups by crash or claim risk.
+
+### B2. One defensible headline
+
+**Drivers aged 65+ accounted for 26% of AAI motor claims lodged between 2014
+and 2023**
+
+This wording identifies the measure, source population and period. It does not
+extend the result to every Australian driver.
+
+### B3. One possible graphic
+
+```{r claims-share-plot}
+#| fig-height: 3.8
+#| fig-width: 8
 #| message: false
 #| warning: false
-df <- read_csv("../../data/census-birthplace.csv")
-df %>% 
-  filter(census == 2021, 
-         !birth %in% c("Total", "Not Stated", "Other", "Australia")) %>% 
-  mutate(rank = rank(-count),
-         birth = fct_reorder(birth, count)) %>% 
-  filter(rank <= 5) %>%
-  ggplot(aes(count, birth)) +
-  geom_col() +
-  geom_col(data = ~filter(.x, birth == "India"),
-           fill = "#006DAE") + 
-  geom_text(aes(label = scales::percent(percentage/100, 0.1)),
-            hjust = 0, nudge_x = -100000, color = "white") +
-  scale_x_continuous(label = scales::comma) +
-  labs(x = "Number of Australian residents",
-       y = "Birth place", 
-       caption = "Data source: Australian Census 2021",
-       title = "India now third most common place of birth of Australian residents,\ncensus results show",
-       subtitle = "Top 5 countries of birth outside Australia") +
-  theme(plot.title.position = "plot")
+claims_share %>%
+  mutate(
+    age_group = factor(age_group, levels = rev(age_group)),
+    label = paste0(
+      age_group,
+      "\n",
+      scales::percent(share_of_claims, accuracy = 1)
+    )
+  ) %>%
+  ggplot(aes(x = "", y = share_of_claims, fill = age_group)) +
+  geom_col(width = 0.55) +
+  geom_text(
+    aes(label = label, colour = age_group),
+    position = position_stack(vjust = 0.5),
+    fontface = "bold",
+    size = 5
+  ) +
+  scale_fill_manual(values = c(
+    "Drivers aged 65+" = "#006DAE",
+    "All other reported age groups" = "grey85"
+  )) +
+  scale_colour_manual(values = c(
+    "Drivers aged 65+" = "white",
+    "All other reported age groups" = "grey20"
+  )) +
+  scale_y_continuous(
+    labels = scales::percent,
+    breaks = seq(0, 1, by = 0.25),
+    expand = expansion(mult = c(0, 0))
+  ) +
+  coord_flip() +
+  guides(fill = "none", colour = "none") +
+  labs(
+    x = NULL,
+    y = "Share of motor insurance claims",
+    title = "Drivers aged 65+ accounted for 26% of AAI motor claims",
+    subtitle = "Claims lodged across AAI Limited insurance brands, 2014--2023",
+    caption = paste(
+      "Source: AAMI Decade of Driving Report 2024.",
+      "Claims share does not estimate how likely an individual driver is to crash."
+    )
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title.position = "plot"
+  )
 ```
 
-The above plot uses a common position scale, in addition to the use of proximity of the bars (law of proximity), to make it easier to compare the number of Australian residents by birth place. We percentage text is enclosed within each bar which make it easier to identify which text belongs to which birth place group (law of closure). The use of color draws attention to India (preattentive processing). 
+The shared scale and enclosing bar make the part-to-whole relationship
+explicit. The contrasting fill directs attention to the reported 65+ share,
+while the printed percentages ensure that colour is not carrying the meaning
+on its own. The title, subtitle and caption keep the visual claim within the
+scope of the evidence.
 
-
-```{r exBii}
-#| fig.height: 4
-#| message: false
-#| warning: false
-df %>% 
-  filter(!birth %in% c("Total", "Not Stated", "Other", "Australia")) %>% 
-  group_by(census) %>% 
-  mutate(rank = rank(-count)) %>% 
-  filter(rank <= 5) %>%
-  ggplot(aes(factor(census), percentage/100, color = birth)) +
-  geom_line(aes(group = birth)) + 
-  geom_point() + 
-  ggrepel::geom_text_repel(data = ~filter(.x, census == 2021),
-                           aes(label = birth),
-                           hjust = 0, nudge_x = 0.05) + 
-  scale_y_continuous(label = scales::percent) +
-  labs(x = "Census Year",
-       y = "Percentage of\nAustralian residents", 
-       caption = "Data source: Australian Census 2021",
-       title = "India has overtaken China and New Zealand to become the\nthird largest country of birth for Australian residents,\n2021 census data has found",
-       subtitle = "Top 5 countries of birth outside Australia") +
-  theme(plot.title.position = "plot") +
-  guides(color = "none")
-```
-
-The above plot uses the same color to group the value as well as birth place category (law of similarity). The proximity of the text label to the line makes it easier to identify which country the values belong to (law of proximity). The use of common position scale makes it easier to see the rise in Indian born Australian residents from the 2016 to 2021 census. The angle is used to ascertain the rise in the percentage of Australian residents with particular birth place. As angle is not as easy to retrieve information, we could have alternatively opted to show the difference or relative difference in percentage of Australian residents by birth place from the previous census.
+**Editor's note:** To estimate age-specific risk, we would need claim counts
+and exposure denominators for comparable age groups within the same insurance
+portfolio. Policyholder-years would estimate the rate among insured customers;
+distance or time driven would better account for exposure on the road. We
+would also need to define the outcome and distinguish involvement from fault
+and severity.
 
 :::
