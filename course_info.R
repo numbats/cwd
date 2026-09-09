@@ -35,21 +35,25 @@ calendar <- tibble(
     Date = seq(as.Date(start_semester), by = "1 week", length.out = 13)
 ) |>
     mutate(
-        Week = row_number(),
-        Week = if_else(Date < mid_semester_break, Week, Week - 1),
-        # Week =
-    )
+        Break = Date >= as.Date(mid_semester_break) &
+            Date < as.Date(mid_semester_break) + 7,
+        Week = case_when(
+            Break ~ NA_integer_,
+            Date < as.Date(mid_semester_break) ~ row_number(),
+            TRUE ~ row_number() - 1L
+        ),
+        Date = if_else(Break, as.Date(mid_semester_break), Date)
+    ) |>
+    select(-Break)
 
 # Add calendar to schedule
 schedule <- schedule |>
-    left_join(calendar, by = "Week") |>
+    full_join(calendar, by = "Week") |>
     mutate(
-        Week = if_else(Date == mid_semester_break, NA, Week),
-        Topic = if_else(Date == mid_semester_break, "Mid-semester break", Topic),
-        # Reference = if_else(Date == mid_semester_break, NA, Reference),
-        # Reference_URL = if_else(Date == mid_semester_break, NA, Reference_URL)
+        Topic = if_else(is.na(Week), "Mid-semester break", Topic)
     ) |>
-    select(Week, Date, everything())
+    select(Week, Date, everything()) |>
+    arrange(Date)
 
 # Add assignment details
 assignments <- read_csv(here::here("assignments.csv")) |>
@@ -59,8 +63,7 @@ assignments <- read_csv(here::here("assignments.csv")) |>
     )
 
 schedule <- schedule |>
-    left_join(assignments, by = c("Week" = "Due_Week")) |>
-    mutate(Week = if_else(is.na(Week) & Date > "2025-05-20", 13, Week))
+    left_join(assignments, by = c("Week" = "Due_Week"))
 
 show_assignments <- function(week) {
     ass <- schedule |>
