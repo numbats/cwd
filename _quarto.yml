@@ -13,6 +13,7 @@ project:
     - "week1/tutorial/data/melb-airport-min-temp-data.csv"
     - "data/census-birthplace.csv"
     - "data/census-birthplace-by-sex.csv"
+    - "data/pokemon-elo.csv"
 
 website:
   title: "ETC5523 Communicating With Data"

@@ -1,0 +1,7 @@
+/*
+Tachyons uses `.dt` as a display utility, while Pandoc uses `.dt` for
+syntax-highlighted HTML delimiters. Keep those delimiters inline in code.
+*/
+.reveal pre code span.dt {
+  display: inline;
+}

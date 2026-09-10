@@ -1,13 +1,13 @@
 ---
 pagetitle: "ETC5523: Communicating with Data"
-subtitle: "Introduction to web technologies and styling"
+subtitle: "CSS, AI-assisted coding, and polished ggplots"
 author: "Michael Lydeamore"
 email: "michael.lydeamore@monash.edu"
 date: "Week 7"
 department: "Department of Econometrics and Business Statistics"
 unit-url: "cwd.numbat.space"
 footer: "ETC5523 Week 7"
-format: 
+format:
   revealjs:
     logo: images/monash-one-line-black-rgb.png
     multiplex: false
@@ -18,41 +18,101 @@ format:
     controls: true
     width: 1280
     height: 720
-    css: [../assets/tachyons-addon.css, ../assets/custom.css]
+    auto-stretch: false
+    code-line-numbers: false
+    css: [../assets/tachyons-addon.css, ../assets/custom.css, week7.css]
     include-after-body: "../assets/after-body.html"
     chalkboard:
       boardmarker-width: 5
       buttons: true
 execute:
   echo: true
+  warning: false
+  message: false
 ---
 
-
-```{r, include = FALSE}
-current_file <- knitr::current_input()
-basename <- gsub(".[Rq]md$", "", current_file)
+```{r}
+#| label: setup
+#| include: false
 library(tidyverse)
-library(widgetframe)
-library(htmltools)
-
-js <- '<i class="fab fa-js-square monash-green2"></i>'
-css <- '<i class="fab fa-css3-alt monash-blue2"></i>'
-seetext <- '<span class="monash-bg-orange2 monash-white" style="padding:5px;font-size:18pt;vertical-align: middle;border:1px dashed black;"><i class="fas fa-eye"></i><i class="fas fa-font" ></i></span>'
-seehtml <- '<span class="monash-bg-orange2 monash-white" style="padding:5px;font-size:18pt;vertical-align: middle;border:1px dashed black;"><i class="fas fa-eye"></i><i class="far fa-window-maximize"></i></span>'
-
+library(here)
+library(ggrepel)
+library(scales)
 
 knitr::opts_chunk$set(
-  fig.width = 6,
-  fig.height = 4,
+  fig.path = "images/index/",
+  fig.width = 8,
+  fig.height = 4.5,
   fig.align = "center",
   out.width = "100%",
   fig.retina = 3,
-  echo = TRUE,
+  dev = "svg",
+  dev.args = list(bg = "transparent"),
   warning = FALSE,
-  message = FALSE,
-  cache = FALSE,
-  cache.path = "cache/"
+  message = FALSE
 )
+
+brand <- c(ink = "#222222", muted = "#B8B8B8", accent = "#006DAE")
+
+birthplace <- read_csv(here("data/census-birthplace.csv"), show_col_types = FALSE) |>
+  filter(
+    census == 2021,
+    !birth %in% c("Total", "Australia", "Other", "Not Stated")
+  ) |>
+  slice_max(count, n = 7) |>
+  mutate(
+    birth = fct_reorder(birth, percentage),
+    focus = if_else(birth == "India", "Focus", "Context")
+  )
+
+housing <- ggplot2::txhousing |>
+  filter(
+    city %in% c("Austin", "Dallas", "Houston", "San Antonio"),
+    year >= 2005,
+    !is.na(median)
+  ) |>
+  mutate(
+    date = as.Date(sprintf("%d-%02d-01", year, month)),
+    focus = if_else(city == "Austin", "Focus", "Context")
+  )
+
+housing_end <- housing |>
+  group_by(city) |>
+  slice_max(date, n = 1, with_ties = FALSE) |>
+  ungroup()
+
+airport_year <- read_csv(
+  here("data/melb-airport-max-temp-data.csv"),
+  show_col_types = FALSE
+) |>
+  transmute(
+    year = Year,
+    max_temp = `Maximum temperature (Degree C)`
+  ) |>
+  group_by(year) |>
+  summarise(mean_max = mean(max_temp, na.rm = TRUE), .groups = "drop") |>
+  filter(is.finite(mean_max))
+
+airport_reference <- mean(airport_year$mean_max)
+airport_high <- airport_year |>
+  slice_max(mean_max, n = 1, with_ties = FALSE)
+
+theme_cwd <- function(base_size = 16) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
+      panel.grid.minor = element_blank(),
+      panel.grid.major.y = element_blank(),
+      axis.title = element_text(colour = brand[["ink"]]),
+      axis.text = element_text(colour = brand[["ink"]]),
+      plot.title = element_text(face = "bold", colour = brand[["ink"]]),
+      plot.subtitle = element_text(colour = "grey35"),
+      plot.caption = element_text(colour = "grey40", hjust = 0),
+      legend.position = "bottom",
+      plot.margin = margin(10, 36, 10, 10)
+    )
+}
 ```
 
 ## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
@@ -67,755 +127,699 @@ Lecturer: *`r rmarkdown::metadata$author`*
 <br>
 
 <ul class="fa-ul">
-
-<li>
-
-[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`
-
-</li>
-
-<li>
-
-[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`
-
-</li>
-
-<li>
-
-[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
-
-</li>
-
+<li>[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`</li>
+<li>[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`</li>
+<li>[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a></li>
 </ul>
-
-<br>
 :::
-
 
 ## {#aim background="white"}
 
-::: {.callout-important }
+::: {.callout-important}
 
 ## Aim
 
-* Understand the make up of web documents, i.e. HTML, CSS and JS
-* Write basic HTML and CSS with valid syntax
-* Use CSS selectors to apply new styles 
-* Integrate CSS and JS to R markdown documents with HTML output
+By the end of today, you should be able to:
+
+* apply small, scoped CSS changes to Quarto HTML output;
+* brief an LLM to produce useful CSS or `ggplot2` code;
+* inspect and verify generated code rather than accepting it on trust; and
+* implement reusable techniques that turn a correct plot into a purposeful one.
 
 :::
 
-::: {.callout-tip }
-
-## Why
-
-* Basic web development skills are necessary for customising HTML documents
-* This hard skill will be necessary later for when you are communicating with web documents and web apps
-
-:::
-
-
-## 🌐  World Wide Web (WWW) 
-
-* WWW (or the **Web**) is the information system where documents (web pages) are identified by Uniform Resource Locators (**URL**s)
-
-::: incremental
-
-* A web page consists of:
-
-
-  * <i class="fab fa-html5 monash-orange2"></i> **HTML** provides the basic structure of the web page
-  * <i class="fab fa-css3-alt monash-blue2"></i> **CSS** controls the look of the web page (optional)
-  * <i class='fab fa-js-square monash-green2'></i> **JS** is a programming language that can modify the behaviour of elements of the web page (optional)
-
-:::
-::: notes
-  
-* Keep in mind that you are not a web developer [(or maybe you are)]{.f4} so you don't need to know these in-depth, but you require some knowledge in web technologies if you want to do some low-level customisation of HTML documents.
-
-:::
-
-
-## 🔨 Web Documents are Handy
-
-::: incremental
-
-* HTML documents are really handy for including interactive elements and supported in almost all computer devices.
-* Naturally, this ties in well with [interactive data visualisation]{.monash-blue}.
-:::
-
-## Web development has been developing for a long time
-
-::: {.columns}
-::: {.column width='50%'}
-1. 1989: First HTML
-2. 1994: CSS
-3. 1995: HTML 2
-4. 1995: JSS
-5. 1996: CSS 1
-:::
-::: {.column width='50%'}
-6. 1997: HTML 3
-7. 1997: HTML 4
-8. 1998: CSS 2
-9. 1999: CSS
-10. 2008: HTML 5
-:::
-:::
-
-::: {.fragment}
-
-From here this all got too confusing and so now we have "living standards"
-
-:::
-
-
-# So what exactly is <br>[HTML]{.monash-orange2}, [CSS]{.monash-blue2}, and [JS]{.monash-green2}? {background="black"}
-
-
-
-
-
-#  <i class="fab fa-html5 monash-orange2"></i> Hyper Text Markup Language {#html}
-
-* HTML files have the extension `.html`.
-* HTML files are often rendered using a web browser via an URL.
-* HTML files are just text files that follow a special syntax that alerts web browsers how to render it.
-
-## <i class="fab fa-html5 monash-orange2"></i>  Simple HTML example 
-
-<center>
-<a href="simple-example.html" download><i class="fas fa-download"></i></a> `simple-example.html`
-</center>
-
-::: {.columns}
-::: {.column width='50%'}
-`r seetext`
-
-```{code-line-numbers="|1,13|2,12|3|4|5-7|8|9-11|"}
-<html>
-<body>
-<h1>ETC5523: Communicating with Data</h1>
-<h2>Lecturer</h2>
-<ul>
-<li>Michael Lydeamore (Chief Examiner)</li>
-</ul>
-<h2>Tutors</h2>
-<ul>
-<li>Janith Wanniarachchi</li>
-<li>Cynthia Huang</li>
-</ul>
-</body>
-</html>
-```
-:::
-::: {.column width='50%'}
-`r seehtml`
-
-<iframe src="simple-example.html" height="100%" width="100%"></iframe>
-
-:::
-:::
-
-## <span class="fa-layers fa-fw"> <i class="fas fa-square monash-white" data-fa-transform="shrink-5"></i><i class="fab fa-html5 monash-orange2"></i></span> HTML Structure
-
-```
-<html>
-<!--This is a comment and ignored by web client.-->
-<head>
-  <!--This section contains web page metadata.-->
-  <title>Communicating with Data</title>
-  <meta name="author" content="Emi Tanaka">
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-
-<body>
-<!--This section contains what you want to display on your web page.-->
-<h1>I'm a first level header</h1>
-<p>This is a paragraph.</p>
-</body>
-</html>
-
-```
-
-
-## <i class="fab fa-html5 monash-orange2"></i> HTML Syntax
-
-`r seetext` 
-
-```
-<span style="color:blue;">Author content</span>
-```
-
-`r seehtml` <span style="color:blue;">Author content</span>
-
-## Breaking down this syntax
-
-The breakdown of this HTML syntax:
-
-<table style="width:100%;font-size:0.8em;" >
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">start tag:</td><td><span style="font-family:monospace;" ><span class="monash-ruby2">&lt;span style="color:blue;"&gt;</span><span class="monash-gray50">Author content&lt;/span&gt;</span></span> </td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">end tag: </td><td> <span style="font-family:monospace;"><span class="monash-gray50">&lt;span style="color:blue;"&gt;Author content<span class="monash-ruby2">&lt;/span&gt;</span></span> </td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">content: </td><td> <span style="font-family:monospace;" ><span class="monash-gray50">&lt;span style="color:blue;"&gt;</span><span class="monash-ruby2">Author content</span><span class="monash-gray50">&lt;/span&gt;</span></span> </td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">element name: </td><td> <span style="font-family:monospace;" ><span class="monash-gray50">&lt;</span><span class="monash-ruby2">span</span><span class="monash-gray50"> style="color:blue;"&gt;Author content&lt;/span&gt;</span></span> </td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">attribute: </td><td> <span style="font-family:monospace;" ><span class="monash-gray50">&lt;span <span class="monash-ruby2">style="color:blue;"</span><span class="monash-gray50">&gt;Author content&lt;/span&gt;</span> </td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">attribute name: </td><td> <span style="font-family:monospace;" ><span class="monash-gray50">&lt;span <span class="monash-ruby2">style</span><span class="monash-gray50">="color:blue;"&gt;Author content&lt;/span&gt;</span> </td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">attribute value: </td><td> <span style="font-family:monospace;" ><span class="monash-gray50">&lt;span style=</span><span class="monash-ruby2">"color:blue;"</span><span class="monash-gray50">&gt;Author content&lt;/span&gt;</span> </td>
-</tr>
-</table>
-
-
-
-## Not all HTML tags have an end tag
-
-`r seetext` 
-
-```
-<img height="200px" src="https://tinyurl.com/rlogo-pic">
-```
-
-<br>
-`r seehtml` 
-
-<img height="200px" src="https://tinyurl.com/rlogo-pic">
-
-
-
-## <i class="fab fa-html5 monash-orange2"></i> Some HTML elements
-
-<table class="f4">
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">block element:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;div><span class="monash-gray50">content</span>&lt;/div></span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">inline element:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;span><span class="monash-gray50">content</span>&lt;/span></span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">paragraph:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;p><span class="gray monash-gray50">content</span>&lt;/p></span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">header level 1:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;h1><span class="monash-gray50">content</span>&lt;/h1></span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">header level 2:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;h2><span class="monash-gray50">content</span>&lt;/h2></span> (note: only up to 6 levels)</td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">italic:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;i><span class="monash-gray50">content</span>&lt;/i></span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">emphasised text:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;em><span class="monash-gray50">content</span>&lt;/em></span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">bold:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;b><span class="monash-gray50">content</span>&lt;/b></span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">strong importance:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;strong><span class="monash-gray50">content</span>&lt;/strong></span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">link:</td><td><span style="font-family: monospace" class="monash-red2" >&lt;a href="https://cwd.numbat.space/"><span class="monash-gray50">content</span>&lt;/a></span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">insert new line:</td><td><span style="font-family: monospace" class="monash-red2">&lt;br></span></td>
-</tr>
-<tr class="fragment">
-<td valign="top" style="text-align:right;padding-right:30px;">unordered list:</td><td><span style="font-family: monospace" class="monash-red2">&lt;ul><br>&lt;li><span class="monash-gray50">item 1</span>&lt;/li><Br>&lt;li><span class="monash-gray50">item 2</span>&lt;/li><Br>&lt;/ul></span></td>
-</tr>
-</table>
-
-::: fragment
-
-How these are rendered to the browser depends on the **browser default style values**, **style attribute** or **CSS**...
-
-:::
-
-
-# `r css` Cascading Style Sheet (CSS) {#css}
-
-
-::: incremental
-
-* CSS files have the extension `.css` [and styles also XHTML, plain XML, SVG and XUL]{.f4}.
-* There are 3 ways to style elements in HTML:
-  * **inline** by using the `style` attribute inside HTML start tag:
-``` 
-<h1 style="color:blue;">Blue Header</h1>
-```
-  * **externally** by using the `<link>` element:
-``` 
-<link rel="stylesheet" href="styles.css">
-```
-  * **internally** by defining within `<style>` element:<br>
-``` 
-<style type="text/css"> h1 { color: blue; } </style>
-```
-  
-:::
-  
-::: notes
-
-
-* By convention, the `<style>` and `<link>` elements tend to go into the `<head>` section of the HTML document.
-
-:::
-
-## `r css` CSS Syntax
-
-::: flex
-
-::: {.w-50 .pr3}
-`r seetext`
-
-```
-<style type="text/css">
-h1 { color: blue; }
-</style>
-
-<h1>This is a header</h1>
-```
-
-
-:::
-
-::: w-50
-
-`r seehtml`
-<h1 style="color:blue">This is a header</h1>
-
-:::
-
-:::
-
-## Breaking down CSS syntax
-
-The breakdown of the CSS syntax:
-
-<table style="font-size:0.9em;">
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">selector:</td><td><span style="font-family:monospace;"><span class="monash-ruby2">h1</span><span class="monash-gray50"> { color: blue; }</span></span> </td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">property:</td><td><span style="font-family:monospace;" class="monash-gray50">h1 { <span class="monash-ruby2">color: blue;</span> }</span> </td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">property name:</td><td><span style="font-family:monospace;" class="monash-gray50">h1 { <span class="monash-ruby2">color</span>: blue; } </span></td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">property value:</td><td><span class="monash-gray50"  style="font-family:monospace;">h1 { color: <span class="monash-ruby2">blue</span>; } </span></td>
-</tr>
-</table>
-
-
-## You may have multiple properties for a single CSS selector
-
-
-``` css
-h1 {
-  color: blue;
-  font-family: monospace;
-  background: yellow;
-}
-```
-
-<br>
-
-<h1 style="color: blue;font-family: monospace;background: yellow;">This is a header</h1>
-
-
-## `r css` Some CSS properties 
-
-<center>
-`<div> Sample text </div>`
-</center>
-
-<table class="f4">
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">background color:</td>
-<td><span class="monash-gray50" style="font-family:monospace;" >div { <span class="monash-ruby2">background-color: yellow;</span> }</span> </td>
-<td>
-<div style="background-color: yellow;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">text color:</td>
-<td><span class="monash-gray50" style="font-family:monospace;" >div { <span class="monash-ruby2">color: purple;</span> }</span> </td>
-<td>
-<div style="color: purple;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">border:</td>
-<td><span class="monash-gray50" style="font-family:monospace;" >div { <span class="monash-ruby2">border: 1px dashed brown;</span> }</span> </td>
-<td>
-<div style="border: 1px dashed brown;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">left border only:</td>
-<td><span class="monash-gray50" style="font-family:monospace;" >div { <span class="monash-ruby2">border-left: 10px solid pink;</span> }</span> </td>
-<td>
-<div style="border-left: 10px solid pink;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td style="text-align:right;padding-right:30px;">text size:</td>
-<td><span class="monash-gray50" style="font-family:monospace;" >div { <span class="monash-ruby2">font-size: 10pt;</span> }</span> </td>
-<td>
-<div style="font-size:10pt;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td valign="top" style="text-align:right;padding-right:30px;">padding:</td>
-<td  valign="top"><span class="monash-gray50" style="font-family:monospace;" >div { background-color: yellow; <br>
-&emsp;&emsp;&emsp;&nbsp;<span class="monash-ruby2">padding: 10px;</span> }</span> </td>
-<td>
-<div style="background-color: yellow;padding:10px;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td valign="top" style="text-align:right;padding-right:30px;">margin:</td>
-<td  valign="top"><span class="monash-gray50" style="font-family:monospace;" >div { background-color: yellow; <br>
-&emsp;&emsp;&emsp;&nbsp;<span class="monash-ruby2">margin: 10px;</span> }</span> </td>
-<td>
-<div style="background-color: yellow;margin:10px;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td valign="top" style="text-align:right;padding-right:30px;">horizontally center text:</td>
-<td  valign="top"><span class="monash-gray50" style="font-family:monospace;" >div { background-color: yellow; <br>
-&emsp;&emsp;&emsp;&nbsp;padding-top: 20px;<br>
-&emsp;&emsp;&emsp;&nbsp;<span class="monash-ruby2">text-align: center;</span> }</span> </td>
-<td>
-<div style="background-color: yellow;text-align: center;padding-top: 20px;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td valign="top" style="text-align:right;padding-right:30px;">font family:</td>
-<td  valign="top"><span class="monash-gray50" style="font-family:monospace;" >div { <span class="monash-ruby2">font-family: Marker Felt, times;</span> }</span> </td>
-<td>
-<div style="font-family: Marker Felt, times;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td valign="top" style="text-align:right;padding-right:30px;">strike:</td>
-<td  valign="top"><span class="monash-gray50" style="font-family:monospace;" >div { <span class="monash-ruby2">text-decoration: line-through;</span> }</span> </td>
-<td>
-<div style="text-decoration: line-through;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td valign="top" style="text-align:right;padding-right:30px;">underline:</td>
-<td  valign="top"><span class="monash-gray50" style="font-family:monospace;" >div { <span class="monash-ruby2">text-decoration: underline;</span> }</span> </td>
-<td>
-<div style="text-decoration: underline;">Sample text</div>
-</td>
-</tr>
-<tr class="fragment">
-<td valign="top" style="text-align:right;padding-right:30px;">opacity:</td>
-<td  valign="top"><span class="monash-gray50" style="font-family:monospace;" >div { <span class="monash-ruby2">opacity: 0.3</span> }</span> </td>
-<td>
-<div style="opacity: 0.3;">Sample text</div>
-</td>
-</tr>
-
-</table>
-
-
-## `r css` CSS Selector {#selector}
-
-
-
-<table style="font-size:0.7em;">
-<tr class="fragment">
-<td style="font-family:monospace;">`*` </td><td>&nbsp;&nbsp;</td><td>selects all elements</td>
-</tr>
-<tr class="fragment">
-<td style="font-family:monospace;">`div`</td><td>&nbsp;&nbsp;</td><td>selects all <span style="font-family:monospace;" >&lt;div></span> elements</td>
-</tr>
-<tr class="fragment">
-<td style="font-family:monospace;">`div, p`</td><td>&nbsp;&nbsp;</td><td>selects all <span style="font-family:monospace;" >&lt;div></span> and <span style="font-family:monospace;" >&lt;p></span> elements</td>
-</tr>
-<tr class="fragment">
-<td style="font-family:monospace;">`div p`</td><td>&nbsp;&nbsp;</td><td>selects all <span style="font-family:monospace;" >&lt;p></span> within <span style="font-family:monospace;" >&lt;div></span></td>
-</tr>
-<tr class="fragment">
-<td style="font-family:monospace;">`div > p`</td><td>&nbsp;&nbsp;</td><td>selects all <span style="font-family:monospace;" >&lt;p></span> one level deep in <span style="font-family:monospace;" >&lt;div></span></td>
-</tr>
-<tr class="fragment" valign="top">
-<td style="font-family:monospace;">`div + p`</td><td>&nbsp;&nbsp;</td><td>selects all <span style="font-family:monospace;" >&lt;p></span> immediately after a <span style="font-family:monospace;" >&lt;div></span></td>
-</tr>
-<tr class="fragment">
-<td style="font-family:monospace;">`div ~ p`</td><td>&nbsp;&nbsp;</td><td>selects all <span style="font-family:monospace;" >&lt;p></span> preceded by a <span style="font-family:monospace;" >&lt;div></span></td>
-</tr>
-<tr class="fragment">
-<td style="font-family:monospace;" valign="top">`.classname`</td><td>&nbsp;&nbsp;</td><td>selects all elements with the attribute <span style="font-family:monospace;" >class="classname"</span>. </td>
-</tr>
-<tr class="fragment">
-<td style="font-family:monospace;" valign="top">`.c1.c2`</td><td>&nbsp;&nbsp;</td><td>selects all elements with <em>both</em> <span style="font-family:monospace;" >c1</span> and <span style="font-family:monospace;" >c2</span> within its class attribute. </td>
-</tr>
-<tr class="fragment">
-<td style="font-family:monospace;" valign="top">`.c1 .c2`</td><td>&nbsp;&nbsp;</td><td>selects all elements with  class <span style="font-family:monospace;" >c2</span> that is a descendant of an element with class <span style="font-family:monospace;" >c1</span>. </td>
-</tr>
-<tr class="fragment">
-<td style="font-family:monospace;" valign="top">`#idname`</td><td>&nbsp;&nbsp;</td><td>selects all elements with the attribute <span style="font-family:monospace;" >id="idname"</span>. </td>
-</tr>
-</table>
-
-
-##  `r js` JavaScript (JS) {#js}
-
-* JS is a programming language and enables interactive components in HTML documents.
-* You can insert JS into a HTML document in two ways:
-
-::: fragment
-  * **internally** by defining within `<script>` element:  
-  ```
-  <script>
-  document.getElementById("p1").innerHTML = "content";
-  </script>
-  ```
-:::
-
-::: fragment
-  * **externally** by using the `src` attribute to refer to the external file:  
-  ```
-  <script src="myjava.js"></script>
-  ```
-:::
-
-::: fragment
-* You are *not* expected to be able to do any JS in this course.
-
-:::
-
-
-# HTML outputs with <br>[qmd documents]{.monash-blue}
-
-``` yaml
----
-format: html
----
-```
-
-
-## `r css` Inserting CSS in qmd documents [Part 1]{.f4}
-
-
-* There is a `css` engine:
-
-```{css}
-/*| echo: fenced */
-h1 { color: red; }
-```
-
-. . . 
-
-* This inserts the following output into the document:
-
-```{}
-<style type="text/css">
-h1 { color: red; }
-</style>
-```
-
-. . . 
-
-
-* If the output is a HTML document then the defined styles will apply to the output document.
-
-## `r css` Inserting CSS in qmd documents [Part 2]{.f4}
-
-* If you have an external file, say `styles.css`, that you define the styles, then most HTML outputs will support this with YAML argument `css`
-
-```{.yaml code-line-numbers=|4}
----
-format: 
-  html: 
-    css: ["styles.css"]
----
-```
-
-## `r js` Inserting JS into qmd documents [Part 1]{.f4}
-
-
-* There is a `js` engine:
-
-```{js}
-//| echo: fenced
-document.getElementById("p1").innerHTML = "content";
-```
-
-
-::: fragment 
-
-which inserts:
-
-```
-<script type="text/javascript">
-document.getElementById("p1").innerHTML = "content";
-</script>
-```
-
-:::
-
-::: fragment
-
-* If you have an external file, say `myjava.js`, then you can directly insert this in the body of the Rmd file as:
-
-``` js
-<script src="myjava.js"></script>
-```
-
-:::
-
-## `r js` Inserting JS into qmd documents [Part 2]{.f4}
-
-If you need to insert at a specific location within the document then you can use `includes`:
-
-``` yaml
----
-format:
-  html:
-    includes-in-header: "header.html"
-    include-before-body: "before_body.html"
-    include-after-body: "after_body.html"
----
-```
-
-where `header.html`, `before_body.html`, `after_body.html` include the JS code, e.g. 
-
-```
-<script src="myjava.js"></script>
-<script type="text/javascript">
-document.getElementById("p1").innerHTML = "content";
-</script>
-```
-
-
-
-## <i class="fas fa-user-friends"></i> Community Web Enhancements
-
-*  [Bootstrap](https://getbootstrap.com/) is a free open-source CSS and JS that is widely adopted.^[Included in the default `rmarkdown::html_document`.]
-* [jQuery](https://jquery.com/) is a widely used JS library for object selection and manipulation.<sup>1</sup>
-* [MathJax](https://www.mathjax.org/) is a JS library for displaying mathematics.<sup>1</sup>
-* [Font Awesome](https://fontawesome.com/) inserts icons to web using their CSS.^[Sometimes included in certain Rmd HTML documents.]
-* [D3.js](https://d3js.org/) is one of the most popular JS libraries for interactive data visualisation.   
-
-
-
-## ☁️  Communication in the Web {.smaller}
-
-* Hypertext Transfer Protocol (**HTTP**)
-functions as the communicator in the Web 
-* HTTPS is the secure version of HTTP where communications are encrypted
-
-![](images/client-server.png){fig-align="center"}
-
-::: fragment
-
-::: callout-warning
-
-Different clients may work differently! E.g. Internet Explorer and Chrome may render the same web page differently.
-
-:::
-
-:::
-
-
-## 📋 Web Standard 
-
-::: {.f2}
-
-* There are 3 major groups that govern the standard for the Web:
-  * World Wide Web Consortium (**W3C**) formed in 1994 maintains the [CSS specifications](https://www.w3.org/Style/CSS/) <i class="fab fa-css3-alt blue"></i>
-  * Web Hypertext Application Technology Working Group (**WHATWG**) formed in 2004 and is the publisher of the [HTML and DOM standards](https://html.spec.whatwg.org/) <i class="fab fa-html5 orange"></i>
-  * **TC39 technical committee** of [Ecma International](http://www.ecma-international.org/publications/standards/Standard.htm), renamed from European Computer Manufacturers Association (ECMA) in 1994, maintains the standards for JS <span class='fa-layers'> <i class='fas fa-square black' data-fa-transform='shrink-2'></i><i class='fab fa-js-square yellow'></i></span>
-* These groups consist of Mozilla, <i class="fab fa-apple"></i> Apple, <i class="fab fa-google"></i> Google, <i class="fab fa-microsoft"></i> Microsoft and other invited members.
-
-:::
-
-
-## 📜 MDN Web Docs
-
-[[https://developer.mozilla.org/](https://developer.mozilla.org/)]{.f2}
-
-* Documentation of web standards maintained by the community.
-* Includes status of use:
-
-![](images/obsolete.png){fig-align="center"}
-
-## 📜 MDN Web Docs
-
-* As well as its compatibility with web clients:
-
-![](images/browser-compatibility.png){fig-align="center"}
-
-## Writing HTML {#htmltidy}
-
-[You can play at [https://htmltidy.net/](https://htmltidy.net/)]{.f2}
-
-![](images/htmltidy.gif){fig-align="center"}
-
-
-# 📝 Interactive Cheatsheets {#cheatsheets}
+## The through-line
 
 ::: {.r-fit-text}
 
-<i class="fab fa-html5 monash-orange2"></i> HTML Cheatsheet
-[https://htmlcheatsheet.com/](https://htmlcheatsheet.com/)
-
-
-<i class="fab fa-css3-alt monash-blue2"></i> CSS Cheatsheet 
-[https://htmlcheatsheet.com/css/](https://htmlcheatsheet.com/css/)
-
-
-<i class="fab fa-js-square monash-green2"></i>  JS Cheatsheet 
-[https://htmlcheatsheet.com/js/](https://htmlcheatsheet.com/js/)
+**Visual intention** → **technical vocabulary** → **code** → **inspection** → **revision**
 
 :::
 
+. . .
 
+An LLM can accelerate the middle of this process. It cannot decide whether the result communicates honestly and clearly.
 
-## 🔎 Inspect Element [LIVE DEMO]{.f4}
+## Today extends Week 6
 
-Below GIF shows interactive use of Inspect Element^[Or called Inspect.] available from the menu in most web browsers when you right click on the web page^[Note: this is for inspection and doesn't actually make changes to the files.]:
+::: {.columns}
+::: {.column width="48%"}
 
-![](images/inspect-element.gif){fig-align="center" width="60%"}
+### Week 6: design judgement
 
-## Week 7 Lesson 
+* What is the message?
+* Which comparison matters?
+* Where should attention go?
+* Is the result honest and accessible?
 
+:::
+::: {.column width="48%"}
 
-::: callout-important
+### Week 7: implementation
 
-## Summary
+* How do I target the right element?
+* How do I encode emphasis in code?
+* How do I label without clutter?
+* How do I get useful help from an LLM?
 
-* We went through the basics of HTML, CSS and JS 
-* You should be more comfortable with writing HTML and CSS
-* You learnt how to include CSS and JS into HTML documents created from R Markdown
-* You know the tools to interactively learn HTML and CSS 
+:::
+:::
 
+## Part 1: CSS and AI-assisted coding {.center background-color="#006DAE"}
+
+## HTML is structure; CSS is appearance
+
+```html
+<section class="finding">
+  <h2>Reliable service matters most</h2>
+  <p id="result">Reliability was selected by 46% of commuters.</p>
+</section>
+```
+
+. . .
+
+You only need three pieces of HTML vocabulary today:
+
+| Kind | Example | CSS target |
+|---|---|---|
+| element | `<h2>` | `h2` |
+| class | `class="finding"` | `.finding` |
+| identifier | `id="result"` | `#result` |
+
+## A CSS rule answers two questions
+
+```css
+.finding {
+  border-left: 8px solid #006DAE;
+  padding-left: 1rem;
+}
+```
+
+::: {.columns}
+::: {.column width="48%"}
+
+### What should change?
+
+`.finding` is the **selector**.
+
+:::
+::: {.column width="48%"}
+
+### How should it change?
+
+Each **property: value** pair is a declaration.
+
+:::
+:::
+
+## Scope selectors to the smallest useful target
+
+```css
+/* Every second-level heading */
+h2 { color: #006DAE; }
+
+/* Headings inside a finding */
+.finding h2 { color: #006DAE; }
+
+/* One unique result */
+#result { font-weight: 700; }
+```
+
+::: {.callout-warning .fragment}
+
+`*`, `div`, `p`, and `h2` can affect far more of a document than intended. Generated CSS often fails because its selector is too broad—or does not exist in the HTML at all.
 
 :::
 
+## The small set of properties you will use often
+
+| Purpose | Properties |
+|---|---|
+| colour | `color`, `background-color`, `border-color` |
+| type | `font-family`, `font-size`, `font-weight`, `line-height` |
+| space | `margin`, `padding`, `gap` |
+| edges | `border`, `border-radius` |
+| alignment | `text-align`, `display`, `align-items` |
+
+. . .
+
+Start with the visual problem. Look up properties when you need them.
+
+## Use colour as a named design decision
+
+::: {.columns}
+::: {.column width="50%"}
+
+### CSS
+
+```css
+:root {
+  --ink: #222222;
+  --muted: #B8B8B8;
+  --accent: #006DAE;
+}
+
+.finding {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+```
+
+:::
+::: {.column width="50%"}
+
+### R
+
+```r
+brand <- c(
+  ink = "#222222",
+  muted = "#B8B8B8",
+  accent = "#006DAE"
+)
+```
+
+:::
+:::
+
+The same visual vocabulary can travel across a webpage and its plots.
+
+## Put reusable CSS in a file
+
+```yaml
+---
+format:
+  html:
+    css: styles.css
+---
+```
+
+. . .
+
+Use an inline CSS block for a quick experiment:
+
+````markdown
+```{css}
+.finding { border-left: 8px solid #006DAE; }
+```
+````
+
+. . .
+
+Move stable rules into `styles.css` so they can be reused and reviewed.
+
+## Inspect the page before changing the code
+
+1. Right-click the element and choose **Inspect**.
+2. Identify its element, classes, and surrounding container.
+3. Try a declaration in the browser's Styles panel.
+4. Move the working rule into the source CSS.
+5. Render again and check more than one page or screen size.
 
 ::: {.callout-tip .fragment}
 
-## Resources
+Browser experiments are temporary. They help you discover the rule; the source file makes the change permanent.
 
-* [Introduction to Data Technologies Ch 2-4 by Paul Murrell](https://www.stat.auckland.ac.nz/~paul/ItDT/itdt-2010-11-01.pdf)
-* [Interactive HTML/CSS/JS cheatsheets](#cheatsheets)
-* [HTML Tidy .Net](#htmltidy)
+:::
 
+## “Make it look better” is not a technical brief
+
+::: {.columns}
+::: {.column width="48%"}
+
+### Under-specified
+
+> Make this callout look better with CSS.
+
+. . .
+
+Likely result: arbitrary colours, excessive decoration, and selectors that may not match the document.
+
+:::
+::: {.column width="48%"}
+
+### Actionable
+
+> In this Quarto HTML page, style only elements with class `.finding`. Add an 8 px blue left border and 1 rem of left padding. Do not change global headings or use `!important`. Return the smallest CSS rule and explain each declaration.
+
+:::
+:::
+
+## A useful LLM brief has four parts
+
+::: {.columns}
+::: {.column width="24%"}
+
+### Target
+
+What should change?
+
+:::
+::: {.column width="24%"}
+
+### Context
+
+What code and output format matter?
+
+:::
+::: {.column width="24%"}
+
+### Constraints
+
+What must remain unchanged?
+
+:::
+::: {.column width="24%"}
+
+### Check
+
+How will you recognise success?
+
+:::
+:::
+
+. . .
+
+Request the **smallest change**, then ask what each selector, layer, or declaration does.
+
+## Generated code can look plausible and still be wrong
+
+::: {.columns}
+::: {.column width='50%'}
+### Model response
+
+```css
+.important-finding h2 {
+  color: #006DAE !important;
+}
+```
+:::
+::: {.column width='50%'}
+
+### Inspect it
+
+* Does `.important-finding` exist in the supplied HTML?
+* Is the `h2` the intended target?
+* Why is `!important` necessary?
+* Does the rule work after a clean render?
+:::
+:::
+
+
+
+## A six-step workflow for AI-assisted coding
+
+1. Supply the smallest relevant source and output context.
+2. State the visual intention.
+3. Specify constraints and an acceptance check.
+4. Request a minimal edit and an explanation.
+5. Render, inspect, and test the result.
+6. Describe the observed problem in the next prompt.
+
+::: {.callout-important .fragment}
+
+Do not ask whether the code “should work”. Run it and collect evidence.
+
+:::
+
+## Live demonstration
+
+Use the workflow to request one change:
+
+> On a Quarto RevealJS slide, style only `.key-result` blocks with a Monash blue left border, comfortable internal spacing, and no background fill. Preserve the existing theme and return only the CSS plus a two-sentence explanation.
+
+. . .
+
+::: {.key-result}
+**One selector, one job**
+
+Only this block should change.
+:::
+
+. . .
+
+Then verify:
+
+* the class exists;
+* the rule is scoped;
+* the properties are valid;
+* the slide still works at 1280 × 720.
+
+
+## Part 2: A polished-plot cookbook {.center background-color="#006DAE"}
+
+## Recipe 1: highlight one bar without depending on order
+
+One category carries the message, but every bar currently receives equal attention.
+
+```{r}
+#| label: bar-before
+#| echo: false
+#| fig-height: 3.5
+ggplot(birthplace, aes(percentage / 100, birth)) +
+  geom_col(fill = brand[["muted"]], width = 0.72) +
+  scale_x_continuous(labels = label_percent(accuracy = 0.1)) +
+  labs(x = "Share of Australian residents", y = NULL) +
+  theme_minimal(base_size = 16)
+```
+
+## Recipe 1: create an explicit focus variable
+
+```r
+plot_data <- plot_data |>
+  mutate(focus = if_else(category == "India", "Focus", "Context"))
+
+focus_colours <- c(
+  "Context" = "#B8B8B8",
+  "Focus" = "#006DAE"
+)
+
+ggplot(plot_data, aes(value, category, fill = focus)) +
+  geom_col() +
+  scale_fill_manual(values = focus_colours, guide = "none")
+```
+
+. . .
+
+A **named** vector matches colours to meanings even if the rows or factor levels move.
+
+## India ranked third among all countries of birth
+
+```{r}
+#| label: highlight-one-bar
+#| echo: false
+#| fig-height: 4.2
+focus_colours <- c("Context" = brand[["muted"]], "Focus" = brand[["accent"]])
+
+ggplot(birthplace, aes(percentage / 100, birth, fill = focus)) +
+  geom_col(width = 0.72) +
+  geom_text(
+    aes(label = percent(percentage / 100, accuracy = 0.1)),
+    hjust = -0.15, colour = brand[["ink"]], size = 4.5
+  ) +
+  scale_fill_manual(values = focus_colours, guide = "none") +
+  scale_x_continuous(
+    labels = label_percent(accuracy = 1),
+    expand = expansion(mult = c(0, 0.14))
+  ) +
+  coord_cartesian(clip = "off") +
+  labs(
+    x = "Share of Australian residents", y = NULL,
+    title = "India ranked third among all countries of birth",
+    subtitle = "Australia ranked first and is omitted from this chart",
+    caption = "Source: Australian Census 2021"
+  ) +
+  theme_cwd()
+```
+
+## Recipe 1: prompt and pitfall
+
+### Adaptation prompt
+
+> Add an explicit `focus` variable that is `"Focus"` for India and `"Context"` otherwise. Map it to `fill` and use a named manual scale. Hide the legend. Do not rely on row or factor order.
+
+### Common generated mistake
+
+```r
+scale_fill_manual(values = c("grey80", "#006DAE"))
+```
+
+Without names, colours are matched using the scale's ordering. The code can silently emphasise the wrong category after a change in the data.
+
+## Recipe 2: draw context first, then emphasis
+
+### Problem
+
+A manual scale changes colour, but the focal line can still be hidden underneath other lines.
+
+```r
+ggplot(housing, aes(date, median, group = city)) +
+  geom_line(colour = "grey75", linewidth = 0.7) +
+  geom_line(
+    data = filter(housing, city == "Austin"),
+    colour = "#006DAE", linewidth = 1.4
+  )
+```
+
+. . .
+
+Layer order is drawing order: context first, focus second.
+
+## Austin sits within a wider Texas housing market
+
+```{r}
+#| label: highlight-one-line
+#| echo: false
+#| fig-height: 4.2
+ggplot(housing, aes(date, median, group = city)) +
+  geom_line(colour = "grey75", linewidth = 0.75) +
+  geom_line(
+    data = filter(housing, city == "Austin"),
+    colour = brand[["accent"]], linewidth = 1.5
+  ) +
+  scale_y_continuous(labels = label_dollar(scale = 1e-3, suffix = "k")) +
+  labs(
+    x = NULL, y = "Median sale price",
+    title = "Austin sits within a wider Texas housing market",
+    subtitle = "The focal series is drawn last so it remains visible",
+    caption = "Source: ggplot2::txhousing"
+  ) +
+  theme_cwd()
+```
+
+## Recipe 2: prompt and pitfall
+
+### Adaptation prompt
+
+> Keep every city visible in light grey, then draw Austin again in blue with a thicker line. Use two `geom_line()` layers so Austin is always on top. Do not remove the comparison cities.
+
+### Common generated mistake
+
+```r
+filter(housing, city == "Austin") |>
+  ggplot(aes(date, median)) +
+  geom_line()
+```
+
+Filtering the plot data removes the context. Emphasis is a relationship between foreground and background.
+
+## Recipe 3: replace legend lookup with end labels
+
+```r
+endpoints <- housing |>
+  group_by(city) |>
+  slice_max(date, n = 1, with_ties = FALSE) |>
+  ungroup()
+
+ggrepel::geom_text_repel(
+  data = endpoints,
+  aes(label = city, colour = focus),
+  direction = "y", hjust = 0, nudge_x = 90,
+  segment.colour = NA, seed = 5523
+)
+```
+
+. . .
+
+Build a label dataset explicitly. Do not ask a text layer to label every observation.
+
+## End labels keep names beside the evidence
+
+```{r}
+#| label: end-labels
+#| echo: false
+#| fig-height: 4.3
+line_colours <- c("Context" = "grey48", "Focus" = brand[["accent"]])
+
+ggplot(housing, aes(date, median, group = city)) +
+  geom_line(aes(colour = focus, linewidth = focus)) +
+  geom_text_repel(
+    data = housing_end,
+    aes(label = city, colour = focus),
+    direction = "y", hjust = 0, nudge_x = 90,
+    segment.colour = NA, seed = 5523, show.legend = FALSE
+  ) +
+  scale_colour_manual(values = line_colours, guide = "none") +
+  scale_linewidth_manual(
+    values = c("Context" = 0.7, "Focus" = 1.4), guide = "none"
+  ) +
+  scale_x_date(expand = expansion(mult = c(0.01, 0.20))) +
+  scale_y_continuous(labels = label_dollar(scale = 1e-3, suffix = "k")) +
+  coord_cartesian(clip = "off") +
+  labs(
+    x = NULL, y = "Median sale price",
+    title = "End labels keep names beside the evidence",
+    caption = "Source: ggplot2::txhousing"
+  ) +
+  theme_cwd() +
+  theme(legend.position = "none")
+```
+
+## Recipe 3: prompt and pitfall
+
+### Adaptation prompt
+
+> Replace the legend with one label at the final date for each city. Construct an endpoint data frame, allow labels to move only vertically, add space on the right, and turn clipping off. Keep Austin blue and other labels grey.
+
+### Common generated mistake
+
+```r
+geom_text(aes(label = city))
+```
+
+This draws a label at every observation. Filter the label layer to one endpoint per group.
+
+## Recipe 4: annotate evidence, not decoration
+
+```r
+reference <- mean(airport_year$mean_max)
+highest <- slice_max(airport_year, mean_max, n = 1)
+
+ggplot(airport_year, aes(year, mean_max)) +
+  geom_hline(yintercept = reference) +
+  geom_line() +
+  geom_point(data = highest) +
+  geom_label_repel(
+    data = highest,
+    aes(label = sprintf("%d: %.1f°C", year, mean_max))
+  )
+```
+
+. . .
+
+Use a reference line to establish context and a selective annotation to explain the exceptional observation.
+
+## One annotation directs attention to the exceptional year
+
+```{r}
+#| label: selective-annotation
+#| echo: false
+#| fig-height: 4.2
+ggplot(airport_year, aes(year, mean_max)) +
+  geom_hline(
+    yintercept = airport_reference,
+    colour = "grey65", linetype = "dashed"
+  ) +
+  geom_line(colour = "grey45", linewidth = 0.8) +
+  geom_point(data = airport_high, colour = brand[["accent"]], size = 3) +
+  geom_label_repel(
+    data = airport_high,
+    aes(label = sprintf("%d: %.1f°C", year, mean_max)),
+    colour = brand[["accent"]], fill = "white",
+    seed = 5523, min.segment.length = 0
+  ) +
+  scale_x_continuous(breaks = breaks_width(10)) +
+  scale_y_continuous(labels = label_number(suffix = "°C")) +
+  labs(
+    x = NULL, y = "Temperature (°C)",
+    title = "One annotation directs attention to the exceptional year",
+    subtitle = "Dashed line: series mean",
+    caption = "Source: Bureau of Meteorology — Melbourne Airport"
+  ) +
+  theme_cwd() +
+  theme(plot.caption.position = "panel")
+```
+
+## Recipe 4: prompt and pitfall
+
+### Adaptation prompt
+
+> Add a dashed reference line at the series mean. Highlight and label only the year with the highest annual mean. Format the y-axis in degrees Celsius and state what the dashed line means in the subtitle.
+
+### Common generated mistake
+
+```r
+geom_text(aes(label = round(mean_max, 1)))
+```
+
+Labelling every value converts the plot into a crowded table. Annotation should answer a particular question.
+
+## Recipe 5: make the finishing layer reusable
+
+```r
+theme_cwd <- function(base_size = 16) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
+      panel.grid.minor = element_blank(),
+      panel.grid.major.y = element_blank(),
+      plot.title = element_text(face = "bold"),
+      plot.caption = element_text(hjust = 0),
+      legend.position = "bottom",
+      plot.margin = margin(10, 36, 10, 10)
+    )
+}
+```
+
+One function makes deliberate defaults easy to reuse and review.
+
+## Recipe 5: prompt and pitfall
+
+### Adaptation prompt
+
+> Extract the non-data styling from this plot into a function called `theme_cwd(base_size = 16)`. Start from `theme_minimal()`. Do not set data colours or axis scales inside the theme.
+
+### Common generated mistake
+
+```r
+theme_set(theme_cwd())
+```
+
+Changing the session-wide theme can alter unrelated plots. Add `theme_cwd()` to each plot unless a global change is intentional.
+
+## A polished plot still needs a review
+
+::: {.columns}
+::: {.column width="48%"}
+
+### Evidence
+
+* Does the title match the data shown?
+* Are the denominator and time period clear?
+* Does emphasis hide relevant context?
+* Are annotations computed from the data?
+
+:::
+::: {.column width="48%"}
+
+### Communication
+
+* Is the intended comparison easy?
+* Is colour doing a specific job?
+* Are labels legible at output size?
+* Can the plot work without its legend?
+
+:::
+:::
+
+## Week 7 lesson
+
+::: {.callout-important}
+
+## Summary
+
+* CSS selectors scope a visual change; declarations describe the change.
+* A good LLM brief names the target, context, constraints, and acceptance check.
+* Generated code is a draft to render, inspect, and revise.
+* Explicit focus variables, deliberate layer order, direct labels, and selective annotations create hierarchy in `ggplot2`.
+* Reusable palettes and themes make consistency easier without replacing judgement.
+
+:::
+
+## Resources {.smaller}
+
+* [Quarto: HTML theming and CSS](https://quarto.org/docs/output-formats/html-themes.html)
+* [MDN: CSS first steps](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics)
+* [`ggplot2`: manual scales](https://ggplot2.tidyverse.org/reference/scale_manual.html)
+* [`ggplot2`: theme elements](https://ggplot2.tidyverse.org/reference/theme.html)
+* [`ggrepel`: repulsive text annotations](https://ggrepel.slowkow.com/reference/geom_text_repel.html)
+
+::: notes
+[Sources]
+
+- https://quarto.org/docs/output-formats/html-themes.html
+- https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics
+- https://ggplot2.tidyverse.org/reference/scale_manual.html
+- https://ggplot2.tidyverse.org/reference/theme.html
+- https://ggrepel.slowkow.com/reference/geom_text_repel.html
 :::
