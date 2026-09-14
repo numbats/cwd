@@ -28,8 +28,9 @@ htmltools::includeCSS("tutorial.css")
 ## Objectives
 
 - Create your own personal website
-- Turn your previous article into a blog post
-- Communicate your data story clearly in a short verbal presentation
+- Adapt your Assignment 2 report into a blog post for a clearly defined audience
+- Explain and justify your communication and visual-design decisions
+- Communicate your data story clearly in a short recorded walkthrough
 
 ::: callout-important
 This is an **individual assignment**.
@@ -37,11 +38,12 @@ This is an **individual assignment**.
 
 ## Output format
 
-- Published website, using Quarto
+- A published website, using Quarto
+- A recorded screen-and-voice walkthrough of the published website
 
 ## Instructions
 
-In this assessment, you will be creating a personal website, including information about you, and a blog post for the story you have worked on in Assignment 2.
+In this assessment, you will create a personal website, including information about you, and adapt your Assignment 2 report into a blog post for a clearly defined audience.
 
 ::: {.callout-important}
 
@@ -49,12 +51,11 @@ You must join the Classroom50 Assignment here: [https://classroom50.org/ETC5523-
 
 :::
 
-### Part A: The homepage (4 marks)
+### Part A: The homepage (3 marks)
 
 The template provided in GitHub classroom will set you up a basic website. Edit the `_quarto.yml` file to include:
 
-* A sensible title for your website (1 mark)
-* A link to _your_ GitHub account (1 mark)
+* A sensible title for your website and a link to _your_ GitHub account (1 mark)
 * Some custom theming (2 marks):
     * Theming is subjective, but make sure to consider readability of your website. As an example, changing the default background colours sensibly could give 1 mark, and changing font colours for headings another mark.
     * You are encouraged to seek feedback on your theming before submission.
@@ -65,13 +66,12 @@ The default theming is deliberately poor!
 
 The listing page will automatically generate, and you do not need to make any changes here.
 
-### Part B: The about page (3 marks)
+### Part B: The about page (2 marks)
 
 In the about page (`about.qmd`), make the following changes:
 
-* Add a photo (or some representation) of you
-* Write a short biography
-* Change the GitHub button to link to your GitHub, and add any other buttons of your choosing
+* Add a photo (or some representation) of you and write a short biography (1 mark)
+* Change the GitHub button to link to your GitHub, and add any other buttons of your choosing (1 mark)
 
 For an example about page, you can see mine [here](https://www.michaellydeamore.com/)
 
@@ -80,8 +80,10 @@ For an example about page, you can see mine [here](https://www.michaellydeamore.
 There is an example blog post included in the template. Replace this post with one about the story that you have written for Assignment 2.
 
 ::: {.callout-important}
-Don't just copy-paste Assignment 2 into your blog post. Blog posts use different language, and have different features to appeal to a difference audience.
+Don't just copy-paste Assignment 2 into your blog post. Blog posts use different language and features to appeal to a different audience.
 :::
+
+Choose a clearly defined intended audience for your blog post. Add a one-sentence audience statement to the repository README so that the audience is clear to the marker. Your choices about language, information order, figures and tables should be appropriate for this audience.
 
 The final blog post must have:
 
@@ -101,15 +103,15 @@ You don't have to use these headings.
 
 Problem description (2 marks):
 
-* Short summary of the problem or issue you are analysing (2 marks)
+* Short summary of the problem or issue, written at an appropriate level for the intended audience (2 marks)
 
 Analysis (10 marks):
 
-* Source of the data clearly identified (1 mark)
-* Findings of the analysis clearly described (2 marks)
-* Tables and plots designed so that the audience can acquire the desired information efficiently (2 marks for plot, 2 marks for table)
+* Source of the evidence or data used in the original article clearly identified (1 mark)
+* Findings reported in the original article clearly described in language appropriate for the intended audience (2 marks)
+* Tables and plots designed so that the intended audience can acquire the desired information efficiently (2 marks for plot, 2 marks for table)
 * Included cross-references (1 mark)
-* Analysis links back to the questions in the problem description (2 marks)
+* Discussion of the evidence links back to the questions in the problem description (2 marks)
 
 
 Conclusion (5 marks):
@@ -118,23 +120,28 @@ Conclusion (5 marks):
 * Includes academic citation (here or other section) (1 mark)
 * Summarises the findings (2 marks)
 
-### Part D: Recorded data-story briefing (5 marks)
+### Part D: Recorded website walkthrough (8 marks)
 
-Record an individual **3--5 minute** verbal presentation that communicates the data story from your blog post to its intended audience. You may use the figures and tables from your blog post as visual support, but the recording should be led by your spoken explanation rather than by text on screen.
+Record an individual **4--6 minute** screen-and-voice walkthrough of your published website. The published website must be visible as you navigate it and discuss your work. The recording should be a single continuous take, led by your spoken explanation rather than by text on screen. Do not submit a slide deck or a narrated set of slides in place of the website walkthrough.
 
 Upload this recording as your assignment submission on Moodle as a video file.
 
-Your briefing should:
+Your walkthrough must:
 
-* introduce the problem or question;
-* explain the most important finding(s), referring to relevant visual evidence; and
+* identify the intended audience and introduce the problem or question;
+* explain the most important finding(s), referring to visual evidence on the published website;
+* identify and explain **two specific changes** you made when adapting your Assignment 2 report for the blog's intended audience;
+* explain one design choice you made for a figure or table;
+* identify one important limitation or qualification that the audience should understand; and
 * end with a clear conclusion or implication for the audience.
 
 #### Marking rubric for Part D
 
 * Clear, accurate explanation of the data story and its main finding(s) (2 marks)
-* Logical structure suited to the intended audience (1 mark)
-* Clear, concise verbal delivery within the time limit (2 marks)
+* Explanation of two specific adaptations and why they suit the intended audience (2 marks)
+* Explanation of one figure or table design choice (1 mark)
+* Clear explanation of an important limitation or qualification (1 mark)
+* Logical navigation and clear, concise verbal delivery within the time limit (2 marks)
 
 ### Part E: Technical work
 
@@ -151,7 +158,6 @@ To do this, you will need to:
 #### Marking rubric for Part E
 
 * Working link (1 mark)
-* Pages set up correctly (1 mark)
-* Website HTML files correctly on version control (1 mark)
+* Pages set up correctly, with the website HTML files correctly under version control (1 mark)
 
-**Maximum grade**: 4 + 3 + 17 + 5 + 3 = 32 marks
+**Maximum grade**: 3 + 2 + 17 + 8 + 2 = 32 marks
