@@ -3,6 +3,7 @@ project:
   render:
     - "*.qmd"
     - "!*-supp.qmd"
+    - "!week7/tutorial/starter/**"
     - "*.md"
   resources:
     - "*-supp.qmd"
@@ -11,6 +12,7 @@ project:
     - "week3/tutorial/data/plv-library-visits.csv"
     - "week1/tutorial/data/melb-airport-max-temp-data.csv"
     - "week1/tutorial/data/melb-airport-min-temp-data.csv"
+    - "week7/tutorial/tutorial-07-starter.zip"
     - "data/census-birthplace.csv"
     - "data/census-birthplace-by-sex.csv"
     - "data/pokemon-elo.csv"

@@ -1,0 +1,22 @@
+/* This stylesheet is deliberately poor. Diagnose the page before editing it. */
+
+body {
+  background-color: #fff3bf;
+  color: #444444;
+  font-size: 18px;
+}
+
+p {
+  line-height: 1.2;
+  text-align: center;
+}
+
+h2 {
+  color: #d9480f;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+img {
+  border: 8px solid #d9480f;
+}

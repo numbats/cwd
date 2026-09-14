@@ -1,0 +1,162 @@
+---
+title: 'ETC5523: Communicating with Data'
+subtitle: "Tutorial 7: Rescue a Quarto page with CSS"
+author: "Michael Lydeamore"
+format:
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
+---
+
+## 🎯 Objectives
+
+By the end of this tutorial, you will be able to:
+
+* inspect a rendered page before changing its source;
+* apply small CSS changes without affecting unrelated elements;
+* brief an LLM with a target, context, constraints and a check; and
+* test whether a design communicates as intended.
+
+::: {.callout-note}
+Download and unzip the [starter mini-site](tutorial-07-starter.zip){download="tutorial-07-starter.zip"}, then open the folder as a project in your usual editor. No packages or data preparation are required.
+:::
+
+## 1. Diagnose before editing (5 minutes)
+
+Open a terminal in the starter folder and run:
+
+```bash
+quarto preview
+```
+
+Read the page as if you were a time-poor local-government communications officer. Without opening `styles.css`, record:
+
+1. three choices that weaken readability or visual hierarchy;
+2. the one result that should attract attention; and
+3. the information that should remain visible but secondary.
+
+
+::: {.unilur-solution}
+Possible problems include the coloured page background, centred paragraphs, compressed line spacing, over-styled headings and heavy border around the figure. The increase in branch visits should receive attention. The definition and limitations of the measure should remain easy to find without competing with the result.
+:::
+
+## 2. Inspect before changing the code (10 minutes)
+
+Right-click the finding and choose **Inspect**. In the browser developer tools:
+
+1. locate the container with class `.finding`;
+2. locate the second-level heading inside it;
+3. test `border-left: 6px solid #006DAE;` on the container; and
+4. identify which existing rules affect every paragraph and every second-level heading.
+
+Browser edits are temporary. Reload the page to prove that your test has not changed the source.
+
+Discuss: why would adding new rules for `p` or `h2` be risky here? Write selectors that would target only the finding heading and only the methods note.
+
+::: {.unilur-solution}
+The broad rules are `p` and `h2`. Changing them would also alter text outside the intended sections. Appropriate scoped selectors are `.finding h2` and `.methods-note`; the latter targets the whole note rather than every paragraph it contains.
+:::
+
+## 3. Brief and check an LLM (15 minutes)
+
+Write a prompt for the smallest CSS change that makes `.finding` prominent. Include all four parts:
+
+| Part | What the prompt must specify |
+|---|---|
+| **Target** | the exact class to change |
+| **Context** | a Quarto HTML website and the relevant source |
+| **Constraints** | what must remain unchanged |
+| **Check** | an observable description of success |
+
+Ask for the CSS and a short explanation of each declaration. Do not paste private or assessed material into a tool unless its terms permit this.
+
+If you are not using an LLM, critique this candidate instead:
+
+```css
+.important-finding h2 {
+  color: blue !important;
+}
+```
+
+Before accepting any response, check that its selector exists, `!important` is justified, declarations are valid, and unrelated headings remain unchanged after a clean render.
+
+::: {.unilur-solution}
+A useful prompt is:
+
+> In a Quarto HTML website, the key result is inside `<div class="finding">`. Add a 6 px Monash-blue left border and 1 rem of internal spacing to that block. Do not change global headings, paragraphs or the page background, and do not use `!important`. Return the smallest CSS rule and explain each declaration. The change succeeds when only the finding block has the border and spacing after `quarto preview` is refreshed.
+
+The candidate response fails because `.important-finding` does not exist, it styles only the heading rather than the block, uses a vague colour name, and provides no reason for `!important`.
+:::
+
+## 4. Complete the page rescue (10 minutes)
+
+Replace the deliberately poor rules in `styles.css`. Make three restrained changes:
+
+* restore a readable page background, text colour and line spacing;
+* emphasise only `.finding` with a left border and spacing; and
+* distinguish `.methods-note` as secondary information.
+
+Define named colours once in `:root`. Keep data colours and content out of the stylesheet. Add one sentence below the methods note explaining why your hierarchy suits the stated audience.
+
+::: {.unilur-solution}
+One possible stylesheet is:
+
+```css
+:root {
+  --ink: #222222;
+  --muted-background: #f2f2f2;
+  --accent: #006dae;
+}
+
+body {
+  background-color: white;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.finding {
+  border-left: 6px solid var(--accent);
+  margin: 1.5rem 0;
+  padding: 0.25rem 1rem;
+}
+
+.finding h2 {
+  color: var(--accent);
+}
+
+.methods-note {
+  background-color: var(--muted-background);
+  border-radius: 0.25rem;
+  font-size: 0.95rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+}
+
+.methods-note h2 {
+  font-size: 1.1rem;
+  margin-top: 0;
+}
+```
+
+Possible justification: “The blue border makes the decision-relevant result easy to locate, while the grey note preserves the qualification without giving it equal visual weight.”
+:::
+
+## 5. Test as a reader (5 minutes)
+
+Check the page at desktop width and in a narrow browser window. Give a partner 20 seconds with the page, then ask:
+
+1. What changed, and by how much?
+2. What does “visit” mean, and what can these data not establish?
+
+Do not explain your intention before they answer. Make one revision based on what they actually noticed, then run `quarto render`.
+
+::: {.unilur-solution}
+A successful reader should identify a 20% increase in in-person branch visits and should not interpret visits as unique people or infer a cause. A revision should respond to observed evidence—for example, increasing note contrast if the qualification was missed—not simply add decoration.
+:::
+
+## Optional extension: transfer one rule
+
+Copy one scoped rule into your Assignment 3 website. Inspect its HTML first, adapt the selector if necessary, and confirm that it works on more than one page and at narrow width.

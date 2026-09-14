@@ -1,0 +1,23 @@
+---
+title: "Victorian public library branch visits rose by one-fifth"
+author: "Communications team"
+date: today
+---
+
+Victorian public library services reported 24.2 million in-person branch visits in 2024–25, up 20% from 20.1 million in 2022–23. The population covered by the survey grew by about 5% over the same period.
+
+![Victorian public library branch visits from 2022–23 to 2024–25.](plv-library-visits.png){fig-alt="A line chart shows in-person branch visits rising from 20.1 million in 2022–23 to 24.2 million in 2024–25."}
+
+::: {.finding}
+## Branch visits grew faster than population
+
+In-person branch visits increased by 20.3% over the two years, compared with population growth of 5.4%. Visits per person therefore rose from 3.04 to 3.47.
+:::
+
+::: {.methods-note}
+## What these figures measure
+
+A branch visit is an in-person visit to a library branch, not a unique visitor. The published totals exclude mobile-library, delivery, outreach and online use. They show that recorded use changed, but not why it changed.
+:::
+
+*Source: Public Libraries Victoria 2024–25 Annual Statistical Survey.*
