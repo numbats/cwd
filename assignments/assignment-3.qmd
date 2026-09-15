@@ -40,6 +40,7 @@ This is an **individual assignment**.
 
 - A published website, using Quarto
 - A recorded screen-and-voice walkthrough of the published website
+- An AI-use declaration in the repository README
 
 ## Instructions
 
@@ -50,6 +51,20 @@ In this assessment, you will create a personal website, including information ab
 You must join the Classroom50 Assignment here: [https://classroom50.org/ETC5523-2026/etc5523/assignments/assignment-3/accept](https://classroom50.org/ETC5523-2026/etc5523/assignments/assignment-3/accept). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
 
 :::
+
+### AI-use declaration
+
+Include a short AI-use declaration in your repository README, whether or not you used generative AI while preparing the assignment. The declaration must cover any AI assistance with planning, writing, code, CSS, analysis, figures or tables.
+
+If you did not use generative AI, write:
+
+> **Generative AI declaration:** I did not use generative AI tools in preparing this assignment.
+
+If you did use generative AI, name the tool or tools and describe the specific tasks for which you used them. For example:
+
+> **Generative AI declaration:** I used ChatGPT to suggest CSS alternatives and to help debug a Quarto rendering error. I checked and revised all generated code and text.
+
+You remain responsible for understanding, checking and revising all submitted work. Do not include private, confidential or restricted material in prompts. The declaration is a submission requirement but does not attract separate marks.
 
 ### Part A: The homepage (3 marks)
 
