@@ -2,7 +2,6 @@
 title: 'ETC5523: Communicating with Data'
 subtitle: "Tutorial 8"
 author: "Michael Lydeamore"
-date: "Week 8"
 format: 
   unilur-html:
     output-file: index.html
@@ -17,9 +16,12 @@ library(tidyverse)
 
 ## 🎯 Objectives
 
+By the end of this tutorial, you will be able to:
 
-* make your first R package
-* make a simple R package as a container for data
+* create your first R package;
+* prepare and include a dataset reproducibly;
+* document package data with `roxygen2`; and
+* check, install and use the finished package.
 
 ::: {.callout-note collapse="true"}
 
@@ -28,7 +30,7 @@ library(tidyverse)
 ```{r}
 #| eval: false
 
-install.packages(c("devtools","usethis","roxygen2"))
+install.packages(c("devtools", "janitor", "roxygen2", "tidyverse", "usethis"))
 ```
 
 :::
@@ -36,90 +38,140 @@ install.packages(c("devtools","usethis","roxygen2"))
     
 ##  Exercise 8A
 
-Use the `usethis` package to create a new package called `cwdata`
+Use `usethis` to create a new package called `trashwheeldata`.
 
 ::: {.unilur-solution}
 
 ```{r}
 #| eval: false
-library(usethis)
-
-create_package("cwdata")
+usethis::create_package("trashwheeldata")
 ```
 
 :::
 
 
-**Edit the DESCRIPTION file** created and modify the `Authors@R` tag to include yourself as the creator and author of the package. 
+**Edit `DESCRIPTION`** and replace the placeholders with:
+
+* yourself as the creator and author;
+* a meaningful title and description; and
+* an appropriate version number.
+
+Add an MIT licence, replacing the placeholder name with your own:
+
+```{r}
+#| eval: false
+#| echo: true
+
+usethis::use_mit_license("Your Name")
+```
 
 
 ##  Exercise 8B
 
-Use the `usethis` package to create an R script called `key_crop_yields.R` in the  `data-raw` directory in your packages folder. 
+Use `usethis` to create an R script called `trash_collections.R` in the `data-raw` directory of your package.
 
 ::: {.unilur-solution}
 
 ```{r}
 #| eval: false
-use_data_raw(name = "key_crop_yields")
+usethis::use_data_raw("trash_collections")
 ```
 
 :::
 
 
-The `data-raw` directory is used to hold scripts that generate package data. We will use the data from [Our World in Data](https://ourworldindata.org/crop-yields) and sourced from [Tidy Tuesday](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-01/readme.md). This data contains agricultural yields across crop types and by entity (country or region) from 1960 to 2018. 
+The `data-raw` directory holds scripts that generate package data. We will use the [Trash Wheel Collection Data](https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-03-05/readme.md) published through TidyTuesday and sourced from Baltimore's [Healthy Harbor initiative](https://www.mrtrashwheel.com/).
 
-**Edit the script** to process the data into a long form tidy representation. Here's some code to get you started:
+Four semi-autonomous Trash Wheels collect rubbish flowing into Baltimore's waterways. The data record each dumpster load, including its weight and volume and estimated counts of several kinds of rubbish.
+
+**Edit the script** to create a long-form dataset in which each row represents one rubbish category from one dumpster collection. Complete the missing `cols` expression.
 
 ```{r data-raw}
 #| echo: true
 #| eval: false
 
-library(janitor)
-library(tidyverse)
-url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-01/key_crop_yields.csv'
+url <- paste0(
+  "https://raw.githubusercontent.com/rfordatascience/",
+  "tidytuesday/main/data/2024/2024-03-05/trashwheel.csv"
+)
 
-key_crop_yields <- read_csv(url) %>% 
-  clean_names() %>% 
-  pivot_longer(
-    cols = -___,
-    names_to = "crop", 
-    values_to = "yield",
-    names_pattern = "([^_]+)"
+trash_collections <- readr::read_csv(url, show_col_types = FALSE) |>
+  janitor::clean_names() |>
+  dplyr::mutate(date = lubridate::mdy(date)) |>
+  tidyr::pivot_longer(
+    cols = ___,
+    names_to = "trash_type",
+    values_to = "count"
   )
+
+usethis::use_data(trash_collections, overwrite = TRUE)
 ```
 
-After you've finished writing your script make sure you've run it.
+::: {.unilur-solution}
+
+The seven item-count columns run from `plastic_bottles` to `sports_balls`:
+
+```{r}
+#| eval: false
+#| echo: true
+
+trash_collections <- readr::read_csv(url, show_col_types = FALSE) |>
+  janitor::clean_names() |>
+  dplyr::mutate(date = lubridate::mdy(date)) |>
+  tidyr::pivot_longer(
+    cols = plastic_bottles:sports_balls,
+    names_to = "trash_type",
+    values_to = "count"
+  )
+
+usethis::use_data(trash_collections, overwrite = TRUE)
+```
+
+:::
+
+Run the completed script from beginning to end.
 
 You should now have a folder called `data` in your package,
-with a file called `key_crop_yields.rda`.
+with a file called `trash_collections.rda`.
+
+::: {.callout-tip}
+The script in `data-raw/` is the reproducible source. The `.rda` file in `data/` is the object shipped to users.
+:::
+
+How many rows do you expect after pivoting seven rubbish categories? Confirm your prediction with `dim(trash_collections)`.
+
+::: {.unilur-solution}
+
+The source has 993 dumpster collections. Pivoting seven categories produces $993 \times 7 = 6{,}951$ rows and 11 columns.
+
+:::
 
 
 ## Exercise 8C
 
-We now need to create an R script that lives in the `R` directory
-that documents our data object `key_crop_yields`.
+Create an R script in the `R` directory to document `trash_collections`.
 
 ```{r}
 #| eval: false
 #| echo: true
-use_r("key_crop_yields.R")
+usethis::use_r("trash_collections")
 ```
 
 Modify the script and **document the data.**
 
-- Describe the number of rows and columns 
-- Type of object `key_crop_yields` is. 
-- What are the types of the columns?
-- What do the columns mean?
-- Where did you find it? 
+- Give the dataset a concise title and description.
+- Describe its dimensions and object type.
+- Define every column, including its units.
+- Explain that item counts are estimates and that missing counts are not necessarily zero.
+- Cite both TidyTuesday and the original Healthy Harbor source.
+- Finish the block with the quoted object name, `"trash_collections"`.
 
-It is possible to use ordinary markdown syntax in documenation with `roxygen2` by running (in fact this is set by default if you used `usethis::create_package()`) 
+Markdown support is enabled by default for packages created with `usethis::create_package()`. You can confirm or enable it with:
 
 ```{r}
 #| eval: false
 #| echo: true
-use_roxygen_md()
+usethis::use_roxygen_md()
 ```
 
 Once you've finished modifying run
@@ -132,10 +184,44 @@ devtools::document()
 
 at the console to build your package documentation.
 
+::: {.unilur-solution}
+
+One possible documentation block is:
+
+```r
+#' Rubbish collected by Baltimore's Trash Wheel family
+#'
+#' Dumpster collections from four Trash Wheels operating in Baltimore's
+#' waterways. Each row describes one rubbish category in one collection.
+#' Item counts are estimated using samples taken during collection.
+#'
+#' @format A data frame with 6,951 rows and 11 variables:
+#' \describe{
+#'   \item{id}{Short identifier for the Trash Wheel.}
+#'   \item{name}{Name of the Trash Wheel.}
+#'   \item{dumpster}{Dumpster collection number.}
+#'   \item{month}{Month of collection.}
+#'   \item{year}{Year of collection.}
+#'   \item{date}{Date of collection.}
+#'   \item{weight}{Weight of collected rubbish, in US tons.}
+#'   \item{volume}{Volume of collected rubbish, in cubic yards.}
+#'   \item{homes_powered}{Source estimate of homes that could be powered
+#'     using energy generated from the collected rubbish.}
+#'   \item{trash_type}{Category of rubbish counted.}
+#'   \item{count}{Estimated item count; missing when not reported.}
+#' }
+#' @source TidyTuesday,
+#'   \url{https://github.com/rfordatascience/tidytuesday/tree/main/data/2024/2024-03-05};
+#'   original data from Baltimore Healthy Harbor,
+#'   \url{https://www.mrtrashwheel.com/}.
+"trash_collections"
+```
+
+:::
+
 ## Exercise 8D
 
-We now have a minimally working package that contains some data. 
-Restart your R session and then run 
+We now have a minimally working package containing a documented dataset. Restart your R session and run:
 
 ```{r}
 #| eval: false
@@ -143,18 +229,29 @@ Restart your R session and then run
 devtools::load_all()
 ```
 
-Now the `key_crop_yields` data is your available to your R session.
+Confirm that `trash_collections` is available and that its help page answers the questions below:
 
-**Edit your DESCRIPTION file** to have a more appropriate title and description and version number. 
+```{r}
+#| eval: false
+#| echo: true
 
-After you've finished editing run:
+trash_collections
+?trash_collections
+```
+
+* What does one row represent?
+* Are the item counts observed exactly or estimated?
+* Does a missing count mean that no items were collected?
+* What units are used for `weight` and `volume`?
+
+Then check the complete package:
 ```{r}
 #| eval: false
 #| echo: true
 devtools::check()
 ```
 
-**Do you get any errors or warnings?**
+Fix every error and warning. Read each note and decide whether it requires action.
 
 Once you have passed the check, install the package locally:
 
@@ -164,17 +261,27 @@ Once you have passed the check, install the package locally:
 devtools::install()
 ```
 
-Restart your R session and try loading your package. Check out the help page for the data.
+Restart your R session, load the installed package, and open the help page again.
 
 ::: {.unilur-solution}
 
 ```{r}
 #| eval: false
-library(cwdata)
-key_crop_yields
-?key_crop_yields
+library(trashwheeldata)
+trash_collections
+?trash_collections
 ```
 
 :::
 
+## Completion check
+
+You have finished when:
+
+* `data-raw/trash_collections.R` reproduces the packaged data;
+* `data/trash_collections.rda` exists;
+* `devtools::document()` creates the help page;
+* `DESCRIPTION` and the licence contain no placeholders;
+* `devtools::check()` reports no errors or warnings; and
+* the installed package works in a clean R session.
 
