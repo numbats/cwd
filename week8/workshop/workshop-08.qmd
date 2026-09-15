@@ -32,11 +32,11 @@ You are documenting this function for an R user who understands vectors but has 
 #| eval: false
 #| echo: true
 
-percent_change <- function(old, new, digits = 1) {
-  if (any(old == 0)) {
-    stop("old cannot contain zero")
+rate_per_1000 <- function(events, population, digits = 1) {
+  if (any(population <= 0)) {
+    stop("population must be greater than zero")
   }
-  round((new - old) / old * 100, digits = digits)
+  round(events / population * 1000, digits = digits)
 }
 ```
 
@@ -54,12 +54,12 @@ Run these examples mentally and predict the output or error:
 #| eval: false
 #| echo: true
 
-percent_change(80, 100)
-percent_change(c(80, 50), c(100, 45), digits = 0)
-percent_change(0, 20)
+rate_per_1000(25, 5000)
+rate_per_1000(c(25, 18), c(5000, 3000), digits = 0)
+rate_per_1000(10, 0)
 ```
 
-List anything a user could misunderstand: direction, units, vector behaviour, rounding or the zero restriction.
+List anything a user could misunderstand: which value is the numerator, the units, vector behaviour, rounding or the population restriction.
 
 ## 4. Draft the reference documentation (12 minutes)
 
@@ -67,7 +67,7 @@ Write a `roxygen2` block containing:
 
 * a specific title;
 * a one- or two-sentence description;
-* `@param` entries for `old`, `new` and `digits`;
+* `@param` entries for `events`, `population` and `digits`;
 * an `@return` entry that states the type and meaning;
 * two `@examples`, including a vector example; and
 * `@export`.
@@ -76,7 +76,7 @@ Aim to answer user questions, not restate the argument names.
 
 ## 5. Write the README quick start (8 minutes)
 
-Write a short section with the heading **Calculate a percentage change**. In no more than 100 words:
+Write a short section with the heading **Calculate a rate per 1,000**. In no more than 100 words:
 
 1. state why someone would use the function;
 2. show one runnable call;
@@ -87,10 +87,10 @@ Write a short section with the heading **Calculate a percentage change**. In no 
 
 Exchange the documentation, but not the original function, with a partner. The reader answers:
 
-* Which value is treated as the baseline?
-* What does a negative result mean?
+* Which value is used as the denominator?
+* What does a result of 5 mean?
 * Can the function accept vectors?
-* What happens when the baseline is zero?
+* What happens when the population is zero or negative?
 
 Revise the first place where the documentation failed to answer clearly.
 
@@ -103,7 +103,7 @@ Complete: "Good documentation begins with the user's ______, not the code's ____
 
 A useful opening is:
 
-> Calculate the percentage change from an old value to a new value. Positive results indicate an increase relative to `old`; negative results indicate a decrease.
+> Calculate the number of events per 1,000 people. The function divides `events` by `population`, multiplies by 1,000, and rounds the result to the requested number of decimal places.
 
-The return documentation should identify a numeric vector measured in percentage points of change, rounded to `digits`. Encourage examples that teach interpretation, not merely prove the function runs.
+The return documentation should identify a numeric vector measured in events per 1,000 people, rounded to `digits`. It should also make clear that `population` must be greater than zero. Encourage examples that teach interpretation, not merely prove the function runs.
 :::
