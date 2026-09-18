@@ -125,7 +125,9 @@ This is a taste of ETC4500/5450 (Advanced R Programming). We will learn the bare
 
 :::
 
-## `ausbirthplace` package
+## `pokemonvgc` package
+
+Last week we rescued a plot of Pokémon Video Game Championship Elo ratings. We will turn that work into a small package so that someone else can derive the ratings, use the data, and repeat the analysis.
 
 It's never been easier to make a package. The `usethis` package can do all of the heavy lifting for us
 
@@ -142,7 +144,7 @@ This means we can easily make packages that might only be just "for us"
 ```{r}
 #| eval: false
 
-usethis::create_package("ausbirthplace")
+usethis::create_package("pokemonvgc")
 
 ```
 
@@ -169,27 +171,113 @@ Different forms of communication live in different parts of the package.
 
 Functions in the `R/` folder become part of the package.
 
+For `pokemonvgc`, we will export `recent_players()`. It reduces rating histories to the most recent observation for each player with enough recorded events.
+
 ::: {.callout-tip}
 Add `@export` to functions that users should call directly.
 :::
 
 ## Data for the package
 
-Your package could load in some data (like `palmerpenguins::penguins` for example).
+Our package will include two user-facing data objects:
+
+* `pokemon_elo`: Elo histories derived from the match history
+* `recent_champions`: the champion lookup used last week
 
 User-facing data objects go in `data`; the scripts that produce them go in `data-raw`.
 
-```{r}
-#| eval: false
-usethis::use_data_raw("census-birthplace")
-```
+The match history is a raw input to the build process, not a dataset shipped
+to package users.
 
-The generated script should finish by saving the object into the package:
+The source pipeline downloads and caches VGC History's tournament catalogue and per-event match files, then validates and normalises them.
 
 ```{r}
 #| eval: false
-usethis::use_data(censusdata, overwrite = TRUE)
+usethis::use_data_raw("pokemon-elo")
 ```
+
+## Build the Elo histories
+
+The generated script records how cached match data become package data objects:
+
+```{r}
+#| eval: false
+source("data-raw/calculate-elo.R")
+
+# Created by the cached VGC History download and validation pipeline
+match_history <- readRDS("data-raw/vgc-match-history.rds")
+players <- readRDS("data-raw/vgc-players.rds")
+
+ratings <- calculate_elo(match_history) |>
+  tibble::as_tibble() |>
+  dplyr::group_by(player_id, date) |>
+  dplyr::summarise(
+    rating = round(dplyr::last(rating), 1),
+    .groups = "drop"
+  )
+```
+
+## Include recent champions
+
+```{r}
+#| eval: false
+recent_champions <- tibble::tribble(
+  ~year, ~player_id,          ~player_name,
+  2022,  "eduardo-cunha",    "Eduardo Cunha",
+  2023,  "shohei-kimura",    "Shohei Kimura",
+  2024,  "luca-ceribelli",   "Luca Ceribelli",
+  2025,  "giovanni-cischke", "Giovanni Cischke",
+  2026,  "takuma-yamazaki",  "Takuma Yamazaki"
+)
+```
+
+Keeping this lookup as data separates championship status from the rating calculation.
+
+## Reproduce the workshop snapshot
+
+```{r}
+#| eval: false
+
+frequent_players <- ratings |>
+  dplyr::count(player_id) |>
+  dplyr::filter(n > 35) |>
+  dplyr::pull(player_id)
+
+selected_players <- union(frequent_players, recent_champions$player_id)
+```
+
+This is the 47 frequently observed players plus the four recent champions represented in the archive.
+
+## Finish and save the package data
+
+```{r}
+#| eval: false
+
+pokemon_elo <- ratings |>
+  dplyr::filter(player_id %in% selected_players) |>
+  dplyr::left_join(
+    dplyr::select(players, player_id, player_name),
+    by = "player_id"
+  ) |>
+  dplyr::select(player_id, player_name, date, rating)
+
+usethis::use_data(
+  pokemon_elo, recent_champions,
+  overwrite = TRUE
+)
+```
+
+This reproduces the 51 players and 2,043 observations used last week. The 2026 champion remains in the lookup but has no rating history in this snapshot.
+
+## Which code belongs where?
+
+::: {.callout-tip}
+Keep downloading, caching, one-off cleaning, and the Elo calculation in `data-raw/`. These steps build the package data but are not part of its user-facing interface.
+:::
+
+::: {.callout-note}
+Put `recent_players()` in `R/recent-players.R` and export it: selecting the latest eligible players is a task package users will repeat.
+:::
 
 ## Load the package while developing
 
@@ -199,7 +287,7 @@ usethis::use_data(censusdata, overwrite = TRUE)
 #| eval: false
 
 devtools::load_all()
-censusdata
+pokemon_elo
 ```
 
 ::: {.fragment}
@@ -241,19 +329,33 @@ and then edit to suit your package.
 
 :::
 
+## README
+
+For `pokemonvgc`, the opening should tell readers that it contains VGC match data, derived Elo histories, and recent champion metadata. Then show the shortest useful example:
+
+```r
+library(pokemonvgc)
+
+recent_players(pokemon_elo) |>
+  dplyr::slice_max(rating, n = 3)
+```
+
 ## DESCRIPTION
 
 `DESCRIPTION` tells tools and users what the package is:
 
 ```
-Package: mypackage
-Title: What the Package Does (One Line, Title Case)
+Package: pokemonvgc
+Title: Explore Competitive Pokemon VGC Results
 Version: 0.0.0.9000
 Authors@R: 
     person("First", "Last", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: Provides competitive Pokemon VGC match data, derived Elo
+    rating histories, recent champion metadata, and tools for identifying
+    each eligible player's latest rating.
 License: MIT + file LICENSE
-Imports: ggplot2
+Imports:
+    dplyr
 ```
 
 ::: {.callout-important}
@@ -281,21 +383,23 @@ Inevitably, you'll want to use a function from another package. Again there's a 
 ```{r}
 #| eval: false
 
-usethis::use_package("ggplot2")
+usethis::use_package("dplyr")
 ```
 
-You still have to reference exported functions using `::`, or import specific functions with `@importFrom`.
+For now, reference exported functions using `::`. After introducing `roxygen2`, we will import selected names where that makes package code easier to read.
 
 For example:
 
 ```{r}
 #| eval: false
 
-plot_census_data <- function() {
-  censusdata |>
-    ggplot2::ggplot(ggplot2::aes(x = count, y = birth)) +
-    ggplot2::geom_col() +
-    ggplot2::labs(x = "Number of residents", y = "Country of birth")
+recent_players <- function(ratings, min_events = 15) {
+  ratings |>
+    dplyr::group_by(player_id, player_name) |>
+    dplyr::mutate(events = dplyr::n()) |>
+    dplyr::slice_max(date, n = 1, with_ties = FALSE) |>
+    dplyr::ungroup() |>
+    dplyr::filter(events >= min_events)
 }
 ```
 
@@ -306,12 +410,13 @@ Comments in code _are communication_. There's no need to re-state very clear cod
 Example:
 
 ```r
-palmerpenguins::penguins |>
-  dplyr::select(species, bill_depth_mm, bill_length_mm, flipper_length_mm, island) |>
-  tidyr::pivot_longer(!c(species, island)) |>
-  dplyr::group_by(species, island) |>
-  dplyr::summarise(means = mean(value, na.rm = TRUE)) |>
-  tidyr::pivot_wider(names_from = species, values_from = means)
+pokemon_elo |>
+  dplyr::group_by(player_id, player_name) |>
+  dplyr::mutate(events = dplyr::n()) |>
+  dplyr::slice_max(date, n = 1, with_ties = FALSE) |>
+  dplyr::ungroup() |>
+  dplyr::filter(events >= 15) |>
+  dplyr::slice_max(rating, n = 3, with_ties = FALSE)
 ```
 
 ## Code commenting {auto-animate="true"}
@@ -321,14 +426,15 @@ Comments in code _are communication_. There's no need to re-state very clear cod
 Example:
 
 ```r
-palmerpenguins::penguins |>
-  dplyr::select(species, bill_depth_mm, bill_length_mm, flipper_length_mm, island) |>
-  # Reshape the measurements so they can be summarised together
-  tidyr::pivot_longer(!c(species, island)) |>
-  dplyr::group_by(species, island) |>
-  dplyr::summarise(means = mean(value, na.rm = TRUE)) |>
-  # Present species as columns for easier comparison
-  tidyr::pivot_wider(names_from = species, values_from = means)
+pokemon_elo |>
+  dplyr::group_by(player_id, player_name) |>
+  # Count events before keeping only each player's latest rating
+  dplyr::mutate(events = dplyr::n()) |>
+  dplyr::slice_max(date, n = 1, with_ties = FALSE) |>
+  dplyr::ungroup() |>
+  # Match the workshop definition of an established current player
+  dplyr::filter(events >= 15) |>
+  dplyr::slice_max(rating, n = 3, with_ties = FALSE)
 ```
 
 ## Code commenting
@@ -370,30 +476,66 @@ myfunction <- function(param_name) {
 ## A function worth documenting {auto-animate="true"}
 
 ```r
-percent_change <- function(old, new, digits = 1) {
-  if (any(old == 0)) {
-    stop("old cannot contain zero")
-  }
-  round((new - old) / old * 100, digits = digits)
+recent_players <- function(ratings, min_events = 15) {
+  ratings |>
+    dplyr::group_by(player_id, player_name) |>
+    dplyr::mutate(events = dplyr::n()) |>
+    dplyr::slice_max(date, n = 1, with_ties = FALSE) |>
+    dplyr::ungroup() |>
+    dplyr::filter(events >= min_events)
 }
 ```
 
 Before reading the source, what would a user need to know?
 
+## Import only the functions you use {auto-animate="true"}
+
+```r
+#' @importFrom dplyr filter group_by mutate n slice_max ungroup
+recent_players <- function(ratings, min_events = 15) {
+  ratings |>
+    group_by(player_id, player_name) |>
+    mutate(events = n()) |>
+    slice_max(date, n = 1, with_ties = FALSE) |>
+    ungroup() |>
+    filter(events >= min_events)
+}
+```
+
+`@importFrom` lets package code use those selected names without repeating `dplyr::`.
+
+::: {.callout-tip}
+Prefer selective `@importFrom` declarations to importing an entire package with `@import dplyr`.
+:::
+
+## Dependency, import, generation
+
+| Instruction | Role |
+|---|---|
+| `usethis::use_package("dplyr")` | Records `dplyr` in `DESCRIPTION` |
+| `@importFrom dplyr ...` | Declares names used inside package code |
+| `devtools::document()` | Writes `importFrom(...)` entries to `NAMESPACE` |
+
+::: {.callout-important}
+Do not edit `NAMESPACE` by hand. If an imported name is ambiguous, keep the explicit `package::function()` form.
+:::
+
 ## Describe purpose, inputs, and output
 
 ```r
-#' Calculate percentage change
+#' Find each eligible player's most recent rating
 #' 
-#' Calculates change from an old value to a new value, relative
-#' to the old value. Positive results indicate an increase.
+#' Keeps the latest rating for every player with at least `min_events`
+#' observations in the supplied rating histories.
 #'
-#' @param old Numeric vector of baseline values; must not contain zero.
-#' @param new Numeric vector of new values.
-#' @param digits Number of decimal places used to round the result.
-#' @return A numeric vector giving percentage change relative to `old`.
+#' @param ratings A data frame containing `player_id`, `player_name`,
+#'   `date`, and `rating`.
+#' @param min_events Minimum number of observations a player must have.
+#' @return A data frame with one row per eligible player, including their
+#'   most recent date and rating and their total number of events.
+#' @importFrom dplyr filter group_by mutate n slice_max ungroup
 #' @export
-percent_change <- function(old, new, digits = 1) {
+recent_players <- function(ratings, min_events = 15) {
   # ...
 }
 ```
@@ -402,11 +544,12 @@ percent_change <- function(old, new, digits = 1) {
 
 ```r
 #' @examples
-#' percent_change(80, 100)
-#' # A 25% increase
+#' recent_players(pokemon_elo)
+#' # Each established player's latest available rating
 #'
-#' percent_change(c(80, 50), c(100, 45), digits = 0)
-#' # A 25% increase followed by a 10% decrease
+#' recent_players(pokemon_elo, min_events = 10) |>
+#'   dplyr::slice_max(rating, n = 3)
+#' # The current top three under a lower eligibility threshold
 ```
 
 ::: {.callout-tip}
@@ -434,19 +577,44 @@ Just like functions, we have to document our data. You can put this anywhere (af
 For our data,
 
 ```r
-#' Number of Australian residents by country of birth from the 2016 and 2021 census
+#' Pokemon Video Game Championship Elo rating histories
 #' 
-#' @format A data frame with 105 rows and 4 columns:
+#' @format A data frame with 2,043 rows and 4 columns:
 #' \describe{
-#'   \item{birth}{Country of birth}
-#'   \item{count}{Number of residents from that birth country}
-#'   \item{percentage}{Percentage of residents from that birth country}
-#'   \item{census}{Year of census (either 2016 or 2021)}
+#'   \item{player_id}{Stable player identifier}
+#'   \item{player_name}{Player display name}
+#'   \item{date}{Date of the rated event}
+#'   \item{rating}{Estimated Elo rating after the event}
 #' }
-#' @source Australian Bureau of Statistics, Census data,
-#'   <https://www.abs.gov.au/census/find-census-data>
-"censusdata"
+#' @details Elo is estimated from the available match archive and is not
+#'   an official ranking. Coverage varies across events.
+#' @source Match data compiled by VGC History,
+#'   <https://vgchistory.com/data>
+"pokemon_elo"
 ```
+
+Every user-facing data object needs its own documentation block. Raw inputs
+kept only in `data-raw/`, such as `match_history`, are documented for package
+developers rather than exposed through the package help system.
+
+## Document the champion lookup
+
+```r
+#' Recent Pokemon VGC World Champions
+#'
+#' @format A data frame with 5 rows and 3 columns:
+#' \describe{
+#'   \item{year}{Championship year}
+#'   \item{player_id}{Stable player identifier}
+#'   \item{player_name}{Player display name}
+#' }
+#' @source VGC History, <https://vgchistory.com/>
+"recent_champions"
+```
+
+::: {.callout-tip}
+Metadata can include a player who has no rows in the rating snapshot. Document that distinction rather than silently dropping them.
+:::
 
 ## Vignettes
 
@@ -483,6 +651,8 @@ Write for a reader who may never have used your package before.
 * Begin with the reader's goal, not the package structure
 * Ask someone to follow the vignette without your help
 
+For `pokemonvgc`, the Week 7 task becomes a guide: **Rescue a Pokémon Elo plot**.
+
 ::: {.callout-tip}
 If a workflow is difficult to explain, the package may also be difficult to use.
 :::
@@ -492,7 +662,7 @@ If a workflow is difficult to explain, the package may also be difficult to use.
 ```{r}
 #| eval: false
 
-usethis::use_vignette("getting-started.qmd")
+usethis::use_vignette("rescue-an-elo-plot.qmd")
 
 ```
 
@@ -522,7 +692,7 @@ Once the package is in a public GitHub repository, another user can install it w
 ```{r}
 #| eval: false
 
-remotes::install_github("username/packagename")
+remotes::install_github("MikeLydeamore/pokemonvgc")
 ```
 
 They should not need your source files, working directory, or instructions sent separately.
@@ -562,13 +732,13 @@ Keep the source documents in the package; regenerate the outputs when the source
 ## Which document would you open?
 
 1. You have never heard of the package and want to know why it exists.
-2. You need to check what the `digits` argument accepts.
-3. You want to complete a multi-step analysis.
+2. You need to check what the `min_events` argument controls.
+3. You want to reproduce the multi-step Elo plot from last week.
 4. You want to install the package from GitHub.
 
 . . .
 
-**README → reference page → vignette → README installation instructions**
+**README → `?recent_players` → Elo-plot vignette → README installation instructions**
 
 ## Week 8 lesson
 

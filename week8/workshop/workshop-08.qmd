@@ -1,6 +1,6 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Workshop 8: Documentation as an invitation"
+subtitle: "Workshop 8: Build and document `pokemonvgc`"
 author: "Michael Lydeamore"
 date: "Week 8"
 format:
@@ -16,94 +16,329 @@ format:
 
 By the end of this workshop, you will be able to:
 
-* describe a function from the user's perspective;
-* write useful reference documentation and examples; and
-* create a short README quick start that helps someone act.
+* distinguish raw data inputs from data shipped in an R package;
+* document and export a package function with `roxygen2`;
+* replace repeated `package::function()` calls with selective imports;
+* write a README quick start; and
+* check, install and use a package.
 
-## 1. Quickwrite: a cold start (5 minutes)
+## Get the starter package
 
-Recall a time when instructions assumed something you did not know. What did the writer assume? What single addition would have helped you begin?
+Clone <https://github.com/MikeLydeamore/pokemonvgc> and open
+`pokemonvgc.Rproj` in Positron or RStudio.
 
-## 2. Define the user and their task (5 minutes)
+You can clone through the **Git: Clone** command, or run this in a terminal:
 
-You are documenting this function for an R user who understands vectors but has not read its source code:
+```bash
+git clone https://github.com/MikeLydeamore/pokemonvgc.git
+```
+
+Install the workshop tools if you do not already have them:
 
 ```{r}
 #| eval: false
-#| echo: true
 
-rate_per_1000 <- function(events, population, digits = 1) {
-  if (any(population <= 0)) {
-    stop("population must be greater than zero")
-  }
-  round(events / population * 1000, digits = digits)
+install.packages(c(
+  "devtools", "dplyr", "remotes", "roxygen2", "rmarkdown", "usethis"
+))
+```
+
+::: {.callout-important}
+Run the remaining commands with `pokemonvgc` open as your current project.
+Do not create another package inside it.
+:::
+
+## Exercise 8A: Tour the package (5 minutes)
+
+Find each of these components and write one sentence describing its role:
+
+| Component | Question to answer |
+|---|---|
+| `R/` | What code will be available to package users? |
+| `data/` | Which objects will be loaded with the package? |
+| `data-raw/` | Which inputs and scripts produce those objects? |
+| `DESCRIPTION` | What does this tell R and a potential user? |
+| `README.Rmd` | Which reader encounters this document first? |
+
+Load the package without installing it:
+
+```{r}
+#| eval: false
+
+devtools::load_all()
+```
+
+Use `pokemon_elo` and `recent_champions` to answer:
+
+1. How many rating observations and distinct players are included?
+2. Which recent champion has no rating history in this snapshot?
+3. Can you open `?recent_players` yet? Why or why not?
+
+::: {.unilur-solution}
+
+```{r}
+#| eval: false
+
+nrow(pokemon_elo)
+dplyr::n_distinct(pokemon_elo$player_id)
+
+recent_champions |>
+  dplyr::anti_join(
+    dplyr::distinct(pokemon_elo, player_id),
+    by = "player_id"
+  )
+```
+
+There are 2,043 observations for 51 players. Takuma Yamazaki is in the
+champion metadata but not the rating snapshot. The function has no help page
+because its roxygen block has not been written and generated yet.
+
+:::
+
+## Exercise 8B: Rebuild the package data (7 minutes)
+
+Open `data-raw/pokemon-elo.R` and follow the data from its prepared inputs to
+the objects saved by `usethis::use_data()`.
+
+Then run the script from the package root:
+
+```{r}
+#| eval: false
+
+source("data-raw/pokemon-elo.R")
+```
+
+The calculation may take several seconds. Confirm that it recreates:
+
+* `data/pokemon_elo.rda`; and
+* `data/recent_champions.rda`.
+
+Discuss with a partner:
+
+* Why is the match history kept in `data-raw/` rather than shipped to users?
+* Why is `recent_champions` stored as package data rather than embedded in
+  `recent_players()`?
+* Which file would you edit if the champion lookup changed?
+
+::: {.unilur-solution}
+
+The match history is an input to the reproducible build process; users need
+the smaller derived rating history, not all source records. Keeping the
+champion lookup as data separates metadata from the function's logic and makes
+it available for other analyses. Update `data-raw/pokemon-elo.R`, rerun it,
+and commit the regenerated `.rda` file rather than editing `data/` directly.
+
+:::
+
+## Exercise 8C: Document and export the function (10 minutes)
+
+Open `R/recent-players.R`. Read the function as evidence before writing its
+documentation. What does one input row represent? When is a player eligible?
+What does one output row represent?
+
+Add a `roxygen2` block containing:
+
+* a task-oriented title and short description;
+* `@param` entries for `ratings` and `min_events`;
+* an `@return` entry stating what one row represents;
+* two runnable `@examples`, one using a non-default threshold; and
+* `@export`.
+
+Generate the documentation and reload the package:
+
+```{r}
+#| eval: false
+
+devtools::document()
+devtools::load_all()
+?recent_players
+```
+
+Inspect the new files in `man/` and `NAMESPACE`. Do not edit either generated
+file by hand.
+
+::: {.unilur-solution}
+
+One possible first version is:
+
+```r
+#' Find each eligible player's most recent rating
+#'
+#' Keeps the latest rating for every player with at least `min_events`
+#' observations in the supplied rating histories.
+#'
+#' @param ratings A data frame containing `player_id`, `player_name`, `date`,
+#'   and `rating`.
+#' @param min_events Minimum number of observations a player must have.
+#' @return A data frame with one row per eligible player, including their most
+#'   recent date and rating and their total number of observations.
+#' @examples
+#' recent_players(pokemon_elo)
+#' recent_players(pokemon_elo, min_events = 10)
+#' @export
+```
+
+After `devtools::document()`, `NAMESPACE` should contain
+`export(recent_players)` and `man/recent_players.Rd` should exist.
+
+:::
+
+## Exercise 8D: Use selective imports (8 minutes)
+
+The first version of the function uses `dplyr::` repeatedly. `dplyr` is
+already recorded under `Imports` in `DESCRIPTION`. Now use roxygen to name
+only the functions imported into the package namespace.
+
+1. Add this line to the roxygen block:
+
+   ```r
+   #' @importFrom dplyr filter group_by mutate n slice_max ungroup
+   ```
+
+2. Remove the six `dplyr::` prefixes from the function body.
+3. Run `devtools::document()` again.
+4. Inspect the generated `NAMESPACE`, then run `devtools::load_all()`.
+
+Explain the different jobs performed by:
+
+* `Imports: dplyr` in `DESCRIPTION`;
+* `@importFrom dplyr ...` in the roxygen block; and
+* `importFrom(dplyr, ...)` in `NAMESPACE`.
+
+::: {.unilur-solution}
+
+The finished function can read:
+
+```r
+#' @importFrom dplyr filter group_by mutate n slice_max ungroup
+#' @export
+recent_players <- function(ratings, min_events = 15) {
+  ratings |>
+    group_by(player_id, player_name) |>
+    mutate(events = n()) |>
+    slice_max(date, n = 1, with_ties = FALSE) |>
+    ungroup() |>
+    filter(events >= min_events)
 }
 ```
 
-Before documenting individual arguments, write:
+`DESCRIPTION` records that the package depends on `dplyr`. The roxygen tag is
+the editable source declaring which names the code uses. `document()` turns
+that tag into machine-readable `importFrom()` entries in `NAMESPACE`.
 
-* the task the user is trying to complete;
-* what the function returns; and
-* one situation in which the function should not be used without care.
+:::
 
-## 3. Read the function as evidence (5 minutes)
+## Exercise 8E: Test from a user's perspective (5 minutes)
 
-Run these examples mentally and predict the output or error:
+Run the documented function and identify the current top three eligible
+players:
 
 ```{r}
 #| eval: false
-#| echo: true
 
-rate_per_1000(25, 5000)
-rate_per_1000(c(25, 18), c(5000, 3000), digits = 0)
-rate_per_1000(10, 0)
+current_ratings <- recent_players(pokemon_elo)
+
+current_ratings |>
+  dplyr::slice_max(rating, n = 3, with_ties = FALSE)
 ```
 
-List anything a user could misunderstand: which value is the numerator, the units, vector behaviour, rounding or the population restriction.
+Check that:
 
-## 4. Draft the reference documentation (12 minutes)
+* the result has one row per player;
+* every returned player has at least 15 observations; and
+* changing `min_events` changes the eligibility rule.
 
-Write a `roxygen2` block containing:
-
-* a specific title;
-* a one- or two-sentence description;
-* `@param` entries for `events`, `population` and `digits`;
-* an `@return` entry that states the type and meaning;
-* two `@examples`, including a vector example; and
-* `@export`.
-
-Aim to answer user questions, not restate the argument names.
-
-## 5. Write the README quick start (8 minutes)
-
-Write a short section with the heading **Calculate a rate per 1,000**. In no more than 100 words:
-
-1. state why someone would use the function;
-2. show one runnable call;
-3. show or explain the result; and
-4. mention the most important restriction.
-
-## 6. Cold-read test (7 minutes)
-
-Exchange the documentation, but not the original function, with a partner. The reader answers:
-
-* Which value is used as the denominator?
-* What does a result of 5 mean?
-* Can the function accept vectors?
-* What happens when the population is zero or negative?
-
-Revise the first place where the documentation failed to answer clearly.
-
-## 7. Writer's note (3 minutes)
-
-Complete: "Good documentation begins with the user's ______, not the code's ______."
+Ask a partner to use only `?recent_players` to explain the `events` column and
+the result of changing `min_events`. Revise the first unclear sentence.
 
 ::: {.unilur-solution}
-## Instructor notes and example core description
 
-A useful opening is:
+The top three are Wolfe Glick, Eric Rios and Paul Chua. With the default
+threshold, the function returns 51 rows. Here `events` counts rating
+observations in the supplied data, so the documentation should not imply that
+it counts every event a player has ever attended.
 
-> Calculate the number of events per 1,000 people. The function divides `events` by `population`, multiplies by 1,000, and rounds the result to the requested number of decimal places.
-
-The return documentation should identify a numeric vector measured in events per 1,000 people, rounded to `digits`. It should also make clear that `population` must be greater than zero. Encourage examples that teach interpretation, not merely prove the function runs.
 :::
+
+## Exercise 8F: Write the README quick start (7 minutes)
+
+Complete the TODOs in `README.Rmd`. A first-time reader should learn:
+
+1. what the package helps them do;
+2. how to install it from GitHub;
+3. how to find the latest eligible ratings; and
+4. why the Elo values require care when interpreted.
+
+Use this copyable installation command:
+
+```r
+remotes::install_github("MikeLydeamore/pokemonvgc")
+```
+
+Keep the quick start short and runnable. Then regenerate `README.md`:
+
+```{r}
+#| eval: false
+
+devtools::build_readme()
+```
+
+::: {.unilur-solution}
+
+A useful quick start might include:
+
+```r
+library(pokemonvgc)
+
+recent_players(pokemon_elo) |>
+  dplyr::slice_max(rating, n = 3, with_ties = FALSE)
+```
+
+The surrounding text should say that this returns the three highest latest
+ratings among players with at least 15 observations. It should also describe
+the ratings as estimates from an incomplete match archive, not an official
+ranking.
+
+:::
+
+## Exercise 8G: Check and install (8 minutes)
+
+Check the package as a complete product:
+
+```{r}
+#| eval: false
+
+devtools::document()
+devtools::check()
+```
+
+Fix every error and warning. Read every note and decide whether it needs
+action. When the check passes, install the package:
+
+```{r}
+#| eval: false
+
+devtools::install()
+```
+
+Restart R, then confirm that the installed package works without
+`devtools::load_all()`:
+
+```{r}
+#| eval: false
+
+library(pokemonvgc)
+?recent_players
+recent_players(pokemon_elo)
+```
+
+## Completion check
+
+You have finished when:
+
+* the data-raw script reproduces both packaged datasets;
+* `recent_players()` has a useful help page and is exported;
+* `DESCRIPTION` and generated `NAMESPACE` record the selective imports;
+* `README.md` contains a copyable installation command and runnable example;
+* `devtools::check()` reports no errors or warnings; and
+* the installed package works in a clean R session.
