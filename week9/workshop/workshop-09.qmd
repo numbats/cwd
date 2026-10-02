@@ -1,6 +1,6 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Workshop 9: Writing the Shiny conversation"
+subtitle: "Workshop 9: Build a Shiny app from scratch"
 author: "Michael Lydeamore"
 date: "Week 9"
 format:
@@ -16,82 +16,436 @@ format:
 
 By the end of this workshop, you will be able to:
 
-* describe an interactive app in terms of a user's goal;
-* write purposeful labels, help text and output explanations; and
-* test interface language through a user think-aloud.
+* create a complete Shiny app in a new `app.R` file;
+* connect input controls to reactive outputs;
+* use a reactive expression to share filtered data; and
+* improve an app with purposeful labels, guidance and source information.
 
-::: {.callout-note}
-## Use your project or the supplied scenario
+::: {.callout-important}
+## What you will build
 
-You may work on an app you are developing. Alternatively, use this scenario: a public app lets residents choose a library branch and date range, then displays visits over time and a table of the busiest days.
+You will build an app that lets a cricket follower choose a Women's Premier League season and explore how leading batters score their runs.
+
+Start with a blank `app.R`. Build and run each stage before moving to the next one.
 :::
 
-## 1. Quickwrite: buttons do not explain themselves (5 minutes)
+## 1. Prepare the app and data (4 minutes)
 
-List interface labels you have encountered such as **Submit**, **Run**, **Value**, or **Select option**. Choose one and write why it might be ambiguous to a first-time user.
+1. Create a new folder called `wpl-app`.
+2. Inside that folder, create a blank file called `app.R`.
+3. [Download `wpl_batters.csv`](../data/wpl_batters.csv) and save it in the same folder.
+4. Add code to load these packages:
+   * `shiny`
+   * `bslib`
+   * `dplyr`
+   * `ggplot2`
+5. Read the CSV into an object called `wpldata`.
 
-## 2. Define the user's goal (5 minutes)
+Run the first few lines and inspect the data with `glimpse(wpldata)`.
 
-Complete these sentences before writing interface text:
-
-* This app is for...
-* They arrive because they want to know...
-* The app can help them decide or understand...
-* The app cannot tell them...
-
-If you cannot complete these precisely, narrow the app's purpose.
-
-## 3. Write the app's opening promise (7 minutes)
-
-Draft:
-
-1. an informative app title;
-2. a two-sentence introduction explaining what the user can learn; and
-3. one brief statement about the data's scope or limitation.
-
-Avoid introductions that merely say “Welcome” or list the technologies used to build the app.
-
-## 4. Write the controls (8 minutes)
-
-For at least two inputs, write:
-
-* a label that names the choice in the user's language;
-* a sensible default and why it is useful;
-* help text only where a reasonable user might need it; and
-* action-button text, if applicable, that states the action.
-
-Compare **Submit** with **Show visit patterns**. Which better predicts what will happen?
-
-## 5. Write around the output (8 minutes)
-
-Draft:
-
-* a dynamic output title that reflects the current selection;
-* a one-sentence instruction for reading the output;
-* a source note; and
-* a limitation or warning that appears where it becomes relevant.
-
-Do not make the user remember instructions from a different tab or the top of a long page.
-
-## 6. Think-aloud reader test (9 minutes)
-
-Give your text to a partner in this order: opening, controls, output. Do not explain it. The partner says aloud:
-
-1. what they think the app is for;
-2. what they would select first;
-3. what they expect each action to do; and
-4. how they would interpret the result.
-
-Record surprises, then revise the smallest amount of text needed to remove the most important misunderstanding.
-
-## 7. Writer's note (3 minutes)
-
-Complete: "The interface is a conversation because..."
+::: {.callout-note}
+Each row describes one batter in one season. The variables include runs, balls faced, dot-ball percentage and boundary percentage. The data contain the 20 leading run-scorers in each season who faced at least 50 balls.
+:::
 
 ::: {.unilur-solution}
+## Check your setup
+
+```r
+library(shiny)
+library(bslib)
+library(dplyr)
+library(ggplot2)
+
+wpldata <- read.csv("wpl_batters.csv")
+
+glimpse(wpldata)
+```
+:::
+
+## 2. Create the smallest possible app (4 minutes)
+
+A Shiny app needs a UI, a server function and a call to `shinyApp()`.
+
+Write these three components in `app.R`:
+
+```r
+ui <- page_fluid(
+  "My first Shiny app"
+)
+
+server <- function(input, output, session) {
+}
+
+shinyApp(ui, server)
+```
+
+Run the app. You should see the text **My first Shiny app** in a browser or viewer window.
+
+::: {.callout-tip}
+Run the app after every small change. When something breaks, the most recent change is the first place to look.
+:::
+
+## 3. Give the user a choice (5 minutes)
+
+Replace `page_fluid()` with `page_sidebar()` and add a sidebar containing a `selectInput()`.
+
+Your input should:
+
+* have the ID `"season"`;
+* use the label **Choose a season**; and
+* take its choices from `wpldata$season`.
+
+Run the app and change the selected season. Nothing else should happen yet.
+
+::: {.unilur-solution}
+## One input in the UI
+
+```r
+ui <- page_sidebar(
+  title = "WPL batting explorer",
+  sidebar = sidebar(
+    selectInput(
+      "season",
+      "Choose a season",
+      choices = sort(unique(wpldata$season))
+    )
+  )
+)
+```
+
+The string `"season"` creates the input ID. Its current value will be available in the server as `input$season`.
+:::
+
+## 4. Reserve a place for the plot (3 minutes)
+
+Add this UI function after the sidebar:
+
+```r
+plotOutput("batters_plot")
+```
+
+Answer these questions before continuing:
+
+1. Does `plotOutput()` draw a plot?
+2. What output ID have you created?
+3. What will that ID look like inside the server function?
+
+::: {.unilur-solution}
+## Connecting IDs
+
+`plotOutput()` creates a place in the UI; it does not draw the plot.
+
+The output ID is `"batters_plot"`. In the server, it becomes:
+
+```r
+output$batters_plot
+```
+:::
+
+## 5. Connect the input to the output (8 minutes)
+
+Inside `server()`, assign `renderPlot()` to `output$batters_plot`.
+
+The plotting code should:
+
+1. filter `wpldata` to `season == input$season`;
+2. map `dot_percent` to the x-axis;
+3. map `boundary_percent` to the y-axis; and
+4. draw the observations with `geom_point()`.
+
+Run the app and confirm that the plot changes when you select another season.
+
+::: {.callout-note}
+Trace the reactive path:
+
+`selectInput("season", ...)` → `input$season` → `renderPlot()` → `plotOutput("batters_plot")`
+:::
+
+::: {.unilur-solution}
+## The first working server
+
+```r
+server <- function(input, output, session) {
+  output$batters_plot <- renderPlot({
+    wpldata |>
+      filter(season == input$season) |>
+      ggplot(aes(x = dot_percent, y = boundary_percent)) +
+      geom_point()
+  })
+}
+```
+
+The UI and server use the same output ID. `renderPlot()` reruns whenever `input$season` changes.
+:::
+
+## 6. Add a second input (7 minutes)
+
+Let the user choose how many leading run-scorers to display.
+
+1. Add a `sliderInput()` with the ID `"top_n"`.
+2. Let the user choose from 5 to 20 batters, with a default of 10.
+3. After filtering by season, use `slice_max()` to keep `input$top_n` batters ranked by `runs`.
+4. Map `balls_faced` to point size.
+
+Before running the app, predict which expression will rerun when the slider moves.
+
+::: {.unilur-solution}
+## A second input
+
+Add this inside `sidebar()`:
+
+```r
+sliderInput(
+  "top_n",
+  "Number of leading batters",
+  min = 5,
+  max = 20,
+  value = 10,
+  step = 1
+)
+```
+
+Update the plot:
+
+```r
+output$batters_plot <- renderPlot({
+  wpldata |>
+    filter(season == input$season) |>
+    slice_max(runs, n = input$top_n) |>
+    ggplot(aes(
+      x = dot_percent,
+      y = boundary_percent,
+      size = balls_faced
+    )) +
+    geom_point()
+})
+```
+:::
+
+## 7. Create and reuse reactive data (7 minutes)
+
+Move the filtering and ranking into a reactive expression called `selected_batters`.
+
+Then:
+
+* use `selected_batters()` inside `renderPlot()`; and
+* create a dynamic plot title with `renderText()` and `textOutput()`.
+
+The title should include the selected season and number of batters.
+
+::: {.unilur-solution}
+## Shared reactive data
+
+Inside `server()`:
+
+```r
+selected_batters <- reactive({
+  wpldata |>
+    filter(season == input$season) |>
+    slice_max(runs, n = input$top_n)
+})
+
+output$plot_title <- renderText({
+  paste(
+    "Batting patterns for the leading",
+    input$top_n,
+    "batters in",
+    input$season
+  )
+})
+
+output$batters_plot <- renderPlot({
+  ggplot(
+    selected_batters(),
+    aes(dot_percent, boundary_percent, size = balls_faced)
+  ) +
+    geom_point()
+})
+```
+
+Add the matching UI function above the plot:
+
+```r
+textOutput("plot_title")
+```
+
+Remember the parentheses in `selected_batters()`.
+:::
+
+## 8. Make the app communicate (7 minutes)
+
+Improve the app for someone who did not write it.
+
+Add:
+
+* an informative app title;
+* percentage labels on both axes;
+* a sentence explaining how to read the chart;
+* a note explaining which batters are included; and
+* a linked source for the data.
+
+Do not add another feature until a reader can understand the current output.
+
+::: {.unilur-solution}
+## One possible UI
+
+```r
+ui <- page_sidebar(
+  title = "How do WPL batters score their runs?",
+  theme = bs_theme(preset = "shiny", primary = "#006DAE"),
+  sidebar = sidebar(
+    selectInput(
+      "season", "Choose a season",
+      choices = sort(unique(wpldata$season))
+    ),
+    sliderInput(
+      "top_n", "Number of leading batters",
+      min = 5, max = 20, value = 10
+    )
+  ),
+  card(
+    card_header(textOutput("plot_title")),
+    p("Batters towards the upper-left combine more boundaries with fewer dot balls."),
+    plotOutput("batters_plot"),
+    card_footer(
+      markdown(
+        "Players faced at least 50 balls. Data: [Cricsheet](https://cricsheet.org/)."
+      )
+    )
+  )
+)
+```
+
+Add these layers to the plot:
+
+```r
+labs(
+  x = "Dot-ball percentage",
+  y = "Boundary percentage",
+  size = "Balls faced"
+) +
+scale_x_continuous(labels = scales::label_percent(scale = 1)) +
+scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+theme_minimal(base_size = 15)
+```
+:::
+
+## 9. Test another student's app (5 minutes)
+
+Swap with a partner. Do not explain your app before they use it.
+
+The tester should:
+
+1. select another season;
+2. change the number of batters;
+3. explain what the upper-left of the chart means; and
+4. identify the data scope and source.
+
+The author should record one programming problem and one communication problem, then fix the more consequential one.
+
+## Extension: choose one purposeful addition
+
+If your app is working, add **one** feature that supports a clear user question:
+
+* colour points by `batting_team`;
+* label the three highest run-scorers;
+* add a table made with `renderTable()` and `tableOutput()`; or
+* add hover details with Plotly.
+
+Before coding, complete:
+
+> This feature helps the user answer …
+
+::: {.unilur-solution}
+## Complete solution
+
+```r
+library(shiny)
+library(bslib)
+library(dplyr)
+library(ggplot2)
+
+wpldata <- read.csv("wpl_batters.csv")
+
+ui <- page_sidebar(
+  title = "How do WPL batters score their runs?",
+  theme = bs_theme(preset = "shiny", primary = "#006DAE"),
+  sidebar = sidebar(
+    selectInput(
+      "season",
+      "Choose a season",
+      choices = sort(unique(wpldata$season))
+    ),
+    sliderInput(
+      "top_n",
+      "Number of leading batters",
+      min = 5,
+      max = 20,
+      value = 10,
+      step = 1
+    )
+  ),
+  card(
+    card_header(textOutput("plot_title")),
+    p("Batters towards the upper-left combine more boundaries with fewer dot balls."),
+    plotOutput("batters_plot"),
+    card_footer(
+      markdown(
+        "Players faced at least 50 balls. Data: [Cricsheet](https://cricsheet.org/)."
+      )
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  selected_batters <- reactive({
+    wpldata |>
+      filter(season == input$season) |>
+      slice_max(runs, n = input$top_n)
+  })
+
+  output$plot_title <- renderText({
+    paste(
+      "Batting patterns for the leading",
+      input$top_n,
+      "batters in",
+      input$season
+    )
+  })
+
+  output$batters_plot <- renderPlot({
+    ggplot(
+      selected_batters(),
+      aes(dot_percent, boundary_percent, size = balls_faced)
+    ) +
+      geom_point(colour = "#006DAE", alpha = 0.7) +
+      labs(
+        x = "Dot-ball percentage",
+        y = "Boundary percentage",
+        size = "Balls faced"
+      ) +
+      scale_x_continuous(labels = scales::label_percent(scale = 1)) +
+      scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+      theme_minimal(base_size = 15)
+  })
+}
+
+shinyApp(ui, server)
+```
+
 ## Instructor notes
 
-Encourage students to distinguish instructions from interpretation. “Choose a branch” tells the user what to do; “Higher points indicate busier days” tells them how to read the result.
+The workshop is designed to produce a successful one-input/one-output app before introducing a second input and a reactive expression. Encourage students to run the app after every stage.
 
-The think-aloud is not a quiz of the user. If the partner misunderstands, treat it as evidence about the current design. Do not let writers interrupt to defend or explain their text.
+Common problems to watch for:
+
+* `app.R` and `wpl_batters.csv` are not in the same folder;
+* an ID differs between the UI and server;
+* students write `season` rather than `input$season`;
+* students write `selected_batters` rather than `selected_batters()`;
+* `renderPlot()` is placed in the UI or `plotOutput()` in the server;
+* a missing comma or closing parenthesis occurs in `page_sidebar()`; and
+* the final ggplot expression is not returned from `renderPlot()`.
+
+If time is short, stop after Section 6. Students will still have built an app from scratch with two inputs and a reactive plot.
 :::
