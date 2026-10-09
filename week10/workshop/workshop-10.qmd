@@ -1,6 +1,6 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Workshop 10: Guiding an interactive journey"
+subtitle: "Workshop 10: Build a multi-tab Shiny dashboard"
 author: "Michael Lydeamore"
 date: "Week 10"
 format:
@@ -16,80 +16,318 @@ format:
 
 By the end of this workshop, you will be able to:
 
-* plan the sequence in which an interactive app reveals information;
-* write useful default, empty, loading and error states; and
-* guide users without overloading every screen with instructions.
+* construct a Shiny `tabsetPanel()` from several `tabPanel()` components;
+* connect outputs in different tabs to shared reactive calculations;
+* use the selected tab as a reactive input;
+* move the user to a tab with `updateTabsetPanel()`; and
+* show controls only when they are relevant to the active tab.
 
-::: {.callout-note}
-## Continue or begin
+::: {.callout-important}
+## What you will build
 
-Continue with last week's app or your own project. If needed, use the supplied library-visits app: users choose a branch and date range, inspect a plot and table, and download the selected records.
+You will turn the Week 10 solar app into a four-tab dashboard. Three tabs reserve space for different views of the results. A fourth tab exposes an interval-by-interval calculation trace.
+
+The focus today is the **technical structure** of a multi-tab app. The tutorial will build the detailed content inside the tabs.
 :::
 
-## 1. Quickwrite: before the result exists (5 minutes)
+## Preparation
 
-What does a user see before an app has enough information to display a result? List all the ways a blank space, spinner, warning or default chart could be interpreted.
+Download the [tutorial starter app](../tutorial/starter_app.R) and [household energy data](../tutorial/solar_data.csv). Save them in the same folder.
 
-## 2. Map the journey (5 minutes)
+Make a copy of `starter_app.R` called `workshop_app.R`. Work in the copy so that you can compare your code with the supplied starter later.
 
-Draw four boxes and label them:
+Run the app once before changing anything.
 
-1. **Arrive**
-2. **Choose**
-3. **Interpret**
-4. **Act or explore again**
+::: {.callout-tip}
+Run the app after every stage. If it stops working, the most recent edit is the first place to look.
+:::
 
-In each box, write the question in the user's mind. Connect the boxes in the order the app should answer them.
+## 1. Trace the existing reactive structure (5 minutes)
 
-## 3. Design the default state (7 minutes)
+Locate these three reactive expressions in `server()`:
 
-Choose whether the app should open with a useful default result or wait for input. Write the text visible at that moment.
+~~~r
+scenario_data()
+metrics()
+daily_data()
+~~~
 
-If you use a default, make clear what is currently selected. If the app waits, tell the user what is required and what will happen next.
+Draw arrows showing which reactive calls which:
 
-## 4. Write conditional states (10 minutes)
+> inputs · `scenario_data()` · `metrics()` · `daily_data()` · outputs
 
-Draft one message for each state:
+Then answer:
 
-* **loading:** work is underway;
-* **empty:** the selection is valid but contains no records;
-* **invalid:** the selected combination cannot be used;
-* **failed:** the app could not complete the task.
-
-Each message should help the user answer:
-
-1. What happened?
-2. Why, if known?
-3. What can I do now?
-
-Avoid blaming language such as “You entered an invalid value”.
-
-## 5. Tabs, disclosure and downloads (7 minutes)
-
-If the app has tabs, write labels that name user tasks or content rather than implementation details. Decide what belongs on the first screen and what can be revealed later.
-
-Then replace generic download text such as **Download** with a label that states what will be downloaded, and write a useful default file name.
-
-## 6. Journey walkthrough (8 minutes)
-
-In pairs, one person reads the four-box journey and all state messages in order. The reader identifies:
-
-* one moment where the next action is obvious;
-* one moment where they might become stuck; and
-* one instruction that appears too early or too late.
-
-Move, cut or rewrite one piece of text.
-
-## 7. Writer's note (3 minutes)
-
-Complete: "A useful error message returns control to the user by..."
+1. Which reactive performs the interval solar and battery calculations?
+2. Which reactive aggregates interval rows into daily rows?
+3. If the system-size slider changes, which objects become invalidated?
+4. Why should a tab call these reactives instead of rebuilding the scenario itself?
 
 ::: {.unilur-solution}
-## Instructor notes and example state
+The main dependency paths are:
 
-Compare **Error: no rows returned** with:
+~~~text
+inputs ──> scenario_data() ──> metrics() ──> text/table outputs
+                    │
+                    └────────> daily_data() ──> plot outputs
+                                  │
+                    metrics() ────┘
+~~~
 
-> **No visits match this selection.** Try a longer date range or choose another branch.
+`scenario_data()` performs the interval calculations. `daily_data()` aggregates the interval rows. A system-size change invalidates `scenario_data()` and therefore every downstream reactive and output that uses it.
 
-The latter names the outcome and supplies two recovery actions without exposing an implementation detail. Discuss whether the app really knows *why* there are no records; messages should not invent explanations.
+Reusing these reactives gives every tab the same scenario and avoids duplicated calculation code.
 :::
+
+## 2. Reconstruct the tabset (7 minutes)
+
+Inside `mainPanel()`, replace the existing `tabsetPanel()` with an empty four-tab structure:
+
+~~~r
+tabsetPanel(
+  id = "dashboard_tab",
+  tabPanel("Why invest"),
+  tabPanel("Energy balance"),
+  tabPanel("Cautious case"),
+  tabPanel("Evidence")
+)
+~~~
+
+Run the app and check that:
+
+* four tabs appear;
+* clicking a tab changes the selected panel; and
+* the sidebar remains visible because it sits outside the tabset.
+
+Add a short placeholder to each of the first three panels. Use indentation to make the UI hierarchy easy to see.
+
+::: {.unilur-solution}
+~~~r
+tabsetPanel(
+  id = "dashboard_tab",
+  tabPanel(
+    "Why invest",
+    h3("Sales view"),
+    p("This tab will be completed in the tutorial.")
+  ),
+  tabPanel(
+    "Energy balance",
+    h3("Neutral view"),
+    p("This tab will show the daily energy balance.")
+  ),
+  tabPanel(
+    "Cautious case",
+    h3("Cautious view"),
+    p("This tab will be completed in the tutorial.")
+  ),
+  tabPanel(
+    "Evidence",
+    h3("Calculation trace")
+  )
+)
+~~~
+
+The `id` makes the selected tab available in the server as `input$dashboard_tab`. Each tab's title is its value unless a separate `value` is supplied.
+:::
+
+## 3. Connect the neutral tab to existing outputs (8 minutes)
+
+The starter server already creates:
+
+* `output$neutral_headline`;
+* `output$neutral_message`; and
+* `output$neutral_plot`.
+
+Place the matching output functions inside the **Energy balance** tab:
+
+~~~r
+h3(textOutput("neutral_headline", inline = TRUE))
+textOutput("neutral_message")
+plotOutput("neutral_plot", height = "430px")
+~~~
+
+Run the app and change the system size and date range.
+
+For each of the three outputs, write down:
+
+| UI placeholder | Server renderer | Shared reactive used |
+|---|---|---|
+| `textOutput("neutral_headline")` | | |
+| `textOutput("neutral_message")` | | |
+| `plotOutput("neutral_plot")` | | |
+
+::: {.unilur-solution}
+| UI placeholder | Server renderer | Shared reactive used |
+|---|---|---|
+| `textOutput("neutral_headline")` | `renderText()` | none: the text is currently fixed |
+| `textOutput("neutral_message")` | `renderText()` | `metrics()` |
+| `plotOutput("neutral_plot")` | `renderPlot()` | `daily_data()` |
+
+An output ID is a contract between the UI and server. For example, `plotOutput("neutral_plot")` must match `output$neutral_plot <- renderPlot({...})` exactly.
+:::
+
+Deliberately change one UI ID to `"neutral_plots"`. Run the app, observe the empty space, and then repair the ID.
+
+## 4. Add a calculation-trace tab (9 minutes)
+
+The **Evidence** tab will help you inspect the calculation that feeds every other tab.
+
+Add this placeholder to that tab:
+
+~~~r
+tableOutput("calculation_trace")
+~~~
+
+In `server()`, create `output$calculation_trace` with `renderTable()`. It should:
+
+1. call `scenario_data()`;
+2. keep the first eight rows; and
+3. display the time, observed consumption, modelled solar, net demand, battery state, grid import and grid export.
+
+Round numeric values to two decimal places.
+
+::: {.unilur-solution}
+Add this to `server()`:
+
+~~~r
+output$calculation_trace <- renderTable({
+  scenario_data() |>
+    slice_head(n = 8) |>
+    transmute(
+      Time = format(datetime, "%d %b %H:%M"),
+      Consumption = round(energy_kwh, 2),
+      Solar = round(solar_kwh, 2),
+      `Net demand` = round(net_demand_kwh, 2),
+      Battery = round(battery_state_kwh, 2),
+      Import = round(grid_import_kwh, 2),
+      Export = round(grid_export_kwh, 2)
+    )
+})
+~~~
+
+This output exposes intermediate values but does not create a second version of the calculation. It reads from the same `scenario_data()` used elsewhere.
+:::
+
+Change the date range and confirm that the first timestamp in the trace changes.
+
+## 5. Treat the selected tab as an input (7 minutes)
+
+Because the tabset has an ID, Shiny stores the selected tab in `input$dashboard_tab`.
+
+Add this immediately before `tabsetPanel()`, then render its value in the server:
+
+~~~r
+verbatimTextOutput("active_tab")
+
+output$active_tab <- renderText({
+  paste("Active tab:", input$dashboard_tab)
+})
+~~~
+
+Now add an action button near the top of `mainPanel()`, immediately before `tabsetPanel()`:
+
+~~~r
+actionButton("show_evidence", "Inspect the calculation")
+~~~
+
+Use `observeEvent()` and `updateTabsetPanel()` to move to the Evidence tab when the button is clicked.
+
+::: {.unilur-solution}
+Add this to `server()`:
+
+~~~r
+observeEvent(input$show_evidence, {
+  updateTabsetPanel(
+    session,
+    inputId = "dashboard_tab",
+    selected = "Evidence"
+  )
+})
+~~~
+
+There are two reactive directions here:
+
+* a user click changes `input$dashboard_tab`; and
+* the server can change the selected tab with `updateTabsetPanel()`.
+
+The `selected` value must match the tab title or its explicit `value`.
+:::
+
+Test the button from each of the other three tabs.
+
+## 6. Show a control only on the relevant tab (6 minutes)
+
+Add this inside `sidebarPanel()`:
+
+~~~r
+conditionalPanel(
+  condition = "input.dashboard_tab == 'Evidence'",
+  sliderInput(
+    "trace_rows",
+    "Rows in calculation trace",
+    min = 4,
+    max = 48,
+    value = 8,
+    step = 4
+  )
+)
+~~~
+
+Update the calculation table so that it uses `input$trace_rows` instead of always showing eight rows.
+
+::: {.unilur-solution}
+The first part of the table code becomes:
+
+~~~r
+output$calculation_trace <- renderTable({
+  scenario_data() |>
+    slice_head(n = input$trace_rows) |>
+    transmute(
+      # the same columns as before
+    )
+})
+~~~
+
+`conditionalPanel()` is evaluated in the browser, so its condition uses JavaScript syntax. The input still exists while hidden; hiding a control does not remove its value from the server.
+:::
+
+Confirm that the slider appears only on the Evidence tab and that it changes the number of table rows.
+
+## 7. Technical check before the tutorial (3 minutes)
+
+Test the finished app systematically:
+
+| Test | Expected result |
+|---|---|
+| Select each tab | The correct panel appears |
+| Change system size | Neutral outputs and trace update |
+| Change date range | Plot, message and trace update |
+| Click **Inspect the calculation** | Evidence becomes active |
+| Move the trace-row slider | Table length changes |
+| Exclude the battery | Battery state becomes zero |
+
+Then search your server code for `add_solar_model(` and `dispatch_battery(`. Each should be called only inside `scenario_data()`.
+
+::: {.callout-important}
+A tab is a container, not a separate app. The dashboard should have one input state and one calculation pipeline, with several outputs reading from it.
+:::
+
+## Extension
+
+Give each tab a short internal value that is independent of its displayed label:
+
+~~~r
+tabPanel("Energy balance", value = "neutral", ...)
+~~~
+
+Update the conditional panel and `updateTabsetPanel()` call to use the new values. This makes it possible to change the visible tab labels later without breaking server logic.
+
+## Workshop check-out
+
+Complete these statements:
+
+> A tabset becomes reactive when...
+
+> UI and server outputs are connected by...
+
+> Shared reactives are preferable to tab-specific calculations because...

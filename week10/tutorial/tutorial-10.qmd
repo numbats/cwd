@@ -1,770 +1,479 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Tutorial 10"
+subtitle: "Tutorial 10: One calculation, three stories"
 author: "Michael Lydeamore"
 date: "Week 10"
 format:
-    unilur-html:
-        output-file: index.html
-        embed-resources: true
-    unilur-html+solution:
-        output-file: solution.html
-        embed-resources: true    
+  unilur-html:
+    output-file: index.html
+    embed-resources: true
+  unilur-html+solution:
+    output-file: solution.html
+    embed-resources: true
 ---
+
+## 🎯 Objectives
+
+By the end of this tutorial, you will be able to:
+
+* build interval solar, grid-flow and battery-state calculations step by step;
+* reuse one reactive calculation across several outputs;
+* generate narrative text from reactive results;
+* create persuasive and sceptical framings without changing the evidence; and
+* audit an interactive communication for misleading differences.
+
+## What you will build
+
+One dashboard presents the same household energy scenario in three ways:
+
+1. **Why invest:** a salesperson foregrounds bill savings and the value of storage.
+2. **Energy balance:** a neutral analyst explains consumption, production, imports and exports.
+3. **Cautious case:** a sceptic foregrounds up-front cost, payback and model limitations.
+
+All three tabs must use the same **scenario_data()**, **metrics()** and **daily_data()** reactives.
+
+::: {.callout-important}
+Your framing may select and emphasise different consequences. It may not silently change the data, system size, tariffs, battery or calculation.
+:::
 
 ## Preparation
 
-Below is a slightly modified version of the solar dashboard app we built in class. I have added a function to simulate solar production data. You'll also want the solar data [Download](solar_data.csv).
+If you completed the workshop, continue with your `workshop_app.R`: it already contains the tabset and calculation-trace tools used below.
 
-<details>
-```r
-library(shiny)
-library(DT)
-library(readr)
-library(dplyr)
-library(ggplot2)
-library(janitor)
-library(tidyr)
-library(lubridate)
+Otherwise, create a folder for the tutorial and download:
 
-add_solar_model <- function(solar_data, max_kw = 5) {
+* [the starter app](starter_app.R);
+* [the household energy data](solar_data.csv); and
+* optionally, [the complete dashboard](../app.R) for comparison after you finish.
 
-  hours <- lubridate::hour(solar_data$datetime)
+Keep the app file and `solar_data.csv` in the same folder, then open the app and select **Run App**. If you are continuing from the workshop, retain the **Evidence** tab while completing the three audience tabs.
 
-  production <- ifelse(
-    hours >= 6 & hours <= 18,
-    max_kw * sin(pi * (hours - 6) / 12)^1.5 + rnorm(length(hours), mean = 0, sd = max_kw * 0.02),
-    0
-  )
+The supplied data are already in long form. Each row records half an hour of observed household consumption. The app adds deterministic modelled solar production and a simplified battery dispatch.
 
-  # Ensure no negative values due to noise
-  production <- pmax(0, production)
+## 1. Build the solar calculation outside Shiny
 
-  solar_data |> mutate(production = production)
-}
+Before working with reactives, reproduce the calculation for one day.
 
-ui <- fluidPage(
-  headerPanel("Solar dashboard"),
-  sidebarPanel(
-    fileInput("solar_file", "Upload solar data CSV", accept = c(".csv")),
-    sliderInput("date_range", "Subset dates", min = as.Date('2024-07-15'), max = as.Date('2025-10-05'),
-                value = c(as.Date('2024-07-15'), as.Date('2025-10-05'))),
-    div(id = "price_inputs",
-        numericInput("electricity_price_1", "Price per kwh", value = 0.28, min = 0)
-    ),
-    div(style = "text-align: right;",
-      actionButton("add_price", "Add another price"),
-  ),
+Run:
 
-    radioButtons("plot_geom", "Plot type",
-                 choices = c("Line" = "line", "Histogram" = "hist"),
-                 selected = "line"),
-    conditionalPanel(
-      condition = "input.plot_geom == 'hist'",
-      sliderInput("bins", "Number of bins", min = 5, max = 60, value = 30),
-    ),
-    selectInput("aggregation_size", "Aggregation type", choices = c("None", "Daily", "Weekly", "Monthly")),
+~~~r
+worked_day <- consumption_data |>
+  filter(date == as.Date("2024-12-06"))
+~~~
 
-  ),
-  mainPanel(
-    tabsetPanel(
-      tabPanel("Data Plot", plotOutput("solar_plot"), downloadButton("download_plot", "Download Plot")),
-      tabPanel("Cost Plot", plotOutput("cost_plot"), downloadButton("download_cost_plot", "Download Cost Plot")),
-      tabPanel("Data", DTOutput("data_table"))
-    )
-  )
-)
+Add these columns one at a time:
 
-server <- function(input, output) {
+1. **interval_hours:** infer the interval from the difference between consecutive datetimes;
+2. **hour_of_day:** combine the hour and minute as a decimal;
+3. **daylight:** create a curve that is zero outside 6 am–6 pm and peaks at midday;
+4. **seasonal:** create the summer–winter scaling factor; and
+5. **solar_kwh:** multiply system capacity, daylight, season and interval length.
 
-  n_prices <- reactiveVal(1)
-  observeEvent(input$add_price, {
-    n <- n_prices() + 1
-    n_prices(n)
-
-    insertUI(
-      selector = "#price_inputs",
-      where = "beforeEnd",
-      ui = numericInput(
-        paste0("electricity_price_", n),
-        paste("Price per kwh"), value = 0.28, min = 0)
-    )
-  })
-
-  solar_data <- reactive({
-    req(input$solar_file)
-    read.csv(input$solar_file$datapath) |>
-    pivot_longer(
-    cols = starts_with("X"),
-    names_to = "datetime",
-    values_to = "energy_kwh"
-  ) |>
-  mutate(
-    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
-    energy_kwh = as.numeric(energy_kwh),
-    datetime = paste0(DATE, " ", datetime),
-    datetime = lubridate::ymd_hm(datetime)
-  ) |>
-  janitor::clean_names()
-  })
-
-  solar_data_filtered <- reactive({
-    req(solar_data())
-    solar_data() |>
-      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2])
-  })
-
-  solar_data_aggregated <- reactive({
-    req(solar_data_filtered())
-    if (input$aggregation_size == "Daily") {
-      solar_data_filtered() |>
-        group_by(date) |>
-        summarise(energy_kwh = sum(energy_kwh, na.rm = TRUE)) |>
-        rename(datetime = date) |>
-        mutate(datetime = as.Date(datetime)) |>
-        ungroup()
-    } else if (input$aggregation_size == "Weekly") {
-      solar_data_filtered() |>
-        mutate(week = lubridate::floor_date(datetime, unit = "week")) |>
-        group_by(week) |>
-        summarise(energy_kwh = sum(energy_kwh, na.rm = TRUE)) |>
-        rename(datetime = week)
-    } else if (input$aggregation_size == "Monthly") {
-      solar_data_filtered() |>
-        mutate(month = lubridate::floor_date(datetime, unit = "month")) |>
-        group_by(month) |>
-        summarise(energy_kwh = sum(energy_kwh, na.rm = TRUE)) |>
-        rename(datetime = month)
-    } else {
-      solar_data_filtered()
-    }
-  })
-
-  solar_data_priced <- reactive({
-    req(prices())
-    solar_data_priced <- solar_data_filtered()
-    for (i in 1:n_prices()) {
-      solar_data_priced[, paste0("electricity_price_", i)] <- prices()[i] * solar_data_priced$energy_kwh
-      solar_data_priced[, paste0("total_cost_", i)] <- cumsum(solar_data_priced[, paste0("electricity_price_", i)])
-    }
-
-    solar_data_priced
-  })
-
-  solar_plot <- reactive({
-    plot <- ggplot(solar_data_aggregated()) +
-          labs(y = 'kWh', x = 'Date') +
-          theme_minimal()
-        if (input$plot_geom == "line") {
-          ggplot(solar_data_aggregated()) + geom_line(aes(x=datetime, y=energy_kwh)) +
-            labs(y='kWh', x='Date') +
-            theme_minimal()
-        } else if (input$plot_geom == "hist") {
-          ggplot(solar_data_aggregated()) + geom_histogram(bins = input$bins, aes(x = energy_kwh)) +
-            labs(y='Count', x='Energy (kWh)') +
-            theme_minimal()
-    }
-  })
-
-  output$solar_plot <- renderPlot({
-    solar_plot()
-  })
-
-
-  output$download_plot <- downloadHandler(
-    filename = function() { paste("solar_plot", Sys.Date(), ".png", sep = "") },
-    content = function(file) {
-          ggsave(file, plot = solar_plot(), device = "png", bg = "white", width = 8, height = 6)
-    }
-  )
-
-  output$download_cost_plot <- downloadHandler(
-    filename = function() { paste("cost_plot", Sys.Date(), ".png", sep = "") },
-    content = function(file) {
-          ggsave(file, plot = cost_plot(), device = "png", bg = "white", width = 8, height = 6)
-    }
-  )
-
-  output$data_table <- renderDT({
-    req(solar_data())
-    solar_data_filtered()
-  })
-
-
-  prices <- reactive({
-    ids <- paste0("electricity_price_", 1:n_prices())
-    values <- sapply(ids, function(id) input[[id]])
-    values[!is.na(values)]
-  })
-
-
-  cost_plot <- reactive({
-    req(solar_data_priced())
-    req(prices())
-    solar_data_priced() |>
-      select(datetime, starts_with("total_cost_")) |>
-      pivot_longer(!c(datetime, starts_with("electricity_price_")), values_to = "total_cost", names_to = "cost_per_kwh") |>
-      mutate(
-        cost_per_kwh = factor(cost_per_kwh, labels = scales::dollar(prices()))
-      ) |>
-    ggplot(aes(x = datetime, y = total_cost, colour = cost_per_kwh)) +
-      geom_line() +
-      labs(y = 'Cost ($)', x = 'Date', colour = "Cost/kwh") +
-      theme_minimal()
-  })
-  output$cost_plot <- renderPlot({
-    cost_plot()
-  })
-
-}
-
-shinyApp(ui, server)
-```
-</details>
-
-You use the `add_solar_model` function to simulate solar production data. For example:
-
-```r
-solar_data |> add_solar_model(max_kw = 5)
-```
-
-and a new column called `production` will be added to the data frame.
-
-## Exercise 1
-
-Modify the app so that the user can select the `max_kw` parameter via a numeric input. The slider should allow values between 1 and 20, with a default value of 5.
-
-Add a plot to the tabset that shows the simulated production data over time.
+Use a 5 kW system.
 
 ::: {.unilur-solution}
-For the UI, something like this:
-
-```r
-numericInput("solar_size", "Solar System Size", value = 5, min = 1, max = 20), #in the sidebarPanel
-
-tabPanel("Production Plot", plotOutput("production_plot")), # in the tabsetPanel
-```
-
-For the server, first we need to mutate on the production data:
-
-```r
-  solar_data_filtered <- reactive({
-    req(solar_data())
-    solar_data() |>
-      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2]) |>
-      add_solar_model(max_kw = input$solar_size)
-  })
-```
-
-then we can create the production plot:
-
-```r
-
-  production_plot <- reactive({
-    req(solar_data_priced())
-
-    solar_data_priced() |>
-      ggplot(aes(x=datetime, y=production)) + geom_line()
-  })
-
-  output$production_plot <- renderPlot({
-    production_plot()
-  })
-```
-
-The entire app at this point:
-
-<details>
-
-```r
-library(shiny)
-library(DT)
-library(readr)
-library(dplyr)
-library(ggplot2)
-library(janitor)
-library(tidyr)
-library(lubridate)
-
-add_solar_model <- function(solar_data, max_kw = 5) {
-
-  hours <- lubridate::hour(solar_data$datetime)
-
-  production <- ifelse(
-    hours >= 6 & hours <= 18,
-    max_kw * sin(pi * (hours - 6) / 12)^1.5 + rnorm(length(hours), mean = 0, sd = max_kw * 0.02),
-    0
-  )
-
-  # Ensure no negative values due to noise
-  production <- pmax(0, production)
-
-  solar_data |> mutate(production = production)
-}
-
-ui <- fluidPage(
-  headerPanel("Solar dashboard"),
-  sidebarPanel(
-    fileInput("solar_file", "Upload solar data CSV", accept = c(".csv")),
-    sliderInput("date_range", "Subset dates", min = as.Date('2024-07-15'), max = as.Date('2025-10-05'),
-                value = c(as.Date('2024-07-15'), as.Date('2025-10-05'))),
-    numericInput("solar_size", "Solar System Size", value = 5, min = 1, max = 20),
-    div(id = "price_inputs",
-        numericInput("electricity_price_1", "Price per kwh", value = 0.28, min = 0)
-    ),
-    div(style = "text-align: right;",
-      actionButton("add_price", "Add another price"),
-  ),
-
-    radioButtons("plot_geom", "Plot type",
-                 choices = c("Line" = "line", "Histogram" = "hist"),
-                 selected = "line"),
-    conditionalPanel(
-      condition = "input.plot_geom == 'hist'",
-      sliderInput("bins", "Number of bins", min = 5, max = 60, value = 30),
-    )
-
-  ),
-  mainPanel(
-    tabsetPanel(
-      tabPanel("Data Plot", plotOutput("solar_plot"), downloadButton("download_plot", "Download Plot")),
-      tabPanel("Cost Plot", plotOutput("cost_plot"), downloadButton("download_cost_plot", "Download Cost Plot")),
-      tabPanel("Production Plot", plotOutput("production_plot")),
-      tabPanel("Data", DTOutput("data_table"))
-    )
-  )
+~~~r
+interval_hours <- median(
+  as.numeric(diff(worked_day$datetime), units = "hours"),
+  na.rm = TRUE
 )
 
-server <- function(input, output) {
-
-  n_prices <- reactiveVal(1)
-  observeEvent(input$add_price, {
-    n <- n_prices() + 1
-    n_prices(n)
-
-    insertUI(
-      selector = "#price_inputs",
-      where = "beforeEnd",
-      ui = numericInput(
-        paste0("electricity_price_", n),
-        paste("Price per kwh"), value = 0.28, min = 0)
-    )
-  })
-
-  solar_data <- reactive({
-    req(input$solar_file)
-    read.csv(input$solar_file$datapath) |>
-    pivot_longer(
-    cols = starts_with("X"),
-    names_to = "datetime",
-    values_to = "energy_kwh"
-  ) |>
+worked_day <- worked_day |>
   mutate(
-    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
-    energy_kwh = as.numeric(energy_kwh),
-    datetime = paste0(DATE, " ", datetime),
-    datetime = lubridate::ymd_hm(datetime)
-  ) |>
-  janitor::clean_names()
-  })
-
-  solar_data_filtered <- reactive({
-    req(solar_data())
-    solar_data() |>
-      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2]) |>
-      add_solar_model(max_kw = input$solar_size)
-  })
-
-  solar_data_priced <- reactive({
-    req(prices())
-    solar_data_priced <- solar_data_filtered()
-    for (i in 1:n_prices()) {
-      solar_data_priced[, paste0("electricity_price_", i)] <- prices()[i] * solar_data_priced$energy_kwh
-      solar_data_priced[, paste0("total_cost_", i)] <- cumsum(solar_data_priced[, paste0("electricity_price_", i)])
-    }
-
-    solar_data_priced
-  })
-
-  solar_plot <- reactive({
-    plot <- ggplot(solar_data_priced()) +
-          labs(y = 'kWh', x = 'Date')
-        if (input$plot_geom == "line") {
-          ggplot(solar_data_priced()) + geom_line(aes(x=datetime, y=energy_kwh)) +
-            labs(y='kWh', x='Date')
-        } else if (input$plot_geom == "hist") {
-          ggplot(solar_data_priced()) + geom_histogram(bins = input$bins, aes(x = energy_kwh)) +
-            labs(y='Count', x='Energy (kWh)')
-    }
-  })
-
-  output$solar_plot <- renderPlot({
-    solar_plot()
-  })
-
-
-  output$download_plot <- downloadHandler(
-    filename = function() { paste("solar_plot", Sys.Date(), ".png", sep = "") },
-    content = function(file) {
-          ggsave(file, plot = solar_plot(), device = "png", bg = "white", width = 8, height = 6)
-    }
+    hour_of_day = hour(datetime) + minute(datetime) / 60,
+    daylight = pmax(sin(pi * (hour_of_day - 6) / 12), 0),
+    seasonal = 0.70 +
+      0.30 * cos(2 * pi * (yday(datetime) - 15) / 365.25),
+    solar_kwh = 5 * daylight^1.5 * seasonal * interval_hours
   )
+~~~
 
-  output$download_cost_plot <- downloadHandler(
-    filename = function() { paste("cost_plot", Sys.Date(), ".png", sep = "") },
-    content = function(file) {
-          ggsave(file, plot = cost_plot(), device = "png", bg = "white", width = 8, height = 6)
-    }
-  )
-
-  output$data_table <- renderDT({
-    req(solar_data())
-    solar_data_filtered()
-  })
-
-
-  prices <- reactive({
-    ids <- paste0("electricity_price_", 1:n_prices())
-    values <- sapply(ids, function(id) input[[id]])
-    values[!is.na(values)]
-  })
-
-
-  cost_plot <- reactive({
-    req(solar_data_priced())
-    req(prices())
-    solar_data_priced() |>
-      select(datetime, starts_with("total_cost_")) |>
-      pivot_longer(!c(datetime, starts_with("electricity_price_")), values_to = "total_cost", names_to = "cost_per_kwh") |>
-      mutate(
-        cost_per_kwh = factor(cost_per_kwh, labels = scales::dollar(prices()))
-      ) |>
-    ggplot(aes(x = datetime, y = total_cost, colour = cost_per_kwh)) +
-      geom_line() +
-      labs(y = 'Cost ($)', x = 'Date', colour = "Cost/kwh") +
-      theme_minimal()
-  })
-  output$cost_plot <- renderPlot({
-    cost_plot()
-  })
-
-  production_plot <- reactive({
-    req(solar_data_priced())
-
-    solar_data_priced() |>
-      ggplot(aes(x=datetime, y=production)) + geom_line()
-  })
-
-  output$production_plot <- renderPlot({
-    production_plot()
-  })
-
-}
-
-shinyApp(ui, server)
-```
-
-</details>
-
+The interval is 0.5 hours. Multiplying power in kW by 0.5 hours produces energy in kWh for each row.
 :::
 
+Check your result:
 
-## Exercise 2
+* solar production should be zero at midnight;
+* it should peak near midday;
+* no value should be negative; and
+* doubling the system size should double every solar value.
 
-Design plots that show:
+Plot observed consumption and modelled production for the day. Label them so a reader cannot confuse observed and modelled quantities.
 
-1. How effective a solar system of a given size can be at reducing electricity costs (as a sales pitch)
-2. Our sales team wants to increase battery sales. To do this, they would like to show the customer the total amount of production in a day that they are not using. Create a text summary that displays this "wasted" energy.
+## 2. Move from energy balance to grid flows
 
+Add net demand:
 
-Hints for part 1:
+~~~r
+worked_day <- worked_day |>
+  mutate(net_demand_kwh = energy_kwh - solar_kwh)
+~~~
 
-<details>
-Instead of looking at raw production data, we should instead look at net consumption, that is usage minus production. This can be done by mutating a new column in `solar_data_priced` with `mutate(net_use = energy_kwh - production)`
+For each row:
 
-Then, we need to change our cost calculation to use `net_use` instead of `energy_kwh`. But we also need to ensure we don't get money back for excess energy.
+* positive net demand requires energy from the battery or grid;
+* negative net demand is surplus available to charge the battery or export.
 
-Then, look at where you are calculating the cost, and use `pmax` to ensure the value isn't negative.
-</details>
+First calculate the no-battery case using **pmax()**:
 
-3. What do you notice about the money saved by having solar panels, versus the size of the solar system? Why does it seem so low?
+~~~r
+worked_day <- worked_day |>
+  mutate(
+    grid_import_without_battery_kwh = pmax(net_demand_kwh, 0),
+    grid_export_without_battery_kwh = pmax(-net_demand_kwh, 0)
+  )
+~~~
+
+Why is the minus sign needed in the export calculation?
 
 ::: {.unilur-solution}
+A surplus has negative net demand. Negating it converts the magnitude of that surplus into a positive export quantity. The use of **pmax()** ensures both flow columns remain non-negative.
+:::
 
-1. Instead of looking at raw production data, we should instead look at net consumption, that is usage minus production. This can be done by mutating a new column in `solar_data_priced` with `mutate(net_use = energy_kwh - production)`
+## 3. Trace the battery as a state through time
 
-Then, we need to change our cost calculation to use `net_use` instead of `energy_kwh`. But we also need to ensure we don't get money back for excess energy.
+A battery cannot be calculated independently row by row. Its state at one interval depends on its state at the previous interval.
 
-We can change lines 104 and 105 to be:
+Start with this deliberately simple sequence:
 
-```r
-solar_data_priced[, paste0("electricity_price_", i)] <- prices()[i] * pmax(solar_data_priced$net_use, 0)
-solar_data_priced[, paste0("total_cost_", i)] <- cumsum(solar_data_priced[, paste0("electricity_price_", i)])
-```
+| Interval | Consumption | Solar | Net demand |
+|---:|---:|---:|---:|
+| 1 | 1 | 0 | 1 |
+| 2 | 1 | 3 | −2 |
+| 3 | 1 | 2 | −1 |
+| 4 | 1 | 0 | 1 |
+| 5 | 1 | 0 | 1 |
+| 6 | 1 | 0 | 1 |
 
-and our cost plot should automatically update.
+Assume:
 
-A better version of this would include the data without solar as a comparison point. This is quite tricky. First, we need to keep both the cost and the net cost in the data frame:
+* a 2 kWh battery;
+* an empty initial battery;
+* no charging or discharging losses.
 
-```r
-for (i in 1:n_prices()) {
-      solar_data_priced[, paste0("electricity_net_", i)] <- prices()[i] * pmax(solar_data_priced$net_use, 0)
-      solar_data_priced[, paste0("electricity_price_", i)] <- prices()[i] * pmax(solar_data_priced$energy_kwh, 0)
-      solar_data_priced[, paste0("total_cost_", i)] <- cumsum(solar_data_priced[, paste0("electricity_price_", i)])
-      solar_data_priced[, paste0("total_net_", i)] <- cumsum(solar_data_priced[, paste0("electricity_net_", i)])
-    }
-```
+For each row, calculate battery state, grid import and grid export. Capacity cannot exceed 2 kWh and state cannot fall below zero.
 
-Then we need to pivot both the total cost and total net cost into long format:
+::: {.unilur-solution}
+| Interval | Net demand | Battery after interval | Grid import | Grid export |
+|---:|---:|---:|---:|---:|
+| 1 | 1 | 0 | 1 | 0 |
+| 2 | −2 | 2 | 0 | 0 |
+| 3 | −1 | 2 | 0 | 1 |
+| 4 | 1 | 1 | 0 | 0 |
+| 5 | 1 | 0 | 0 | 0 |
+| 6 | 1 | 0 | 1 | 0 |
 
-```r
-solar_data_priced() |>
-      select(datetime, starts_with("total_")) |>
-      pivot_longer(!c(datetime), names_to = c("cost_type", "cost_per_kwh"), names_pattern = "total_(cost|net)_(\\d+)", values_to = "cost") |>
-      mutate(
-        cost_per_kwh = factor(cost_per_kwh, labels = scales::dollar(prices())),
-        cost_type = factor(cost_type, labels = c("Without solar", "With Solar"))
+Interval 3 exports energy because the battery is already full. Intervals 4 and 5 use stored energy. By interval 6 the battery is empty, so demand returns to the grid.
+:::
+
+Now inspect **dispatch_battery()** in the starter app. Match each part of the function to one row of your manual trace:
+
+1. read net demand;
+2. calculate energy stored or delivered;
+3. enforce capacity or available state with **min()**;
+4. update state; and
+5. record the remaining import or export.
+
+The app uses the square root of round-trip efficiency for both charging and discharging. Explain why applying 90% twice would not represent 90% round-trip efficiency.
+
+::: {.unilur-solution}
+Applying 90% during charging and again during discharging would give 0.9 × 0.9 = 81% round-trip efficiency. Using the square root in each direction gives √0.9 × √0.9 = 0.9.
+:::
+
+## 4. Turn grid flows into costs
+
+For every interval, the baseline buys all observed consumption from the grid:
+
+~~~r
+baseline_cost <- energy_kwh * import_tariff
+~~~
+
+The scenario pays for imports and receives a credit for exports:
+
+~~~r
+scenario_cost <-
+  grid_import_kwh * import_tariff -
+  grid_export_kwh * feed_in_tariff
+
+interval_saving <- baseline_cost - scenario_cost
+~~~
+
+Check the signs using one imported and one exported interval. Explain why exported electricity is not necessarily “wasted”.
+
+::: {.unilur-solution}
+An export credit is subtracted from the scenario cost, so it increases the saving relative to the baseline. Exported electricity may be less valuable than self-consumed electricity, but it still has value when the feed-in tariff is positive.
+:::
+
+Only after completing the interval calculation should the app sum energy and costs, calculate self-sufficiency, annualise savings and estimate simple payback.
+
+## 5. Trace the common reactive calculation
+
+Before changing the app, locate these three reactive objects:
+
+* **scenario_data()** filters the observed records, adds solar production, dispatches the battery and calculates interval costs;
+* **metrics()** reduces that scenario to values used in headlines; and
+* **daily_data()** prepares daily totals for plotting.
+
+For each input below, predict which reactive objects should invalidate:
+
+1. date range;
+2. solar system size;
+3. import tariff;
+4. battery capacity; and
+5. active tab.
+
+::: {.unilur-solution}
+Changing the date range, system size, tariff or battery capacity changes `scenario_data()`, so the dependent `metrics()` and `daily_data()` also invalidate.
+
+Changing only the active tab should not rebuild the scenario. Tabs select a view of the common results; they do not represent different calculations.
+:::
+
+## 6. Build the salesperson framing
+
+The salesperson wants the user to ask:
+
+> What do I gain from installing this system?
+
+In the **Why invest** tab, replace the placeholder with:
+
+~~~r
+h3(textOutput("sales_headline", inline = TRUE)),
+textOutput("sales_message"),
+plotOutput("sales_plot", height = "430px")
+~~~
+
+In the server:
+
+1. create a headline containing the selected period's bill saving;
+2. mention self-sufficiency and, when included, energy redirected by the battery; and
+3. plot cumulative bill savings over time.
+
+Do not calculate any new scenario inside an output. Use `metrics()` and `daily_data()`.
+
+::: {.unilur-solution}
+One possible headline and message are:
+
+~~~r
+output$sales_headline <- renderText({
+  paste0(
+    "Put ", scales::dollar(metrics()$saving),
+    " back in the household budget"
+  )
+})
+
+output$sales_message <- renderText({
+  battery_text <- if (isTRUE(input$include_battery)) {
+    paste0(
+      " The battery redirects about ",
+      scales::number(metrics()$battery_shift, accuracy = 1),
+      " kWh that would otherwise have been imported from the grid."
+    )
+  } else {
+    ""
+  }
+
+  paste0(
+    "Over the selected ", metrics()$days,
+    " days, the modelled system supplies ",
+    scales::percent(metrics()$self_sufficiency, accuracy = 1),
+    " of consumption without grid imports.",
+    battery_text
+  )
+})
+~~~
+
+The cumulative-savings plot can be:
+
+~~~r
+output$sales_plot <- renderPlot({
+  ggplot(daily_data(), aes(date, cumulative_saving)) +
+    geom_area(fill = "#72BF44", alpha = 0.35) +
+    geom_line(colour = "#2E7D32", linewidth = 1) +
+    scale_y_continuous(labels = scales::label_dollar()) +
+    labs(
+      x = NULL,
+      y = "Cumulative bill saving",
+      subtitle = "Avoided import costs minus foregone export credits"
+    ) +
+    theme_minimal(base_size = 15)
+})
+~~~
+
+This framing is positive, but it still labels what the saving includes.
+:::
+
+## 7. Build the cautious framing
+
+The sceptic wants the user to ask:
+
+> What could make this investment unattractive?
+
+In the **Cautious case** tab, add:
+
+~~~r
+h3(textOutput("sceptic_headline", inline = TRUE)),
+textOutput("sceptic_message"),
+plotOutput("sceptic_plot", height = "430px")
+~~~
+
+Create:
+
+1. a headline reporting simple payback;
+2. text that names at least two limitations; and
+3. a plot of cumulative savings after subtracting the up-front cost.
+
+Again, use the existing common reactives.
+
+::: {.unilur-solution}
+One possible headline and message are:
+
+~~~r
+output$sceptic_headline <- renderText({
+  if (is.finite(metrics()$payback)) {
+    paste0(
+      "Simple payback is approximately ",
+      round(metrics()$payback, 1),
+      " years"
+    )
+  } else {
+    "The selected assumptions do not produce a positive annual saving"
+  }
+})
+
+output$sceptic_message <- renderText({
+  paste0(
+    "The headline saving excludes the up-front cost of ",
+    scales::dollar(metrics()$capital_cost),
+    ". It also assumes tariffs, consumption and modelled production ",
+    "continue unchanged."
+  )
+})
+~~~
+
+The net-position plot can be:
+
+~~~r
+output$sceptic_plot <- renderPlot({
+  ggplot(daily_data(), aes(date, net_position)) +
+    geom_hline(
+      yintercept = 0,
+      linetype = "dashed",
+      colour = "#555555"
+    ) +
+    geom_line(colour = "#9C2F2F", linewidth = 1) +
+    scale_y_continuous(labels = scales::label_dollar()) +
+    labs(
+      x = NULL,
+      y = "Cumulative position after up-front cost",
+      subtitle = paste(
+        "Simple cash position; financing, maintenance",
+        "and degradation are excluded"
       )
-```
-
-and plot both lines
-
-```r
-ggplot(aes(x = datetime, y = cost, colour = cost_per_kwh, linetype = cost_type)) +
-    geom_line() +
-    labs(y = 'Cost ($)', x = 'Date', colour = "Cost/kwh", linetype = "") +
-    theme_minimal()
-```
-
-2. We can create a some text output that calculates the total "wasted" total energy, which is everything which is negative from our solar model. We can put this as text under our Production plot
-
-```r
-tabPanel("Production Plot", plotOutput("production_plot"), textOutput("energy_wasted")),
-```
-
-The calculation is done in the server:
-
-```r
-
-  output$energy_wasted <- renderText({
-    energy_not_used <- solar_data_priced() |>
-      filter(net_use < 0) |>
-      summarise(total_wasted = -1*sum(net_use)) |>
-      pull(total_wasted) |>
-      round() |>
-      scales::comma()
-    paste0("For a system of this size, ", energy_not_used, "kWh are being wasted.")
-  })
-```
-
-Don't forget to format it nicely for the user!
-
-Final app:
-
-<details>
-
-```r
-library(shiny)
-library(DT)
-library(readr)
-library(dplyr)
-library(ggplot2)
-library(janitor)
-library(tidyr)
-library(lubridate)
-
-add_solar_model <- function(solar_data, max_kw = 5) {
-
-  hours <- lubridate::hour(solar_data$datetime)
-
-  production <- ifelse(
-    hours >= 8 & hours <= 18,
-    max_kw/2 * sin(pi * (hours - 6) / 12)^1.5 + rnorm(length(hours), mean = 0, sd = max_kw * 0.02),
-    0
-  )
-
-  # Ensure no negative values due to noise
-  production <- pmax(0, production)
-
-  solar_data |> mutate(production = production)
-}
-
-ui <- fluidPage(
-  headerPanel("Solar dashboard"),
-  sidebarPanel(
-    fileInput("solar_file", "Upload solar data CSV", accept = c(".csv")),
-    sliderInput("date_range", "Subset dates", min = as.Date('2024-07-15'), max = as.Date('2025-10-05'),
-                value = c(as.Date('2024-07-15'), as.Date('2025-10-05'))),
-    numericInput("solar_size", "Solar System Size", value = 5, min = 1, max = 20),
-    div(id = "price_inputs",
-        numericInput("electricity_price_1", "Price per kwh", value = 0.28, min = 0)
-    ),
-    div(style = "text-align: right;",
-      actionButton("add_price", "Add another price"),
-  ),
-
-    radioButtons("plot_geom", "Plot type",
-                 choices = c("Line" = "line", "Histogram" = "hist"),
-                 selected = "line"),
-    conditionalPanel(
-      condition = "input.plot_geom == 'hist'",
-      sliderInput("bins", "Number of bins", min = 5, max = 60, value = 30),
-    )
-
-  ),
-  mainPanel(
-    tabsetPanel(
-      tabPanel("Data Plot", plotOutput("solar_plot"), downloadButton("download_plot", "Download Plot")),
-      tabPanel("Cost Plot", plotOutput("cost_plot"), downloadButton("download_cost_plot", "Download Cost Plot")),
-      tabPanel("Production Plot", plotOutput("production_plot"), textOutput("energy_wasted")),
-      tabPanel("Data", DTOutput("data_table"))
-    )
-  )
-)
-
-server <- function(input, output) {
-
-  n_prices <- reactiveVal(1)
-  observeEvent(input$add_price, {
-    n <- n_prices() + 1
-    n_prices(n)
-
-    insertUI(
-      selector = "#price_inputs",
-      where = "beforeEnd",
-      ui = numericInput(
-        paste0("electricity_price_", n),
-        paste("Price per kwh"), value = 0.28, min = 0)
-    )
-  })
-
-  solar_data <- reactive({
-    req(input$solar_file)
-    read.csv(input$solar_file$datapath) |>
-    pivot_longer(
-    cols = starts_with("X"),
-    names_to = "datetime",
-    values_to = "energy_kwh"
-  ) |>
-  mutate(
-    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
-    energy_kwh = as.numeric(energy_kwh),
-    datetime = paste0(DATE, " ", datetime),
-    datetime = lubridate::ymd_hm(datetime)
-  ) |>
-  janitor::clean_names()
-  })
-
-  solar_data_filtered <- reactive({
-    req(solar_data())
-    solar_data() |>
-      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2]) |>
-      add_solar_model(max_kw = input$solar_size) |>
-      mutate(net_use = energy_kwh - production)
-  })
-
-  solar_data_priced <- reactive({
-    req(prices())
-    solar_data_priced <- solar_data_filtered()
-    for (i in 1:n_prices()) {
-      solar_data_priced[, paste0("electricity_net_", i)] <- prices()[i] * pmax(solar_data_priced$net_use, 0)
-      solar_data_priced[, paste0("electricity_price_", i)] <- prices()[i] * pmax(solar_data_priced$energy_kwh, 0)
-      solar_data_priced[, paste0("total_cost_", i)] <- cumsum(solar_data_priced[, paste0("electricity_price_", i)])
-      solar_data_priced[, paste0("total_net_", i)] <- cumsum(solar_data_priced[, paste0("electricity_net_", i)])
-    }
-
-    solar_data_priced
-  })
-
-  solar_plot <- reactive({
-    plot <- ggplot(solar_data_priced()) +
-          labs(y = 'kWh', x = 'Date')
-        if (input$plot_geom == "line") {
-          ggplot(solar_data_priced()) + geom_line(aes(x=datetime, y=energy_kwh)) +
-            labs(y='kWh', x='Date')
-        } else if (input$plot_geom == "hist") {
-          ggplot(solar_data_priced()) + geom_histogram(bins = input$bins, aes(x = energy_kwh)) +
-            labs(y='Count', x='Energy (kWh)')
-    }
-  })
-
-  output$solar_plot <- renderPlot({
-    solar_plot()
-  })
-
-
-  output$download_plot <- downloadHandler(
-    filename = function() { paste("solar_plot", Sys.Date(), ".png", sep = "") },
-    content = function(file) {
-          ggsave(file, plot = solar_plot(), device = "png", bg = "white", width = 8, height = 6)
-    }
-  )
-
-  output$download_cost_plot <- downloadHandler(
-    filename = function() { paste("cost_plot", Sys.Date(), ".png", sep = "") },
-    content = function(file) {
-          ggsave(file, plot = cost_plot(), device = "png", bg = "white", width = 8, height = 6)
-    }
-  )
-
-  output$data_table <- renderDT({
-    req(solar_data())
-    solar_data_filtered()
-  })
-
-
-  prices <- reactive({
-    ids <- paste0("electricity_price_", 1:n_prices())
-    values <- sapply(ids, function(id) input[[id]])
-    values[!is.na(values)]
-  })
-
-
-  cost_plot <- reactive({
-    req(solar_data_priced())
-    req(prices())
-    solar_data_priced() |>
-      select(datetime, starts_with("total_")) |>
-      pivot_longer(!c(datetime), names_to = c("cost_type", "cost_per_kwh"), names_pattern = "total_(cost|net)_(\\d+)", values_to = "cost") |>
-      mutate(
-        cost_per_kwh = factor(cost_per_kwh, labels = scales::dollar(prices())),
-        cost_type = factor(cost_type, labels = c("Without solar", "With Solar"))
-      ) |>
-    ggplot(aes(x = datetime, y = cost, colour = cost_per_kwh, linetype = cost_type)) +
-      geom_line() +
-      labs(y = 'Cost ($)', x = 'Date', colour = "Cost/kwh", linetype = "") +
-      theme_minimal()
-  })
-  output$cost_plot <- renderPlot({
-    cost_plot()
-  })
-
-  production_plot <- reactive({
-    req(solar_data_priced())
-
-    solar_data_priced() |>
-      ggplot(aes(x=datetime, y=production)) + geom_line()
-  })
-
-  output$production_plot <- renderPlot({
-    production_plot()
-  })
-
-  output$energy_wasted <- renderText({
-    energy_not_used <- solar_data_priced() |>
-      filter(net_use < 0) |>
-      summarise(total_wasted = -1*sum(net_use)) |>
-      pull(total_wasted) |>
-      round() |>
-      scales::comma()
-    paste0("For a system of this size, ", energy_not_used, "kWh are being wasted.")
-  })
-
-}
-
-shinyApp(ui, server)
-```
-
-<details>
-
+    ) +
+    theme_minimal(base_size = 15)
+})
+~~~
 :::
+
+## 8. Audit the three views
+
+Run the app and record the following for each tab:
+
+| View | Main claim | Foregrounded measure | Important context left secondary |
+|---|---|---|---|
+| Why invest | | | |
+| Energy balance | | | |
+| Cautious case | | | |
+
+Then test at least three combinations of:
+
+* solar system size;
+* battery included or excluded;
+* import and feed-in tariffs; and
+* date range.
+
+Check that:
+
+1. the text updates when the inputs change;
+2. the three views remain numerically compatible;
+3. no tab suggests that observed consumption is modelled;
+4. no tab presents modelled production as observed; and
+5. battery claims disappear when the battery is excluded.
+
+## 9. Find the ethical boundary
+
+Choose one change below and implement it temporarily:
+
+* show only summer months in the salesperson view;
+* remove the up-front-cost line from the cautious view;
+* use different tariffs in different tabs; or
+* rename “modelled solar production” as “solar production”.
+
+Discuss with a partner:
+
+1. Does the change merely guide attention?
+2. What would a reasonable user infer?
+3. What label or disclosure would make the choice defensible?
+4. Should the change remain in the dashboard?
+
+Restore a defensible version before continuing.
+
+::: {.callout-tip}
+A transparent subset can be legitimate. A hidden change to the calculation is not.
+:::
+
+## 10. Test the non-ideal states
+
+Try to produce:
+
+* a very short date range;
+* a small solar system and expensive battery;
+* a zero feed-in tariff; and
+* a scenario with no battery.
+
+For each state, ask:
+
+* Does every output still make sense?
+* Does the app explain an awkward result?
+* Does the user know what to change next?
+
+Add one `validate(need())` message or one conditional sentence that improves a weak state.
+
+::: {.unilur-solution}
+For example, you could guard a plot that needs at least seven days:
+
+~~~r
+validate(need(
+  metrics()$days >= 7,
+  "Choose at least seven days to compare the trend."
+))
+~~~
+
+Or make the salesperson message explicit when no battery is selected:
+
+~~~r
+if (!isTRUE(input$include_battery)) {
+  battery_text <- " No battery is included in this scenario."
+}
+~~~
+:::
+
+## 11. Writer's note
+
+Complete both sentences:
+
+> My strongest legitimate framing choice is...
+
+> It would become misleading if...
+
+## Extension: let the evidence travel
+
+Add a fourth tab containing:
+
+~~~r
+downloadButton("download_data", "Download common scenario data")
+~~~
+
+Connect it to `scenario_data()` with `downloadHandler()`. The downloaded data should include observed consumption, modelled production, battery state, grid imports, grid exports and interval savings.
+
+The complete implementation is available in [the finished dashboard](../app.R).

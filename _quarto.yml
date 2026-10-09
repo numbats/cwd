@@ -9,6 +9,8 @@ project:
     - "*-supp.qmd"
     - "assignments/assignment-2-papers/*.pdf"
     - "week10/tutorial/solar_data.csv"
+    - "week10/tutorial/starter_app.R"
+    - "week10/app.R"
     - "week9/data/wpl_batters.csv"
     - "week3/tutorial/data/plv-library-visits.csv"
     - "week1/tutorial/data/melb-airport-max-temp-data.csv"

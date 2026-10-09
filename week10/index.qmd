@@ -1,15 +1,15 @@
 ---
 pagetitle: "ETC5523: Communicating with Data"
-subtitle: "R Shiny — Advanced: tabsets, shared reactives, debugging, conditional UI"
+subtitle: "One dataset, three stories"
 author: "Michael Lydeamore"
 email: "michael.lydeamore@monash.edu"
 date: "Week 10"
 department: "Department of Econometrics and Business Statistics"
 unit-url: "cwd.numbat.space"
 footer: "ETC5523 Week 10"
-format: 
+format:
   revealjs:
-    logo: ../images/monash-one-line-black-rgb.png
+    logo: images/monash-one-line-black-rgb.png
     slide-number: c
     multiplex: false
     theme: ../assets/monash.scss
@@ -26,20 +26,59 @@ execute:
   eval: true
 ---
 
-```{r, include = FALSE}
-current_file <- knitr::current_input()
-basename <- gsub(".[Rq]md$", "", current_file)
+```{r}
+#| include: false
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(readr)
+library(tidyr)
 
-knitr::opts_chunk$set(
-  fig.width = 6,
-  fig.height = 4,
-  fig.align = "center",
-  out.width = "100%",
-  fig.retina = 3,
-  warning = FALSE,
-  message = FALSE,
-  cache = FALSE
-)
+solar_demo <- read_csv("tutorial/solar_data.csv", show_col_types = FALSE) |>
+  filter(con_gen == "Consumption") |>
+  mutate(
+    datetime = as.POSIXct(datetime, tz = "UTC"),
+    date = as.Date(datetime),
+    hour = hour(datetime) + minute(datetime) / 60,
+    daylight = pmax(sin(pi * (hour - 6) / 12), 0),
+    seasonal = 0.70 + 0.30 * cos(2 * pi * (yday(datetime) - 15) / 365.25),
+    solar_kwh = 5 * daylight^1.5 * seasonal * 0.5
+  )
+
+dispatch_demo <- function(data, capacity_kwh = 10, round_trip_efficiency = 0.90) {
+  one_way_efficiency <- sqrt(round_trip_efficiency)
+  battery_state <- grid_import <- grid_export <- numeric(nrow(data))
+  state <- 0
+
+  for (i in seq_len(nrow(data))) {
+    net <- data$net_demand_kwh[i]
+
+    if (net < 0) {
+      surplus <- -net
+      stored <- min(surplus * one_way_efficiency, capacity_kwh - state)
+      state <- state + stored
+      grid_export[i] <- surplus - stored / one_way_efficiency
+    } else {
+      delivered <- min(net, state * one_way_efficiency)
+      state <- state - delivered / one_way_efficiency
+      grid_import[i] <- net - delivered
+    }
+
+    battery_state[i] <- state
+  }
+
+  data |>
+    mutate(
+      battery_state_kwh = battery_state,
+      grid_import_kwh = grid_import,
+      grid_export_kwh = grid_export
+    )
+}
+
+trace_day <- solar_demo |>
+  filter(date == as.Date("2024-12-06")) |>
+  mutate(net_demand_kwh = energy_kwh - solar_kwh) |>
+  dispatch_demo()
 ```
 
 ## <br>[`r rmarkdown::metadata$pagetitle`]{.monash-blue} {#etc5523-title background-image="images/bg-01.png"}
@@ -54,534 +93,562 @@ Lecturer: *`r rmarkdown::metadata$author`*
 <br>
 
 <ul class="fa-ul">
-
-<li>
-
-[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`
-
-</li>
-
-<li>
-
-[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`
-
-</li>
-
-<li>
-
-[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
-
-</li>
-
+<li>[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`</li>
+<li>[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`</li>
+<li>[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a></li>
 </ul>
-
-<br>
 :::
 
+## By the end of today
 
-## {#aim background="white"}
+You will be able to:
 
-::: {.callout-important }
+1. build one shared reactive model that feeds several views;
+2. use tabs, conditional UI and reactive text to guide an argument; and
+3. distinguish legitimate emphasis from changing or hiding the evidence.
 
-## Aim
-
-* Tabbed layouts (tabsets) to organise views
-* Shared reactive datasets / reactiveValues used across components
-* More debugging techniques and diagnostics
-* Auto-generated narrative text driven by reactive expressions
-* Conditionally showing UI elements (show/hide based on inputs)
-
+::: {.callout-important .fragment}
+The technical goal is not three separate apps. It is **one calculation, communicated three ways**.
 :::
 
-::: fragment
+## The same evidence can support different stories
 
-::: {.callout-tip }
+::: {.columns}
+::: {.column width="33%"}
+### Salesperson
 
-## Why
-
-These patterns let you write cleaner, more efficient apps and craft persuasive narratives using the same underlying data.
-
+“A battery helps you use more of the energy your panels generate.”
 :::
 
+::: {.column width="33%"}
+### Neutral analyst
+
+“Savings depend on production, demand, tariffs and timing.”
 :::
 
----
+::: {.column width="33%"}
+### Sceptic
+
+“Up-front costs remain visible long after the first bill saving.”
+:::
+:::
+
+::: {.fragment}
+All three statements can be true at the same time.
+:::
+
+## First establish the common evidence
 
 ```{r}
 #| echo: false
-#| message: false
-#| warning: false
-library(tidyverse)
-library(tidyr)
+#| fig-width: 10
+#| fig-height: 4.3
+#| out-width: "88%"
+solar_demo |>
+  filter(date >= as.Date("2024-12-01"), date <= as.Date("2024-12-07")) |>
+  select(datetime, Consumption = energy_kwh, `Modelled solar` = solar_kwh) |>
+  pivot_longer(-datetime, names_to = "series", values_to = "energy_kwh") |>
+  ggplot(aes(datetime, energy_kwh, colour = series)) +
+  geom_line(linewidth = 0.7) +
+  scale_colour_manual(values = c("#006DAE", "#F28E2B")) +
+  labs(x = NULL, y = "Energy per half-hour (kWh)", colour = NULL) +
+  theme_minimal(base_size = 18) +
+  theme(legend.position = "top")
 ```
 
-## Dataset
+Consumption is observed. Solar production is a transparent, simplified model.
+
+# Build the scenario one column at a time
+
+## Begin with energy measured every half-hour
+
+The supplied data are already in long form:
+
+~~~r
+consumption_data
+# datetime              energy_kwh
+# 2024-07-15 00:00:00       0.0312
+# 2024-07-15 00:30:00       0.0437
+~~~
+
+~~~r
+interval_hours <- median(
+  as.numeric(diff(consumption_data$datetime), units = "hours")
+)
+# 0.5
+~~~
+
+The interval length is needed because **kW measures power**, while each row requires **kWh of energy**.
+
+## The solar model converts capacity into interval energy {.smaller}
+
+For each half-hour:
+
+$$
+\text{solar kWh} =
+\text{system kW} \times
+\text{daylight shape} \times
+\text{seasonal factor} \times
+\text{interval hours}
+$$
+
+~~~r
+hour <- hour(datetime) + minute(datetime) / 60
+daylight <- pmax(sin(pi * (hour - 6) / 12), 0)
+seasonal <- 0.70 + 0.30 * cos(2 * pi * (yday(datetime) - 15) / 365.25)
+solar_kwh <- system_kw * daylight^1.5 * seasonal * interval_hours
+~~~
+
+This is a teaching model, not a site-specific production forecast.
+
+## Inspect each part before combining it
+
+::: {.columns}
+::: {.column width="33%"}
+### Daylight
+
+Zero outside 6 am–6 pm; highest near midday.
+:::
+
+::: {.column width="33%"}
+### Season
+
+The factor ranges from 0.4 to 1.0 and peaks in the Australian summer.
+:::
+
+::: {.column width="33%"}
+### System and interval
+
+A larger system scales production; multiplying by 0.5 converts half-hourly power to energy.
+:::
+:::
+
+::: {.callout-tip .fragment}
+Keep these intermediate columns while developing. Remove them only after the calculation has been checked.
+:::
+
+## Net demand determines the direction of flow
+
+~~~r
+net_demand_kwh <- energy_kwh - solar_kwh
+~~~
+
+::: {.columns}
+::: {.column width="50%"}
+### Positive net demand
+
+Consumption exceeds solar production.
+
+Energy must come from the battery or grid.
+:::
+
+::: {.column width="50%"}
+### Negative net demand
+
+Solar production exceeds consumption.
+
+The surplus can charge the battery or be exported.
+:::
+:::
+
+## Without a battery, split net demand at zero
+
+~~~r
+grid_import_without_battery_kwh <- pmax(net_demand_kwh, 0)
+grid_export_without_battery_kwh <- pmax(-net_demand_kwh, 0)
+~~~
+
+| Net demand | Grid import | Grid export |
+|---:|---:|---:|
+| 0.8 kWh | 0.8 kWh | 0 kWh |
+| −1.2 kWh | 0 kWh | 1.2 kWh |
+
+The sign tells us the direction; **pmax()** keeps both flow columns non-negative.
+
+## A battery makes the calculation sequential {.smaller}
+
+The state of charge at interval *i* depends on interval *i − 1*.
+
+For every row, in time order:
+
+1. calculate net demand;
+2. use surplus to charge, subject to capacity and charging losses;
+3. use stored energy to meet demand, subject to discharging losses;
+4. record the remaining grid import or export; and
+5. carry the new state of charge to the next row.
+
+::: {.callout-important .fragment}
+This is why battery dispatch cannot be calculated with one independent **mutate()** expression.
+:::
+
+## Dispatch one interval at a time {.smaller}
+
+~~~r
+one_way_efficiency <- sqrt(round_trip_efficiency)
+state <- 0
+
+for (i in seq_len(nrow(data))) {
+  net <- data$net_demand_kwh[i]
+
+  if (net < 0) {
+    surplus <- -net
+    stored <- min(surplus * one_way_efficiency, capacity_kwh - state)
+    state <- state + stored
+    grid_export[i] <- surplus - stored / one_way_efficiency
+  } else {
+    delivered <- min(net, state * one_way_efficiency)
+    state <- state - delivered / one_way_efficiency
+    grid_import[i] <- net - delivered
+  }
+}
+~~~
+
+The square root applies half of the round-trip loss while charging and half while discharging.
+
+## Trace one day through the battery {.smaller}
 
 ```{r}
-smartmeter <- read.csv(here::here("data", "smartmeter.csv"))
-
-head(smartmeter)
+#| echo: false
+#| tbl-cap: "Selected intervals from 6 December 2024; 10 kWh battery, 90% round-trip efficiency."
+trace_day |>
+  filter(format(datetime, "%H:%M") %in% c("00:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00")) |>
+  transmute(
+    Time = format(datetime, "%H:%M"),
+    Consumption = round(energy_kwh, 2),
+    Solar = round(solar_kwh, 2),
+    Net = round(net_demand_kwh, 2),
+    Battery = round(battery_state_kwh, 2),
+    Import = round(grid_import_kwh, 2),
+    Export = round(grid_export_kwh, 2)
+  ) |>
+  knitr::kable(align = "rrrrrrr")
 ```
 
-## Dataset after some cleaning
+Read across a row, then down the **Battery** column: that is the state carried through time.
 
-```{r}
-solar_data <- smartmeter |>
-  pivot_longer(
-    cols = starts_with("X"),
-    names_to = "datetime",
-    values_to = "energy_kwh"
-  ) |>
-  mutate(
-    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
-    energy_kwh = as.numeric(energy_kwh),
-    datetime = paste0(DATE, " ", datetime),
-    datetime = lubridate::ymd_hm(datetime)
-  ) |>
-  janitor::clean_names()
+## Tariffs turn energy flows into interval costs {.smaller}
 
-solar_data
-```
+~~~r
+baseline_cost <- energy_kwh * import_tariff
 
-## The basic app
+scenario_cost <-
+  grid_import_kwh * import_tariff -
+  grid_export_kwh * feed_in_tariff
 
-```r
-library(shiny)
+interval_saving <- baseline_cost - scenario_cost
+~~~
 
-ui <- fluidPage(
-  headerPanel("Solar dashboard"),
-  sidebarPanel(
-    sliderInput("date_range", "Subset dates", min = as.Date('2024-07-15'), max = as.Date('2025-10-05'),
-                value = c(as.Date('2024-07-15'), as.Date('2025-10-05'))),
-  ),
-  mainPanel(
-    plotOutput("solar_plot")
-  )
+::: {.callout-note .fragment}
+A feed-in payment reduces the scenario cost. It does not make exported energy “wasted”.
+:::
+
+## Summaries come after the interval calculation
+
+~~~r
+metrics <- list(
+  consumption = sum(energy_kwh),
+  production = sum(solar_kwh),
+  grid_import = sum(grid_import_kwh),
+  grid_export = sum(grid_export_kwh),
+  saving = sum(interval_saving),
+  self_sufficiency = 1 - sum(grid_import_kwh) / sum(energy_kwh)
 )
+~~~
 
-server <- function(input, output) {
-  solar_data <- read.csv(here::here("data", "smartmeter.csv")) |>
-    pivot_longer(
-    cols = starts_with("X"),
-    names_to = "datetime",
-    values_to = "energy_kwh"
-  ) |>
-  mutate(
-    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
-    energy_kwh = as.numeric(energy_kwh),
-    datetime = paste0(DATE, " ", datetime),
-    datetime = lubridate::ymd_hm(datetime)
-  ) |>
-  janitor::clean_names()
+Simple payback then compares an annualised saving with up-front cost.
 
-  output$solar_plot <- renderPlot({
-    solar_data <- solar_data |>
-      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2])
-    ggplot(solar_data, aes(x = datetime, y = energy_kwh)) +
-      geom_line() +
-      labs(y = 'kWh', x = 'Date') +
-      theme_minimal()
-  })
-}
-```
+::: {.callout-warning .fragment}
+Annualising a short or unusual period can produce an unstable payback estimate.
+:::
 
-# Tabsets and layout patterns
+## Framing changes attention—not the calculation
 
-## How to implement tabsets (step-by-step)
+We may legitimately change:
 
-1. Decide what content belongs together — group related plots, tables or controls.
-2. Use `tabsetPanel(id = 'tabs', tabPanel('A', ...), tabPanel('B', ...))` in your UI.
-3. If you need to react to which tab is active, give the tabset an `id` and inspect `input$tabs` on the server.
+- the comparison placed in the foreground;
+- the time window or summary, if it is clearly labelled;
+- annotations, ordering, colour and language; and
+- the question the view helps the user answer.
 
-## How to implement tabsets (example)
+::: {.callout-warning .fragment}
+We must not quietly change tariffs, system size, battery assumptions or the underlying records between tabs.
+:::
 
-Small example:
+# Build one source of truth
+
+## A shared reactive prevents three versions of reality
 
 ```r
-ui <- fluidPage(
-  tabsetPanel(id = 'main_tabs',
-    tabPanel('Overview', plotOutput('p1')),
-    tabPanel('Details', plotOutput('p2'))
-  ),
-  mainPanel(
-    textOutput('which_tab')
-  )
-)
-
-server <- function(input, output) {
-  output$which_tab <- renderText({ paste("Current tab:", input$main_tabs)})
-}
-```
-
-## Updating our app to include a tabset
-
-```r
-library(shiny)
-library(DT)
-
-ui <- fluidPage(
-  headerPanel("Solar dashboard"),
-  sidebarPanel(
-    sliderInput("date_range", "Subset dates", min = as.Date('2024-07-15'), max = as.Date('2025-10-05'),
-                value = c(as.Date('2024-07-15'), as.Date('2025-10-05'))),
-  ),
-  mainPanel(
-    tabsetPanel(
-      tabPanel("Plot", plotOutput("solar_plot")),
-      tabPanel("Data", DTOutput("data_table"))
+scenario_data <- reactive({
+  consumption_data |>
+    filter(date >= input$date_range[1],
+           date <= input$date_range[2]) |>
+    add_solar(system_kw = input$system_kw) |>
+    dispatch_battery(
+      capacity_kwh = input$battery_kwh,
+      round_trip_efficiency = input$battery_efficiency
     )
-  )
-)
-
-server <- function(input, output) {
-  solar_data <- read.csv(here::here("data", "smartmeter.csv")) |>
-    pivot_longer(
-    cols = starts_with("X"),
-    names_to = "datetime",
-    values_to = "energy_kwh"
-  ) |>
-  mutate(
-    datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
-    energy_kwh = as.numeric(energy_kwh),
-    datetime = paste0(DATE, " ", datetime),
-    datetime = lubridate::ymd_hm(datetime)
-  ) |>
-  janitor::clean_names()
-
-  output$solar_plot <- renderPlot({
-    solar_data <- solar_data |>
-      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2])
-    ggplot(solar_data, aes(x = datetime, y = energy_kwh)) +
-      geom_line() +
-      labs(y = 'kWh', x = 'Date') +
-      theme_minimal()
-  })
-
-  output$data_table <- renderDT({
-    solar_data <- solar_data |>
-      filter(datetime >= input$date_range[1] & datetime <= input$date_range[2])
-    solar_data
-  })
-}
+})
 ```
 
-## When to use tabsets
+Every plot, headline and table calls `scenario_data()`.
 
-- Use for logically separate views or different analysis perspectives of the same data (like our three framings).
-- Avoid deep nesting of tabs (it adds cognitive load). Prefer progressive disclosure: keep primary controls visible and move advanced filters to secondary tabs.
-
-# Reactive variables & shared datasets
-
-## Reactive variables & shared datasets
-
-You may have noticed in our app we are re-cleaning and processing the dataset inside each `render*()` function. This is inefficient and error-prone.
-
-::: {.fragment}
-Instead, we can create shared reactive expressions that parse and clean the data once, and then multiple outputs can re-use the cleaned data.
-:::
-
-## Reactive variables & shared datasets
-
-To implement:
+## The dependency graph is the design
 
 ::: {.columns}
-::: {.column width='50%'}
+::: {.column width="30%"}
+### Inputs
 
+- date range
+- system size
+- tariffs
+- battery assumptions
+:::
+
+::: {.column width="35%"}
+### Shared model
+
+- solar production
+- battery dispatch
+- grid import/export
+- costs and savings
+:::
+
+::: {.column width="35%"}
+### Views
+
+- salesperson
+- neutral analyst
+- sceptic
+- downloadable evidence
+:::
+:::
+
+::: {.callout-tip .fragment}
+When a number differs across views, the first place to look is the dependency graph.
+:::
+
+## Derive the claims from the model
 
 ```r
-# Shared reactive dataset
-solar_data <- reactive({
-  df <- read.csv(here::here("data", "smartmeter.csv")) |>
-    pivot_longer(
-      cols = starts_with("X"),
-      names_to = "datetime",
-      values_to = "energy_kwh"
-    ) |>
-    mutate(
-      datetime = gsub("X(\\d{2}\\.\\d{2})\\.\\.\\.(\\d{2}\\.\\d{2})", "\\1", datetime),
-      energy_kwh = as.numeric(energy_kwh),
-      datetime = paste0(DATE, " ", datetime),
-      datetime = lubridate::ymd_hm(datetime)
-    ) |>
-    janitor::clean_names()
-  df
+metrics <- reactive({
+  df <- scenario_data()
+
+  tibble(
+    grid_import_kwh = sum(df$grid_import_kwh),
+    grid_export_kwh = sum(df$grid_export_kwh),
+    bill_without_system = sum(df$energy_kwh) * input$import_tariff,
+    bill_with_system = sum(df$grid_import_kwh) * input$import_tariff -
+      sum(df$grid_export_kwh) * input$feed_in_tariff
+  ) |>
+    mutate(saving = bill_without_system - bill_with_system)
 })
 ```
+
+The narrative is calculated, not typed around a screenshot.
+
+# Turn calculations into three views
+
+## Tabs separate questions—not datasets
+
+```r
+tabsetPanel(
+  id = "frame",
+  tabPanel("Why invest", plotOutput("sales_plot"),
+           textOutput("sales_message")),
+  tabPanel("Energy balance", plotOutput("neutral_plot"),
+           textOutput("neutral_message")),
+  tabPanel("Cautious case", plotOutput("sceptic_plot"),
+           textOutput("sceptic_message"))
+)
+```
+
+Each label names the question or perspective the user will encounter.
+
+## Reactive text makes the framing explicit
+
+```r
+output$sales_message <- renderText({
+  glue::glue(
+    "The selected system avoids {scales::dollar(metrics()$saving)} ",
+    "in electricity costs over this period."
+  )
+})
+
+output$sceptic_message <- renderText({
+  glue::glue(
+    "Simple payback is approximately ",
+    "{round(metrics()$payback, 1)} years."
+  )
+})
+```
+
+The code selects a consequence; it does not invent a result.
+
+## The salesperson foregrounds avoided cost
+
+### Question: “What do I gain?”
+
+- lead with cumulative bill savings;
+- show how the battery redirects surplus production;
+- use confident, specific language; and
+- keep costs and assumptions accessible.
+
+::: {.callout-note .fragment}
+Persuasion is not permission to hide the feed-in tariff, capital cost or model limitations.
 :::
-::: {.column width='50%'}
+
+## The neutral view explains the mechanism
+
+### Question: “What is happening to the energy?”
+
+- show consumption, solar production and grid imports together;
+- report imports, exports and self-sufficiency;
+- state which quantities are observed and modelled; and
+- make the selected period and tariffs visible.
+
+This is the reference view against which the other framings can be checked.
+
+## The sceptic keeps the opportunity cost visible
+
+### Question: “What could make this unattractive?”
+
+- subtract up-front costs from cumulative savings;
+- highlight grid dependence during low-production periods;
+- show the simple payback implied by the same assumptions; and
+- distinguish uncertainty from evidence against the system.
+
+“Cautious” should mean conservative interpretation—not a different dataset.
+
+## Three headlines, one model
+
+::: {.columns}
+::: {.column width="33%"}
+### Why invest
+
+“Save **$X** over the selected period.”
+:::
+
+::: {.column width="33%"}
+### Energy balance
+
+“Supply **Y%** of consumption without grid imports.”
+:::
+
+::: {.column width="33%"}
+### Cautious case
+
+“Simple payback is approximately **Z years**.”
+:::
+:::
 
 ::: {.fragment}
-
-Then inside `renderPlot()` or `renderDT()` we call `solar_data()` to get the cleaned data frame.
-
-```r
-output$solar_plot <- renderPlot({
-  df <- solar_data() |>
-    filter(datetime >= input$date_range[1] & datetime <= input$date_range[2])
-  ggplot(df, aes(x = datetime, y = energy_kwh)) +
-    geom_line() +
-    labs(y = 'kWh', x = 'Date') +
-    theme_minimal()
-})
-```
-
-:::
-:::
+The numbers **X, Y and Z** come from the same reactive model.
 :::
 
-## Best practice checklist
+# Model the battery honestly
 
-::: {.incremental}
+## Surplus is not automatically a battery saving {.smaller}
 
-- Validate early: use `req()` and `validate()` at the top of reactive expressions
-- Keep single responsibility: each reactive does one transformation step and you chain them (parse -> clean -> aggregate)
-- Use descriptive names and document the contract for each reactive (inputs, outputs, error modes)
+Without a battery model, we can calculate only:
 
-:::
+> surplus solar generation that is not consumed at the time it is produced.
 
-# Other inputs and outputs
+Battery savings also require:
 
-## File inputs
+- storage capacity;
+- charging and discharging losses;
+- state of charge; and
+- remaining grid imports and exports.
 
-So far we have hard-coded the data source. To make the app reusable, we can add a file input control to let users upload their own solar CSV.
-
-```r
-fileInput("solar_file", "Upload solar data (CSV)", accept = c('.csv'))
-```
-
-Then inside the `solar_data` reactive we check if a file is uploaded and read it.
+## Conditional controls reveal relevant assumptions
 
 ```r
-solar_data <- reactive({
-  req(input$solar_file) # require a file
-  read.csv(input$solar_file$datapath)
-  # ... rest of parsing and validation ...
-})
-```
+checkboxInput("include_battery", "Include a battery", TRUE)
 
-## Showing and hiding UI elements
-
-You might only want to show certain controls or outputs based on user selections.
-
-For example, if you are changing `geoms` then the user might want to include a parameter that only applies to one geom.
-
-## Enter the `conditionalPanel`
-
-```r
 conditionalPanel(
-  condition = "input.geom_type == 'hist'",
-  sliderInput("bin_width", "Bin Width", min = 1, max = 30, value = 7)
+  condition = "input.include_battery",
+  numericInput("battery_kwh", "Usable battery capacity (kWh)",
+               value = 10, min = 1, max = 30),
+  sliderInput("battery_efficiency", "Round-trip efficiency",
+              min = 0.70, max = 1, value = 0.90)
 )
 ```
 
-Here, the `condition` is in JavaScript. In `R` land, you read this as
+Hide irrelevant controls, not inconvenient evidence.
+
+# Design for incomplete and awkward states
+
+## A blank output is not an explanation
 
 ```r
-inpuut$geom_type == 'hist'
-```
+scenario_data <- reactive({
+  req(input$date_range)
 
-## Example of conditional UI
+  df <- consumption_data |>
+    filter(date >= input$date_range[1],
+           date <= input$date_range[2])
 
-```r
-# client
-radioButtons("plot_geom", "Plot type",
-                 choices = c("Line" = "line", "Histogram" = "hist"),
-                 selected = "line"),
-conditionalPanel(
-  condition = "input.plot_geom == 'hist'",
-  sliderInput("bins", "Number of bins", min = 5, max = 60, value = 30),
-  selectInput("aggregation_size", "Aggregation type", choices = c("None", "Daily", "Weekly", "Monthly")),
-)
+  validate(need(nrow(df) > 0,
+                "No records match this period. Try a wider date range."))
 
-# server
-
-solar_data_aggregated <- reactive({
-  req(solar_data_filtered())
-  if (input$aggregation_size == "Daily") {
-    solar_data_filtered() |>
-      group_by(date) |>
-      summarise(energy_kwh = sum(energy_kwh, na.rm = TRUE))
-  } else if (input$aggregation_size == "Weekly") { ... }
+  build_scenario(df, input)
 })
 ```
 
-## File downloading
+Validation returns control to the user.
 
-You can let users download processed datasets or reports using `downloadButton()` in the UI and `downloadHandler()` on the server.
+## Every state needs a useful next action {.smaller}
+
+| State | Useful message |
+|---|---|
+| Waiting | Choose a period and system size. |
+| Empty | No records match. Try a wider range. |
+| Invalid | Battery capacity must exceed zero. |
+| Failed | Check the input data format and try again. |
+
+## Download the evidence, not merely the picture
 
 ```r
-downloadButton("download_plot", "Download Plot")
-
-# server
-
-output$download_plot <- downloadHandler(
-  filename = function() { paste("solar_plot", Sys.Date(), ".png", sep = "") },
+output$download_data <- downloadHandler(
+  filename = function() paste0("solar-scenario-", Sys.Date(), ".csv"),
   content = function(file) {
-    ggsave(file, plot = solar_plot(), device = "png", bg = "white", width = 8, height = 6)
+    readr::write_csv(scenario_data(), file)
   }
 )
 ```
 
-# On-the-fly data manipulation
+A reader should be able to inspect the common calculation behind every frame.
 
-## On-the-fly data manipulation
+# Demo and discussion
 
-You can let users manipulate data on-the-fly using inputs that control filtering, aggregation, or transformations.
+## Watch what changes—and what does not
 
-In our solar app, we could let users input their price per kWh and feed-in tariff to calculate potential savings.
+During the demo, track four things:
 
-## `observeEvent`
+1. Which inputs invalidate the shared model?
+2. Which numbers remain identical across tabs?
+3. Which design choices make each account feel persuasive?
+4. Where could emphasis become misleading?
 
-Sometimes you want to trigger something when something else happens, like when a button is clicked, rather than on every input change. If you have a long running computation, you might want to only run it when the user clicks "Update".
+## Exit ticket
 
-This is where we use `observeEvent()`:
+Choose one difference between the salesperson and sceptical views.
 
-```r
-# client
+Complete both sentences:
 
-actionButton("update", "Update calculations")
+> This is a legitimate framing choice because…
 
-# server
+> It would become misleading if…
 
-observeEvent(input$update, {
-  # Re-run expensive calculations here
-  solar_data_priced <- solar_data_filtered()
-  solar_data_priced$cost <- input$electricity_price * solar_data_priced$energy_kwh
-  solar_data_priced$total_cost <- cumsum(solar_data_priced$cost)
-})
-```
+## Week 10 summary
 
-## Dynamic UI generation
+- One shared reactive model keeps the evidence consistent.
+- Tabs organise competing questions, not competing calculations.
+- Reactive text turns computed results into explicit claims.
+- Conditional UI reveals assumptions when they become relevant.
+- Helpful states and downloadable evidence make persuasion inspectable.
 
-You can also use `actionButton` with `reactiveValues` to let users input multiple conditions without pre-specifying the numbers.
-
-```r
-# client
-
-div(id = "price_inputs",
-  numericInput("electricity_price_1", "Price per kwh", value = 0.28, min = 0)
-),
-div(style = "text-align: right;",
-  actionButton("add_price", "Add another price"),
-)
-
-# server
-
-
-n_prices <- reactiveVal(1)
-observeEvent(input$add_price, {
-  n <- n_prices() + 1
-  n_prices(n)
-
-  insertUI(
-    selector = "#price_inputs",
-    where = "beforeEnd",
-    ui = numericInput(
-      paste0("electricity_price_", n), 
-      paste("Price per kwh"), value = 0.28, min = 0)
-  )
-})
-
-
-solar_data_priced <- reactive({
-  req(prices())
-  solar_data_priced <- solar_data_filtered()
-  for (i in 1:n_prices()) {
-    solar_data_priced[, paste0("electricity_price_", i)] <- prices()[i] * solar_data_priced$energy_kwh
-    solar_data_priced[, paste0("total_cost_", i)] <- cumsum(solar_data_priced[, paste0("electricity_price_", i)])
-  }
-
-  solar_data_priced
-})
-```
-
-## Code management
-
-By this point, your `app.R` file may be getting quite long. To keep things manageable:
-
-- Split UI and server into separate files (`ui.R` and `server.R`)
-- Modularise repeated components into functions or modules and then source them
-
-::: {.fragment}
-When using `source`, remember the path is relative to the app's working directory, not the file location.
+::: {.callout-important .fragment}
+The dashboard’s argument may change. Its underlying evidence must not.
 :::
-
-::: {.fragment}
-You can't define _variables_ in sourced files and expect them to be available in the main app. Instead, define _functions_ that return values, and then use the functions inside `reactive` or similar.
-:::
-
-::: {.fragment}
-Thinking in this modularised, functional way is similar to the workflow in `targets`, and helps to avoid the 1000-line script problem. Get in the habit early!
-:::
-
-
-
-
-## Recap: Packaging shiny apps in an R package
-
-Recall the R package structure:
-
-```
-my_package/
-  R/
-    functions.R
-    plots.R
-  man/
-    my_function.Rd
-  vignettes/
-    my_vignette.Rmd
-```
-
-## Recap: Packaging shiny apps in an R package
-
-To include a shiny app, create an `inst/app/` directory inside your package:
-
-::: {.columns}
-::: {.column width='50%'}
-```
-my_package/
-  R/
-    functions.R
-    plots.R
-    man/
-    my_function.Rd
-  vignettes/
-    my_vignette.Rmd
-  inst/
-    app/
-      app.R
-      www/
-        styles.css
-        script.js
-      data/
-        dataset.csv
-```
-:::
-::: {.column width='50%'}
-::: {.fragment}
-Access things inside the package using `system.file()`:
-
-```r
-dataset <- read.csv(system.file("app/data/dataset.csv", package = "my_package"))
-```
-
-::: {.fragment}
-Or export them using `roxygen` and then use as normal
-:::
-:::
-:::
-:::
-
-# Demo
-
-## Recap
-
-- Tabsets for organizing views
-- Shared reactive datasets for efficiency
-- Conditional UI elements
-- On-the-fly data manipulation with `observeEvent`
-- Packaging shiny apps in an R package
-
-
-
-

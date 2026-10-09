@@ -5,18 +5,7 @@ library(ggplot2)
 library(readr)
 library(lubridate)
 
-data_candidates <- c(
-  "tutorial/solar_data.csv",
-  "solar_data.csv",
-  file.path("week10", "tutorial", "solar_data.csv")
-)
-data_path <- data_candidates[file.exists(data_candidates)][1]
-
-if (is.na(data_path)) {
-  stop("Could not find solar_data.csv. Run the app from the week10 folder or place the data beside app.R.")
-}
-
-consumption_data <- read_csv(data_path, show_col_types = FALSE) |>
+consumption_data <- read_csv("solar_data.csv", show_col_types = FALSE) |>
   filter(con_gen == "Consumption") |>
   transmute(
     datetime = as.POSIXct(datetime, tz = "UTC"),
@@ -84,14 +73,6 @@ minimum_date <- min(consumption_data$date)
 maximum_date <- max(consumption_data$date)
 
 ui <- fluidPage(
-  tags$head(
-    tags$style(HTML("
-      .frame-message {font-size: 1.25rem; line-height: 1.45; margin: 1rem 0 1.4rem;}
-      .model-note {background: #f4f7f9; border-left: 5px solid #006dae; padding: 0.8rem 1rem; margin-bottom: 1rem;}
-      .tab-content {padding-top: 1rem;}
-      .control-label {font-weight: 600;}
-    "))
-  ),
   titlePanel("One household, three solar stories"),
   sidebarLayout(
     sidebarPanel(
@@ -113,39 +94,27 @@ ui <- fluidPage(
       )
     ),
     mainPanel(
-      div(
-        class = "model-note",
+      p(
         strong("Common evidence: "),
-        "Every tab uses the same consumption records, modelled solar production, tariffs and battery dispatch. Only the framing changes."
+        "Every tab must use scenario_data() and metrics()."
       ),
       tabsetPanel(
         id = "frame",
         tabPanel(
           "Why invest",
-          h3(textOutput("sales_headline", inline = TRUE)),
-          div(class = "frame-message", textOutput("sales_message")),
-          plotOutput("sales_plot", height = "430px")
+          h3("Your salesperson framing goes here"),
+          p("Add a reactive headline, a short narrative and one plot.")
         ),
         tabPanel(
           "Energy balance",
           h3(textOutput("neutral_headline", inline = TRUE)),
-          div(class = "frame-message", textOutput("neutral_message")),
+          textOutput("neutral_message"),
           plotOutput("neutral_plot", height = "430px")
         ),
         tabPanel(
           "Cautious case",
-          h3(textOutput("sceptic_headline", inline = TRUE)),
-          div(class = "frame-message", textOutput("sceptic_message")),
-          plotOutput("sceptic_plot", height = "430px")
-        ),
-        tabPanel(
-          "Evidence and assumptions",
-          h3("The calculation behind all three views"),
-          tableOutput("assumptions"),
-          h4(textOutput("trace_title", inline = TRUE)),
-          p("Read across each row, then down the battery column to follow the state carried through time."),
-          tableOutput("calculation_trace"),
-          downloadButton("download_data", "Download common scenario data")
+          h3("Your sceptical framing goes here"),
+          p("Add a reactive headline, a short narrative and one plot.")
         )
       )
     )
@@ -213,7 +182,6 @@ server <- function(input, output, session) {
         consumption_kwh = sum(energy_kwh),
         solar_kwh = sum(solar_kwh),
         grid_import_kwh = sum(grid_import_kwh),
-        grid_export_kwh = sum(grid_export_kwh),
         daily_saving = sum(interval_saving),
         .groups = "drop"
       ) |>
@@ -221,28 +189,6 @@ server <- function(input, output, session) {
         cumulative_saving = cumsum(daily_saving),
         net_position = -metrics()$capital_cost + cumulative_saving
       )
-  })
-
-  output$sales_headline <- renderText({
-    paste0("Put ", scales::dollar(metrics()$saving), " back in the household budget")
-  })
-
-  output$sales_message <- renderText({
-    battery_text <- if (isTRUE(input$include_battery)) {
-      paste0(
-        " The battery redirects about ",
-        scales::number(metrics()$battery_shift, accuracy = 1),
-        " kWh that would otherwise have been imported from the grid."
-      )
-    } else {
-      ""
-    }
-
-    paste0(
-      "Over the selected ", metrics()$days, " days, the modelled system supplies ",
-      scales::percent(metrics()$self_sufficiency, accuracy = 1),
-      " of consumption without grid imports.", battery_text
-    )
   })
 
   output$neutral_headline <- renderText({
@@ -258,34 +204,6 @@ server <- function(input, output, session) {
       " kWh is imported and ", scales::number(metrics()$grid_export, accuracy = 1),
       " kWh is exported."
     )
-  })
-
-  output$sceptic_headline <- renderText({
-    if (is.finite(metrics()$payback)) {
-      paste0("Simple payback is approximately ", round(metrics()$payback, 1), " years")
-    } else {
-      "The selected assumptions do not produce a positive annual saving"
-    }
-  })
-
-  output$sceptic_message <- renderText({
-    paste0(
-      "The headline saving excludes the up-front cost of ",
-      scales::dollar(metrics()$capital_cost),
-      ". It also assumes tariffs, consumption and modelled production continue unchanged."
-    )
-  })
-
-  output$sales_plot <- renderPlot({
-    ggplot(daily_data(), aes(date, cumulative_saving)) +
-      geom_area(fill = "#72BF44", alpha = 0.35) +
-      geom_line(colour = "#2E7D32", linewidth = 1) +
-      scale_y_continuous(labels = scales::label_dollar()) +
-      labs(
-        x = NULL, y = "Cumulative bill saving",
-        subtitle = "Avoided import costs minus foregone export credits"
-      ) +
-      theme_minimal(base_size = 15)
   })
 
   output$neutral_plot <- renderPlot({
@@ -305,75 +223,10 @@ server <- function(input, output, session) {
       theme(legend.position = "top")
   })
 
-  output$sceptic_plot <- renderPlot({
-    ggplot(daily_data(), aes(date, net_position)) +
-      geom_hline(yintercept = 0, linetype = "dashed", colour = "#555555") +
-      geom_line(colour = "#9C2F2F", linewidth = 1) +
-      scale_y_continuous(labels = scales::label_dollar()) +
-      labs(
-        x = NULL, y = "Cumulative position after up-front cost",
-        subtitle = "Simple cash position; financing, maintenance and degradation are excluded"
-      ) +
-      theme_minimal(base_size = 15)
-  })
-
-  output$assumptions <- renderTable({
-    data.frame(
-      Assumption = c(
-        "Selected period", "Solar system", "Battery", "Import tariff",
-        "Feed-in tariff", "Up-front cost", "Solar production",
-        "Battery initial state"
-      ),
-      Value = c(
-        paste(input$date_range, collapse = " to "),
-        paste(input$system_kw, "kW"),
-        if (isTRUE(input$include_battery)) {
-          paste(input$battery_kwh, "kWh at", scales::percent(input$battery_efficiency))
-        } else {
-          "Not included"
-        },
-        paste0(scales::dollar(input$import_tariff), "/kWh"),
-        paste0(scales::dollar(input$feed_in_tariff), "/kWh"),
-        scales::dollar(metrics()$capital_cost),
-        "Simplified deterministic daylight and seasonal model",
-        "Empty at the start of the selected period"
-      ),
-      check.names = FALSE
-    )
-  }, striped = TRUE, bordered = TRUE, spacing = "m")
-
-  output$trace_title <- renderText({
-    paste("Selected calculation trace for", min(scenario_data()$date))
-  })
-
-  output$calculation_trace <- renderTable({
-    data <- scenario_data()
-    first_date <- min(data$date)
-
-    data |>
-      filter(
-        date == first_date,
-        hour(datetime) %in% c(0, 6, 9, 12, 15, 18, 21),
-        minute(datetime) == 0
-      ) |>
-      transmute(
-        Time = format(datetime, "%H:%M"),
-        Consumption = round(energy_kwh, 2),
-        Solar = round(solar_kwh, 2),
-        Net = round(net_demand_kwh, 2),
-        Battery = round(battery_state_kwh, 2),
-        Import = round(grid_import_kwh, 2),
-        Export = round(grid_export_kwh, 2),
-        Saving = scales::dollar(interval_saving)
-      )
-  }, striped = TRUE, bordered = TRUE, spacing = "s")
-
-  output$download_data <- downloadHandler(
-    filename = function() paste0("solar-scenario-", Sys.Date(), ".csv"),
-    content = function(file) {
-      write_csv(scenario_data(), file)
-    }
-  )
+  # TODO 1: Add sales_headline, sales_message and sales_plot.
+  # TODO 2: Add sceptic_headline, sceptic_message and sceptic_plot.
+  # TODO 3: Check that every output uses scenario_data(), metrics()
+  #         or daily_data(), rather than recalculating the scenario.
 }
 
 shinyApp(ui, server)
