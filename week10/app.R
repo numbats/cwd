@@ -1,4 +1,5 @@
 library(shiny)
+library(bslib)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -83,18 +84,9 @@ dispatch_battery <- function(data, capacity_kwh, round_trip_efficiency) {
 minimum_date <- min(consumption_data$date)
 maximum_date <- max(consumption_data$date)
 
-ui <- fluidPage(
-  tags$head(
-    tags$style(HTML("
-      .frame-message {font-size: 1.25rem; line-height: 1.45; margin: 1rem 0 1.4rem;}
-      .model-note {background: #f4f7f9; border-left: 5px solid #006dae; padding: 0.8rem 1rem; margin-bottom: 1rem;}
-      .tab-content {padding-top: 1rem;}
-      .control-label {font-weight: 600;}
-    "))
-  ),
-  titlePanel("One household, three solar stories"),
-  sidebarLayout(
-    sidebarPanel(
+ui <- page_sidebar(
+  title = "One household, three solar stories",
+  sidebar = sidebar(
       dateRangeInput(
         "date_range", "Period",
         start = minimum_date, end = maximum_date,
@@ -111,43 +103,39 @@ ui <- fluidPage(
         sliderInput("battery_efficiency", "Round-trip efficiency", min = 0.70, max = 1, value = 0.90, step = 0.01),
         numericInput("battery_cost", "Battery installation cost ($)", value = 10000, min = 0, step = 500)
       )
+  ),
+  p(
+    strong("Common evidence: "),
+    "Every tab uses the same consumption records, modelled solar production, tariffs and battery dispatch. Only the framing changes."
+  ),
+  navset_card_tab(
+    id = "frame",
+    nav_panel(
+      "Why invest",
+      h3(textOutput("sales_headline", inline = TRUE)),
+      textOutput("sales_message"),
+      plotOutput("sales_plot", height = "430px")
     ),
-    mainPanel(
-      div(
-        class = "model-note",
-        strong("Common evidence: "),
-        "Every tab uses the same consumption records, modelled solar production, tariffs and battery dispatch. Only the framing changes."
-      ),
-      tabsetPanel(
-        id = "frame",
-        tabPanel(
-          "Why invest",
-          h3(textOutput("sales_headline", inline = TRUE)),
-          div(class = "frame-message", textOutput("sales_message")),
-          plotOutput("sales_plot", height = "430px")
-        ),
-        tabPanel(
-          "Energy balance",
-          h3(textOutput("neutral_headline", inline = TRUE)),
-          div(class = "frame-message", textOutput("neutral_message")),
-          plotOutput("neutral_plot", height = "430px")
-        ),
-        tabPanel(
-          "Cautious case",
-          h3(textOutput("sceptic_headline", inline = TRUE)),
-          div(class = "frame-message", textOutput("sceptic_message")),
-          plotOutput("sceptic_plot", height = "430px")
-        ),
-        tabPanel(
-          "Evidence and assumptions",
-          h3("The calculation behind all three views"),
-          tableOutput("assumptions"),
-          h4(textOutput("trace_title", inline = TRUE)),
-          p("Read across each row, then down the battery column to follow the state carried through time."),
-          tableOutput("calculation_trace"),
-          downloadButton("download_data", "Download common scenario data")
-        )
-      )
+    nav_panel(
+      "Energy balance",
+      h3(textOutput("neutral_headline", inline = TRUE)),
+      textOutput("neutral_message"),
+      plotOutput("neutral_plot", height = "430px")
+    ),
+    nav_panel(
+      "Cautious case",
+      h3(textOutput("sceptic_headline", inline = TRUE)),
+      textOutput("sceptic_message"),
+      plotOutput("sceptic_plot", height = "430px")
+    ),
+    nav_panel(
+      "Evidence and assumptions",
+      h3("The calculation behind all three views"),
+      tableOutput("assumptions"),
+      h4(textOutput("trace_title", inline = TRUE)),
+      p("Read across each row, then down the battery column to follow the state carried through time."),
+      tableOutput("calculation_trace"),
+      downloadButton("download_data", "Download common scenario data")
     )
   )
 )

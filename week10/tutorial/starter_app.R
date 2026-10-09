@@ -1,4 +1,5 @@
 library(shiny)
+library(bslib)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -72,10 +73,9 @@ dispatch_battery <- function(data, capacity_kwh, round_trip_efficiency) {
 minimum_date <- min(consumption_data$date)
 maximum_date <- max(consumption_data$date)
 
-ui <- fluidPage(
-  titlePanel("One household, three solar stories"),
-  sidebarLayout(
-    sidebarPanel(
+ui <- page_sidebar(
+  title = "One household, three solar stories",
+  sidebar = sidebar(
       dateRangeInput(
         "date_range", "Period",
         start = minimum_date, end = maximum_date,
@@ -92,31 +92,28 @@ ui <- fluidPage(
         sliderInput("battery_efficiency", "Round-trip efficiency", min = 0.70, max = 1, value = 0.90, step = 0.01),
         numericInput("battery_cost", "Battery installation cost ($)", value = 10000, min = 0, step = 500)
       )
+  ),
+  p(
+    strong("Common evidence: "),
+    "Every tab must use scenario_data() and metrics()."
+  ),
+  navset_card_tab(
+    id = "frame",
+    nav_panel(
+      "Why invest",
+      h3("Your salesperson framing goes here"),
+      p("Add a reactive headline, a short narrative and one plot.")
     ),
-    mainPanel(
-      p(
-        strong("Common evidence: "),
-        "Every tab must use scenario_data() and metrics()."
-      ),
-      tabsetPanel(
-        id = "frame",
-        tabPanel(
-          "Why invest",
-          h3("Your salesperson framing goes here"),
-          p("Add a reactive headline, a short narrative and one plot.")
-        ),
-        tabPanel(
-          "Energy balance",
-          h3(textOutput("neutral_headline", inline = TRUE)),
-          textOutput("neutral_message"),
-          plotOutput("neutral_plot", height = "430px")
-        ),
-        tabPanel(
-          "Cautious case",
-          h3("Your sceptical framing goes here"),
-          p("Add a reactive headline, a short narrative and one plot.")
-        )
-      )
+    nav_panel(
+      "Energy balance",
+      h3(textOutput("neutral_headline", inline = TRUE)),
+      textOutput("neutral_message"),
+      plotOutput("neutral_plot", height = "430px")
+    ),
+    nav_panel(
+      "Cautious case",
+      h3("Your sceptical framing goes here"),
+      p("Add a reactive headline, a short narrative and one plot.")
     )
   )
 )

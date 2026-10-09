@@ -16,10 +16,10 @@ format:
 
 By the end of this workshop, you will be able to:
 
-* construct a Shiny `tabsetPanel()` from several `tabPanel()` components;
+* construct a `{bslib}` `navset_card_tab()` from several `nav_panel()` components;
 * connect outputs in different tabs to shared reactive calculations;
 * use the selected tab as a reactive input;
-* move the user to a tab with `updateTabsetPanel()`; and
+* move the user to a panel with `nav_select()`; and
 * show controls only when they are relevant to the active tab.
 
 ::: {.callout-important}
@@ -37,6 +37,8 @@ Download the [tutorial starter app](../tutorial/starter_app.R) and [household en
 Make a copy of `starter_app.R` called `workshop_app.R`. Work in the copy so that you can compare your code with the supplied starter later.
 
 Run the app once before changing anything.
+
+The app uses `library(bslib)`. All layout components in this workshop are standard functions documented on the [{bslib} website](https://rstudio.github.io/bslib/).
 
 ::: {.callout-tip}
 Run the app after every stage. If it stops working, the most recent edit is the first place to look.
@@ -79,17 +81,17 @@ inputs ──> scenario_data() ──> metrics() ──> text/table outputs
 Reusing these reactives gives every tab the same scenario and avoids duplicated calculation code.
 :::
 
-## 2. Reconstruct the tabset (7 minutes)
+## 2. Reconstruct the tabbed navset (7 minutes)
 
-Inside `mainPanel()`, replace the existing `tabsetPanel()` with an empty four-tab structure:
+In the body of `page_sidebar()`, replace the existing `navset_card_tab()` with an empty four-panel structure:
 
 ~~~r
-tabsetPanel(
+navset_card_tab(
   id = "dashboard_tab",
-  tabPanel("Why invest"),
-  tabPanel("Energy balance"),
-  tabPanel("Cautious case"),
-  tabPanel("Evidence")
+  nav_panel("Why invest", value = "sales"),
+  nav_panel("Energy balance", value = "neutral"),
+  nav_panel("Cautious case", value = "cautious"),
+  nav_panel("Evidence", value = "evidence")
 )
 ~~~
 
@@ -97,37 +99,41 @@ Run the app and check that:
 
 * four tabs appear;
 * clicking a tab changes the selected panel; and
-* the sidebar remains visible because it sits outside the tabset.
+* the sidebar remains visible because it belongs to `page_sidebar()`, outside the navset.
 
 Add a short placeholder to each of the first three panels. Use indentation to make the UI hierarchy easy to see.
 
 ::: {.unilur-solution}
 ~~~r
-tabsetPanel(
+navset_card_tab(
   id = "dashboard_tab",
-  tabPanel(
+  nav_panel(
     "Why invest",
+    value = "sales",
     h3("Sales view"),
     p("This tab will be completed in the tutorial.")
   ),
-  tabPanel(
+  nav_panel(
     "Energy balance",
+    value = "neutral",
     h3("Neutral view"),
     p("This tab will show the daily energy balance.")
   ),
-  tabPanel(
+  nav_panel(
     "Cautious case",
+    value = "cautious",
     h3("Cautious view"),
     p("This tab will be completed in the tutorial.")
   ),
-  tabPanel(
+  nav_panel(
     "Evidence",
+    value = "evidence",
     h3("Calculation trace")
   )
 )
 ~~~
 
-The `id` makes the selected tab available in the server as `input$dashboard_tab`. Each tab's title is its value unless a separate `value` is supplied.
+The navset `id` makes the selected panel available in the server as `input$dashboard_tab`. Explicit values keep the server logic independent of the visible labels.
 :::
 
 ## 3. Connect the neutral tab to existing outputs (8 minutes)
@@ -214,7 +220,7 @@ Change the date range and confirm that the first timestamp in the trace changes.
 
 Because the tabset has an ID, Shiny stores the selected tab in `input$dashboard_tab`.
 
-Add this immediately before `tabsetPanel()`, then render its value in the server:
+Add this immediately before `navset_card_tab()`, then render its value in the server:
 
 ~~~r
 verbatimTextOutput("active_tab")
@@ -224,44 +230,40 @@ output$active_tab <- renderText({
 })
 ~~~
 
-Now add an action button near the top of `mainPanel()`, immediately before `tabsetPanel()`:
+Now add an action button in the page body, immediately before `navset_card_tab()`:
 
 ~~~r
 actionButton("show_evidence", "Inspect the calculation")
 ~~~
 
-Use `observeEvent()` and `updateTabsetPanel()` to move to the Evidence tab when the button is clicked.
+Use `observeEvent()` and `nav_select()` to move to the Evidence panel when the button is clicked.
 
 ::: {.unilur-solution}
 Add this to `server()`:
 
 ~~~r
 observeEvent(input$show_evidence, {
-  updateTabsetPanel(
-    session,
-    inputId = "dashboard_tab",
-    selected = "Evidence"
-  )
+  nav_select("dashboard_tab", selected = "evidence")
 })
 ~~~
 
 There are two reactive directions here:
 
 * a user click changes `input$dashboard_tab`; and
-* the server can change the selected tab with `updateTabsetPanel()`.
+* the server can change the selected panel with `nav_select()`.
 
-The `selected` value must match the tab title or its explicit `value`.
+The `selected` value must match the panel's explicit `value`.
 :::
 
 Test the button from each of the other three tabs.
 
 ## 6. Show a control only on the relevant tab (6 minutes)
 
-Add this inside `sidebarPanel()`:
+Add this inside `sidebar()`:
 
 ~~~r
 conditionalPanel(
-  condition = "input.dashboard_tab == 'Evidence'",
+  condition = "input.dashboard_tab == 'evidence'",
   sliderInput(
     "trace_rows",
     "Rows in calculation trace",
@@ -314,13 +316,19 @@ A tab is a container, not a separate app. The dashboard should have one input st
 
 ## Extension
 
-Give each tab a short internal value that is independent of its displayed label:
+Replace `navset_card_tab()` temporarily with another standard `{bslib}` navset:
 
 ~~~r
-tabPanel("Energy balance", value = "neutral", ...)
+navset_pill(
+  id = "dashboard_tab",
+  nav_panel("Why invest", value = "sales", ...),
+  nav_panel("Energy balance", value = "neutral", ...),
+  nav_panel("Cautious case", value = "cautious", ...),
+  nav_panel("Evidence", value = "evidence", ...)
+)
 ~~~
 
-Update the conditional panel and `updateTabsetPanel()` call to use the new values. This makes it possible to change the visible tab labels later without breaking server logic.
+The panel contents and server code do not change. This separation between navigation, content and calculation is one advantage of standard `{bslib}` components.
 
 ## Workshop check-out
 

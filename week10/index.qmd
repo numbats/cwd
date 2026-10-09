@@ -449,17 +449,17 @@ The narrative is calculated, not typed around a screenshot.
 
 # Turn calculations into three views
 
-## Tabs separate questions—not datasets
+## Navigation panels separate questions—not datasets
 
 ```r
-tabsetPanel(
+navset_card_tab(
   id = "frame",
-  tabPanel("Why invest", plotOutput("sales_plot"),
-           textOutput("sales_message")),
-  tabPanel("Energy balance", plotOutput("neutral_plot"),
-           textOutput("neutral_message")),
-  tabPanel("Cautious case", plotOutput("sceptic_plot"),
-           textOutput("sceptic_message"))
+  nav_panel("Why invest", plotOutput("sales_plot"),
+            textOutput("sales_message")),
+  nav_panel("Energy balance", plotOutput("neutral_plot"),
+            textOutput("neutral_message")),
+  nav_panel("Cautious case", plotOutput("sceptic_plot"),
+            textOutput("sceptic_message"))
 )
 ```
 
