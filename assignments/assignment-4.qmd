@@ -1,6 +1,6 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Assignment 4: Turning analysis interactive"
+subtitle: "Assignment 4: Creating an interactive data product"
 author: "Michael Lydeamore"
 date: today
 format:
@@ -27,12 +27,12 @@ htmltools::includeCSS("tutorial.css")
 
 ## Objectives
 
-Write an R package including:
+Create an interactive data product for a clearly defined user and question. The product will include:
 
-- Data that you have analysed
-- A shiny app to explore data
-- Full documentation
-- `roxygen2` website
+- a reproducibly prepared dataset;
+- a Shiny app that supports meaningful exploration;
+- an installable and documented R package; and
+- a published `pkgdown` website.
 
 ::: callout-important
 This is an **individual assignment**.
@@ -40,65 +40,101 @@ This is an **individual assignment**.
 
 ## Output format
 
-- Published website, using `pkgdown`
 - An installable R package on GitHub
+- A published documentation website, using `pkgdown`
+- A recorded screen-and-voice technical walkthrough
+- An AI-use declaration in the repository README
 
 ## Instructions
 
-In this assessment, you will be turning the analysis you have used for Assignments 1, 2 and 3 into an R package, including a Shiny app and a `roxygen2`-created website.
+In this assessment, you will create an R package containing data, at least one useful data-processing or summary function, and a Shiny app. You will document the package using `roxygen2` and publish its documentation using `pkgdown`.
 
 ::: {.callout-important}
 
-You must join the GitHub classroom here: [https://classroom.github.com/a/8aFXJE-7](https://classroom.github.com/a/8aFXJE-7). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
+You must join the GitHub Classroom assignment here: [https://classroom.github.com/a/8aFXJE-7](https://classroom.github.com/a/8aFXJE-7). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
 
 :::
 
-### Part A: The R Package (15 marks)
+### Choosing data and a purpose
 
-The template provided in the GitHub classroom is _blank_. You will need to set up the relevant structure for a package either manually or using the `usethis` package. The final repository must have:
+Choose one of the following:
 
-* A README file with relevant information (2 mark)
-* A license (1 mark)
-* An installable R package using the `remotes` package (1 mark)
+* a dataset used in the unit materials;
+* a public dataset related to the topic of your Assignment 2 report; or
+* another suitable public dataset.
 
-The R package must have:
+You are **not** required to obtain the original data from the article used in Assignment 2 or reproduce that article's analysis. Clearly identify the source of your chosen data and comply with any licence or attribution requirements.
 
-* A shiny app inside the `inst` folder (1 mark)
-* A function to launch the shiny app that is exported (1 mark)
-* The data used by the shiny app, including any cleaning, contained in `data-raw` (1 mark)
-* At least one vignette (3 marks)
-* Completed DESCRIPTION file, including your name, package name and short description (2 marks)
+Define an intended user and a specific question that your app will help that user investigate. The purpose is not to add as many controls or outputs as possible. The interactions should help the intended user explore the data and reach an informed interpretation.
 
-Including extra functions that are useful to the package (and reduce repetition) may be granted extra marks, although they are not necessary.
+### AI-use declaration
 
-All functions and data objects must be documented clearly using `roxygen2` (3 marks)
+Include a short AI-use declaration in your repository README, whether or not you used generative AI while preparing the assignment. The declaration must cover any AI assistance with planning, writing, code, debugging, analysis, figures, styling or documentation.
 
+If you did not use generative AI, write:
 
-### Part B: The Shiny App (11 marks)
+> **Generative AI declaration:** I did not use generative AI tools in preparing this assignment.
 
-You need to create a shiny app to help users explore the dataset you have been working on, and find similar conclusions to your analysis. The shiny app must:
+If you did use generative AI, name the tool or tools and describe the specific tasks for which you used them. For example:
 
-* Use the dataset from your package (don't use `read.csv` inside the app) (1 mark)
-* Present _some level_ of interactivity to the user using at least one selector/button/input field (2 marks)
-* Use these interactivities to change the displayed output(s) (2 marks)
-* Include a description of what the fields mean (2 marks)
-* Include a description of how to interpret the outputs (2 marks)
-* Have some styling beyond the default white background / grey well panel (2 marks)
+> **Generative AI declaration:** I used ChatGPT to suggest alternatives for validating an empty selection and to help diagnose a package installation error. I checked and revised all generated code and text.
 
-Remember, don't just include interactivity for the sake of it. It needs to _add_ something to the message the users could otherwise receive from a static picture. The best interactive plots help users explore, and reach a guided conclusion.
+You remain responsible for understanding, checking and revising all submitted work. Do not include private, confidential or restricted material in prompts. The declaration is a submission requirement but does not attract separate marks.
+
+### Part A: The R package (11 marks)
+
+The template provided in GitHub Classroom is _blank_. You will need to set up the relevant structure for a package either manually or using the `usethis` package. The final repository must have:
+
+* A README that explains the package's purpose, data, installation and how to launch the app (1 mark)
+* A licence and a completed DESCRIPTION file, including your name, package name, description and dependencies (1 mark)
+* An R package that can be installed from GitHub and for which `devtools::check()` reports no errors (2 marks)
+* Reproducible scripts in `data-raw` that import and prepare the data included in the package (2 marks)
+* A Shiny app inside the `inst` folder and an exported function that launches it (1 mark)
+* At least one meaningful exported data-processing or summary function, in addition to the app-launching function, that is used by the app or vignette (2 marks)
+* Clear `roxygen2` documentation for all exported functions and included data objects (2 marks)
+
+### Part B: The Shiny app (11 marks)
+
+Create a Shiny app that helps the intended user investigate the question you have defined. The app must:
+
+* Clearly identify its intended user and question (1 mark)
+* Use data included in the installed package rather than reading a CSV or other external data file when the app runs (1 mark)
+* Use one or more inputs to change the displayed output in a way that meaningfully supports the question (3 marks)
+* Explain the fields and how to use the available controls (2 marks)
+* Explain how to interpret the outputs and connect them to the app's question (2 marks)
+* Handle at least one empty, invalid or otherwise weak state with an informative message (1 mark)
+* Use purposeful styling that improves readability beyond the default appearance (1 mark)
+
+Remember, don't include interactivity for its own sake. It should add something that the intended user could not obtain as effectively from a static display.
 
 ::: {.callout-tip}
-You are free to use whatever shiny templates you like (such as `shinydashboard`), or just the default. Note that simply including `shinydashboard` will not get you full styling marks!
+You are free to use whatever Shiny templates you like (such as `shinydashboard`), or just the default. Note that simply including `shinydashboard` will not get you full styling marks!
 :::
 
 
-### Part C: The `pkgdown` site (6 marks)
+### Part C: The `pkgdown` site (3 marks)
 
-You should have a `pkgdown` site accessible from a public URL (1 mark).
+Publish a `pkgdown` site that makes the package understandable and usable by someone encountering it for the first time. It must have:
 
-* Link to the `pkgdown` site present in the README file (1 mark)
-* Working function documentation (2 marks)
-* A descriptive homepage for the pkgdown site (1 mark)
-* Vignettes showing on the web (1 mark)
+* A working public URL linked from the repository README (1 mark)
+* Working reference pages for the package's functions and data (1 mark)
+* At least one vignette, visible on the site, that shows how to install the package, launch and use the app, and interpret its outputs (1 mark)
 
-Overall grade: 15 + 11 + 6 = 32 marks
+### Part D: Recorded technical walkthrough (7 marks)
+
+Record an individual **5--7 minute** screen-and-voice walkthrough of your submitted package and app. The recording should be a single continuous take. Show the actual package, code and running app rather than using a separate slide deck.
+
+Upload the recording as a video file with your assignment submission on Moodle.
+
+Your walkthrough must:
+
+* load the package and launch the app successfully (1 mark);
+* identify the intended user and question, then demonstrate how an input changes an output to help investigate that question (1 mark);
+* trace one input through the relevant reactive code to the displayed output (2 marks);
+* explain either your meaningful exported function or your reproducible data-preparation pipeline (1 mark);
+* demonstrate one empty, invalid or otherwise weak state and explain how the app handles it (1 mark); and
+* interpret one finding from the app and identify one important limitation (1 mark).
+
+The walkthrough should be logically organised, clearly explained and within the time limit.
+
+**Maximum grade**: 11 + 11 + 3 + 7 = 32 marks
