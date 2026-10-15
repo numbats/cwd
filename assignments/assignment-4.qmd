@@ -51,7 +51,7 @@ In this assessment, you will create an R package containing data, at least one u
 
 ::: {.callout-important}
 
-You must join the GitHub Classroom assignment here: [https://classroom.github.com/a/8aFXJE-7](https://classroom.github.com/a/8aFXJE-7). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
+You must join the GitHub Classroom assignment here: [https://classroom50.org/ETC5523-2026/etc5523/assignments/assignment-4/accept](https://classroom50.org/ETC5523-2026/etc5523/assignments/assignment-4/accept). **If you cannot find your name in the list of students, please contact the lecturer directly before accepting the assignment.**
 
 :::
 
