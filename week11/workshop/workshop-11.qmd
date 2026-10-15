@@ -1,6 +1,6 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Workshop 11: From reference documentation to a guide"
+subtitle: "Workshop 11: Trace, package and audit a Shiny app"
 author: "Michael Lydeamore"
 date: "Week 11"
 format:
@@ -16,88 +16,242 @@ format:
 
 By the end of this workshop, you will be able to:
 
-* distinguish reference documentation from a task-based vignette;
-* structure a guide around a reader's problem; and
-* explain code, output and interpretation as one connected sequence.
+* use `reactlog` to inspect a Shiny dependency graph;
+* replace repeated calculations with one shared reactive expression;
+* add a package function that launches a Shiny app; and
+* audit an app before web deployment.
+
+## 1. Clone and run the app (5 minutes)
+
+Clone the workshop repository and open `wplshare.Rproj`:
+
+```bash
+git clone https://github.com/numbats/etc5523-wpl-share.git
+cd etc5523-wpl-share
+```
+
+Install any packages you do not already have:
+
+```r
+install.packages(c(
+  "bslib", "devtools", "dplyr", "ggplot2", "reactlog", "rsconnect", "shiny"
+))
+```
+
+Start a fresh R session, enable reactive logging, and run the app:
+
+```r
+reactlog::reactlog_enable()
+shiny::runApp("inst/app")
+```
+
+Change both inputs and check the number, plot and table.
+
+## 2. Inspect the current graph (10 minutes)
+
+With the app running, open the reactive log:
+
+* macOS: **Cmd + F3**
+* Windows/Linux: **Ctrl + F3**
+
+Find `input$season`, `input$minimum_runs` and the four outputs. The log may also
+contain browser and layout nodes; use search or double-click an output to isolate
+its dependency family.
+
+Then return to the app and set **Minimum runs** to exactly 150 in season
+2024/25. Compare the number, plot and table before inspecting `app.R`.
+
+Answer:
+
+1. Why does the table disagree with the other outputs?
+2. Why do both inputs connect directly to every output in `reactlog`?
 
 ::: {.callout-note}
-## Choose a feature
-
-Use one meaningful task supported by your package. If you do not have one ready, use this example: a package contains `solar_summary(data, station)`, which returns annual maximum-temperature summaries for a selected weather station.
+If the keyboard shortcut does not work, stop the app and run
+`shiny::reactlogShow()` in the console.
 :::
 
-## 1. Quickwrite: knowing is not doing (5 minutes)
+::: {.unilur-solution}
+## What the first run reveals
 
-Write about the difference between knowing what a function's arguments mean and knowing how to use the function to answer a real question.
+The number and plot use `runs >= input$minimum_runs`, while the table uses
+`runs > input$minimum_runs`. JL Jonassen has exactly 150 runs in 2024/25, so the
+table omits a batter counted and plotted elsewhere.
 
-## 2. Write the reader's question (5 minutes)
+Each output contains its own filter and reads both inputs directly. There is no
+shared reactive node between the inputs and outputs.
+:::
 
-Write one question your vignette will help a reader answer. It should describe a task or decision, not a package feature.
+## 3. Put the filter in one place (15 minutes)
 
-Prefer:
+Add this labelled reactive expression at the top of `server()`:
 
-> How can I compare annual temperature extremes for one station?
+```r
+selected_batters <- reactive({
+  batters |>
+    filter(
+      season == input$season,
+      runs >= input$minimum_runs
+    )
+}, label = "selected_batters")
+```
 
-over:
+Replace the repeated filtering code in all four outputs with calls to
+`selected_batters()`.
 
-> How do I use `solar_summary()`?
+Run the app and repeat the 150-run test. Then stop the app, clear the old log,
+run it again, and change one input:
 
-Then state what the reader should already know and have before beginning.
+```r
+shiny::reactlogReset()
+shiny::runApp("inst/app")
+```
 
-## 3. Build the vignette spine (10 minutes)
-
-Create an outline with these roles, using informative headings rather than copying the role names:
-
-1. the problem and what the reader will accomplish;
-2. setup and data requirements;
-3. the smallest meaningful first result;
-4. interpretation of that result;
-5. one extension or variation; and
-6. limitations and a useful next step.
-
-Check that each section creates a reason to read the next one.
-
-## 4. Draft one complete section (12 minutes)
-
-Choose the section containing the first meaningful result. Write 150--200 words around a short code example.
-
-Your section must:
-
-* tell the reader why they are about to run the code;
-* show only code needed at that moment;
-* state what kind of output to expect;
-* interpret one feature of the output; and
-* connect the result back to the reader's question.
-
-Do not make the code carry the entire explanation.
-
-## 5. Repair an error message (4 minutes)
-
-Replace this message with one that supports recovery:
-
-> `Error in solar_summary: bad station`
-
-Assume the user typed a station name that is not present. The package can display the invalid name and direct the user to `available_stations()`.
-
-## 6. Reader path test (6 minutes)
-
-Exchange the outline and drafted section. The reader answers:
-
-* What will I be able to do by the end?
-* Where do I first receive a useful result?
-* Does the prose tell me what the result means?
-* What would I do next?
-
-Revise one heading or transition.
-
-## 7. Writer's note (3 minutes)
-
-Complete: "Reference documentation describes ______; a vignette helps a reader ______."
+Reopen `reactlog`. Identify which nodes depend on `selected_batters` and step
+through what happens after the input changes.
 
 ::: {.unilur-solution}
-## Instructor notes and example error
+## Refactored server
 
-> Station `Melborne` was not found. Run `available_stations()` to see valid station names, then try again.
+```r
+server <- function(input, output, session) {
+  selected_batters <- reactive({
+    batters |>
+      filter(
+        season == input$season,
+        runs >= input$minimum_runs
+      )
+  }, label = "selected_batters")
 
-Reference documentation is organised around functions and objects; a vignette is normally organised around a reader's goal. Both are necessary, but they should not be forced to do the same job.
+  output$number_shown <- renderText({
+    nrow(selected_batters())
+  })
+
+  output$leading_batter <- renderText({
+    selected <- selected_batters()
+    req(nrow(selected) > 0)
+    selected$striker[which.max(selected$runs)]
+  })
+
+  output$batters_plot <- renderPlot({
+    selected_batters() |>
+      ggplot(aes(
+        x = dot_percent,
+        y = boundary_percent,
+        size = balls_faced
+      )) +
+      geom_point(colour = "#006DAE", alpha = 0.7) +
+      labs(
+        x = "Dot-ball percentage",
+        y = "Boundary percentage",
+        size = "Balls faced"
+      ) +
+      theme_minimal(base_size = 14)
+  })
+
+  output$batters_table <- renderTable({
+    selected_batters() |>
+      arrange(desc(runs)) |>
+      select(striker, batting_team, runs, balls_faced) |>
+      head(5)
+  })
+}
+```
+
+Both inputs now feed `selected_batters`; all four outputs depend on that shared
+node. When an input changes, the shared reactive and its downstream outputs are
+invalidated.
+:::
+
+## 4. Make the app launchable from the package (12 minutes)
+
+The repository already has the structure of an R package. Files under
+`inst/app` will be installed with it.
+
+Create `R/run_app.R`, then add a documented, exported `run_app()` function:
+
+```r
+usethis::use_r("run_app")
+```
+
+The function should:
+
+1. locate the installed `app` directory with `system.file()`; and
+2. pass that directory to `shiny::runApp()`.
+
+Generate the documentation, install the package and test the launcher:
+
+```r
+devtools::document()
+devtools::install()
+wplshare::run_app()
+```
+
+Why would a path such as `/Users/name/wpl-share/inst/app` fail for another
+package user?
+
+::: {.unilur-solution}
+## Package launcher
+
+```r
+#' Run the WPL batting explorer
+#'
+#' @return No return value; called for its side effect of launching the app.
+#' @export
+run_app <- function() {
+  app_dir <- system.file("app", package = "wplshare")
+  shiny::runApp(app_dir)
+}
+```
+
+`inst/app` becomes `app` at the top level of the installed package.
+`system.file()` finds that location in the active R library rather than assuming
+where the source repository exists on a particular computer.
+:::
+
+## 5. Audit the web deployment (10 minutes)
+
+Treat the hosting service as a clean Linux computer that receives only the app
+bundle. Mark each item **ready**, **not ready**, or **not applicable**:
+
+* all required files are inside `inst/app`;
+* file paths are relative and match the exact case of the file names;
+* package dependencies can be detected from the app code;
+* there is no `install.packages()` call in the app;
+* no password, token or secret is stored in the repository;
+* every possible input state produces a useful response; and
+* any durable writes use storage outside the app's local filesystem.
+
+Ask `rsconnect` what it detects:
+
+```r
+rsconnect::appDependencies("inst/app")
+```
+
+Which audit item does the current app handle least well? If time permits, make
+one improvement and rerun the app.
+
+::: {.unilur-solution}
+## Audit findings
+
+The data are bundled under `inst/app/data`, paths are relative, packages are
+loaded explicitly, and the source contains no installation calls or secrets.
+
+The empty selection is poorly communicated. `req()` prevents an error in the
+leader box but leaves it blank. One possible replacement is:
+
+```r
+output$leading_batter <- renderText({
+  selected <- selected_batters()
+
+  if (nrow(selected) == 0) {
+    return("No batter meets this threshold")
+  }
+
+  selected$striker[which.max(selected$runs)]
+})
+```
+
+A deployed app should use a database, object store or other persistent service
+for durable writes because hosted instances can restart or be replaced.
 :::

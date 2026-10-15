@@ -1,0 +1,18 @@
+Package: wplshare
+Title: Explore Women's Premier League Batting
+Version: 0.0.0.9000
+Authors@R: 
+    person("Michael", "Lydeamore", email = "michael.lydeamore@monash.edu",
+           role = c("aut", "cre"))
+Description: A teaching package containing a small Shiny application for
+    exploring batting patterns in the Women's Premier League.
+License: MIT
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports:
+    shiny
+Suggests:
+    bslib,
+    dplyr,
+    ggplot2,
+    reactlog

@@ -1,34 +1,34 @@
 ---
 pagetitle: "ETC5523: Communicating with Data"
-subtitle: "Automated tools for package development and documentation"
+subtitle: "From a reactive app to an audience"
 author: "Michael Lydeamore"
 email: "michael.lydeamore@monash.edu"
 date: "Week 11"
 department: "Department of Econometrics and Business Statistics"
 unit-url: "cwd.numbat.space"
 footer: "ETC5523 Week 11"
-format: 
+format:
   revealjs:
     logo: images/monash-one-line-black-rgb.png
     slide-number: c
     multiplex: false
     theme: ../assets/monash.scss
     show-slide-number: all
-    show-notes: true
     controls: true
     width: 1280
     height: 720
     css: [../assets/tachyons-addon.css, ../assets/custom.css]
     include-after-body: "../assets/after-body.html"
     incremental: true
+  powerpoint-not-fullscreen-revealjs:
+    output-file: "week11-ppt.html"
 execute:
   echo: true
-  eval: true
+  eval: false
 ---
 
-```{r, include = FALSE}
-current_file <- knitr::current_input()
-basename <- gsub(".[Rq]md$", "", current_file)
+```{r}
+#| include: false
 
 knitr::opts_chunk$set(
   fig.align = "center",
@@ -36,8 +36,7 @@ knitr::opts_chunk$set(
   fig.retina = 3,
   warning = FALSE,
   message = FALSE,
-  cache = FALSE,
-  cache.path = "cache/"
+  cache = FALSE
 )
 ```
 
@@ -53,695 +52,614 @@ Lecturer: *`r rmarkdown::metadata$author`*
 <br>
 
 <ul class="fa-ul">
-
-<li>
-
-[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`
-
-</li>
-
-<li>
-
-[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`
-
-</li>
-
-<li>
-
-[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a>
-
-</li>
-
+<li>[<i class="fas fa-envelope"></i>]{.fa-li}`r rmarkdown::metadata$email`</li>
+<li>[<i class="fas fa-calendar-alt"></i>]{.fa-li} `r rmarkdown::metadata$date`</li>
+<li>[<i class="fa-solid fa-globe"></i>]{.fa-li}<a href="https://`r rmarkdown::metadata[["unit-url"]]`">`r rmarkdown::metadata[["unit-url"]]`</a></li>
 </ul>
+:::
+
+## By the end of today
+
+::: {.callout-important}
+
+You should be able to:
+
+1. use one reactive expression to keep several outputs consistent;
+2. explain what changes when an app moves from your computer to someone else's; and
+3. choose between an R package and a hosted web app for a particular audience.
+
+:::
+
+# One calculation, several outputs {.center background-color="#006DAE"}
+
+## A small app with one question
+
+> For a selected WPL season and run threshold, which leading batters remain,
+> and how did they score?
+
+The app will show:
+
+* how many batters meet the conditions;
+* the leading run-scorer;
+* a plot of batting patterns; and
+* a small table.
+
+All four claims should describe the **same selection**.
+
+## Demo 1: start with repeated calculations {.scrollable .smaller}
+
+```r
+library(shiny)
+library(bslib)
+library(dplyr)
+library(ggplot2)
+
+batters <- read.csv("data/wpl_batters.csv")
+
+ui <- page_sidebar(
+  title = "WPL batting explorer",
+  sidebar = sidebar(
+    selectInput(
+      "season", "Choose a season",
+      choices = sort(unique(batters$season))
+    ),
+    sliderInput(
+      "minimum_runs", "Minimum runs",
+      min = 0,
+      max = max(batters$runs),
+      value = 150,
+      step = 25
+    )
+  ),
+  layout_columns(
+    value_box(
+      title = "Batters shown",
+      value = textOutput("number_shown")
+    ),
+    value_box(
+      title = "Leading run-scorer",
+      value = textOutput("leading_batter")
+    )
+  ),
+  plotOutput("batters_plot"),
+  tableOutput("batters_table")
+)
+
+server <- function(input, output, session) {
+  output$number_shown <- renderText({
+    batters |>
+      filter(
+        season == input$season,
+        runs >= input$minimum_runs
+      ) |>
+      nrow()
+  })
+
+  output$leading_batter <- renderText({
+    filtered <- batters |>
+      filter(
+        season == input$season,
+        runs >= input$minimum_runs
+      )
+
+    req(nrow(filtered) > 0)
+    filtered$striker[which.max(filtered$runs)]
+  })
+
+  output$batters_plot <- renderPlot({
+    batters |>
+      filter(
+        season == input$season,
+        runs >= input$minimum_runs
+      ) |>
+      ggplot(aes(
+        x = dot_percent,
+        y = boundary_percent,
+        size = balls_faced
+      )) +
+      geom_point(colour = "#006DAE", alpha = 0.7) +
+      labs(
+        x = "Dot-ball percentage",
+        y = "Boundary percentage",
+        size = "Balls faced"
+      ) +
+      theme_minimal(base_size = 14)
+  })
+
+  output$batters_table <- renderTable({
+    batters |>
+      filter(
+        season == input$season,
+        runs > input$minimum_runs
+      ) |>
+      arrange(desc(runs)) |>
+      select(striker, batting_team, runs, balls_faced) |>
+      head(5)
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Duplication creates several sources of truth
+
+```r
+# Number and plot
+runs >= input$minimum_runs
+
+# Table
+runs > input$minimum_runs
+```
+
+At an exact threshold, the app disagrees with itself.
+
+## Let the running app draw its dependencies
+
+Start a fresh R session, then enable the reactive log before running the app:
+
+```r
+library(reactlog)
+reactlog_enable()
+
+shiny::runApp("inst/app")
+```
+
+Change each input once, then open the visualiser:
+
+* macOS: **Cmd + F3**
+* Windows/Linux: **Ctrl + F3**
+
+The full log may also contain browser and layout nodes. Filter or double-click a
+named output to isolate the part of the graph we are discussing.
+
+## Before refactoring: inputs feed every output
+
+```text
+input$season -------+---> number
+                    +---> leader
+input$minimum_runs -+---> plot
+                    +---> table
+```
+
+## Name the shared calculation
+
+```r
+selected_batters <- reactive({
+  batters |>
+    filter(
+      season == input$season,
+      runs >= input$minimum_runs
+    )
+}, label = "selected_batters")
+```
+
+* `reactive()` records the calculation and its reactive dependencies.
+* `label = "selected_batters"` supplies a readable node name for `reactlog`.
+* Calling `selected_batters()` retrieves its current value.
+
+## Call a reactive expression with parentheses
+
+::: columns
+::: {.column width="48%"}
+### Definition
+
+```r
+selected_batters <- reactive({
+  # calculation
+})
+```
+:::
+
+::: {.column width="48%"}
+### Use
+
+```r
+selected_batters()
+```
+:::
+:::
+
+Without `()`, you have the reactive object—not the data it currently returns.
+
+## Several outputs can consume the same value
+
+```r
+output$number_shown <- renderText({
+  nrow(selected_batters())
+})
+
+output$leading_batter <- renderText({
+  selected <- selected_batters()
+  selected$striker[which.max(selected$runs)]
+})
+
+output$batters_table <- renderTable({
+  selected_batters() |>
+    arrange(desc(runs)) |>
+    select(striker, batting_team, runs)
+})
+```
+
+## Demo 2: replace `server()` with this version {.scrollable .smaller}
+
+```r
+server <- function(input, output, session) {
+  selected_batters <- reactive({
+    batters |>
+      filter(
+        season == input$season,
+        runs >= input$minimum_runs
+      )
+  }, label = "selected_batters")
+
+  output$number_shown <- renderText({
+    nrow(selected_batters())
+  })
+
+  output$leading_batter <- renderText({
+    selected <- selected_batters()
+    req(nrow(selected) > 0)
+    selected$striker[which.max(selected$runs)]
+  })
+
+  output$batters_plot <- renderPlot({
+    selected_batters() |>
+      ggplot(aes(
+        x = dot_percent,
+        y = boundary_percent,
+        size = balls_faced
+      )) +
+      geom_point(colour = "#006DAE", alpha = 0.7) +
+      labs(
+        x = "Dot-ball percentage",
+        y = "Boundary percentage",
+        size = "Balls faced"
+      ) +
+      theme_minimal(base_size = 14)
+  })
+
+  output$batters_table <- renderTable({
+    selected_batters() |>
+      arrange(desc(runs)) |>
+      select(striker, batting_team, runs, balls_faced) |>
+      head(5)
+  })
+}
+```
+
+## The dependency graph is the explanation
+
+```text
+input$season -------+
+                    +---> selected_batters() --+---> number
+input$minimum_runs -+                           +---> leader
+                                                +---> plot
+                                                +---> table
+```
+
+Shiny records a dependency whenever reactive code reads an input or another
+reactive value.
+
+## Reopen `reactlog` after refactoring
+
+Stop the app, clear the old history and run the revised version:
+
+```r
+shiny::reactlogReset()
+shiny::runApp("inst/app")
+```
+
+Change one input and reopen `reactlog`.
+
+. . .
+
+The graph should now contain one labelled `selected_batters` node between the
+two inputs and all four outputs.
+
+## Read the animation from left to right
+
+When `input$minimum_runs` changes, step through the reactive history:
+
+1. the input changes;
+2. `selected_batters` becomes invalid;
+3. its dependent outputs become invalid;
+4. the shared reactive recalculates when needed; and
+5. the outputs consume its new value.
+
+## Predict before running
+
+The user changes `input$minimum_runs`.
+
+. . .
+
+1. `selected_batters()` is invalidated.
+2. Each output that called it is invalidated.
+3. When an output is needed, the shared calculation runs again.
+4. All outputs receive the same selected rows.
+
+## Why share a reactive?
+
+Use a shared reactive when several consumers need the same value.
+
+::: {.incremental}
+
+* **Consistency:** outputs cannot quietly apply different rules.
+* **Legibility:** the calculation receives a meaningful name.
+* **Maintenance:** one rule changes in one place.
+* **Efficiency:** Shiny can reuse the current result until a dependency changes.
+
+:::
+
+## Do not make everything reactive
+
+```r
+# Loaded once when the R process starts
+batters <- read.csv("data/wpl_batters.csv")
+
+server <- function(input, output, session) {
+  # Different for each user session
+  selected_batters <- reactive({
+    batters |>
+      filter(season == input$season)
+  })
+}
+```
+
+* Code outside `server()` runs once for the R process and is shared across sessions.
+* Code inside `server()` is created separately for each user session.
+
+## A function and a reactive solve different problems
+
+::: columns
+::: {.column width="48%"}
+### Function
+
+```r
+select_batters <- function(data,
+                           season_value,
+                           minimum_runs) {
+  data |>
+    filter(
+      season == season_value,
+      runs >= minimum_runs
+    )
+}
+```
+
+Explicit inputs; easy to test outside Shiny.
+:::
+
+::: {.column width="48%"}
+### Reactive expression
+
+```r
+selected_batters <- reactive({
+  select_batters(
+    batters,
+    input$season,
+    input$minimum_runs
+  )
+})
+```
+
+Connects the function to the current session.
+:::
+:::
+
+## Empty data are still a possible value
+
+```r
+output$leading_batter <- renderText({
+  selected <- selected_batters()
+
+  if (nrow(selected) == 0) {
+    return("No batter meets this threshold")
+  }
+
+  selected$striker[which.max(selected$runs)]
+})
+```
+
+## Checkpoint
+
+Which object should own the filter?
+
+1. Each output, so it is self-contained
+2. The UI, because the inputs live there
+3. One reactive expression used by every relevant output
+4. A global variable that is overwritten whenever an input changes
+
+. . .
+
+**3.** It represents the current selection without duplicating the rule or
+mixing sessions.
+
+# From your computer to someone else {.center background-color="#006DAE"}
+
+## “Share the app” is incomplete
+
+Who is the audience?
+
+What software do they have?
+
+Who will run R?
+
+Who controls access?
+
+Who maintains the dependencies and data connections?
+
+## Two useful delivery routes
+
+| | R package | Hosted web app |
+|---|---|---|
+| Primary audience | R users | Browser users |
+| R process runs on | User's computer | Hosting server |
+| User receives | Installable software | A URL |
+| User can reuse functions | Yes | Only through the interface |
+| Author maintains | Package releases | A running service |
+
+## A package puts the app beside reusable code
+
+```text
+wplcommunicate/
+├── DESCRIPTION
+├── R/
+│   ├── select_batters.R
+│   └── run_app.R
+└── inst/
+    └── app/
+        ├── app.R
+        └── data/
+            └── wpl_batters.csv
+```
+
+## `inst/` ships non-R files with the package
+
+During installation, files under `inst/` are copied into the installed package.
+
+```r
+run_app <- function() {
+  app_dir <- system.file(
+    "app",
+    package = "wplcommunicate"
+  )
+
+  shiny::runApp(app_dir)
+}
+```
+
+`system.file()` finds the app after installation, wherever the package lives.
+
+## A hosted app moves the R process
+
+::: {.center .f2}
+
+**Local package**<br>
+browser ↔ R on the user's computer
 
 <br>
-:::
 
-
-## {#aim}
-
-::: {.callout-important }
-
-## Aim
-
-* Document your functions
-* Create vignettes for your package
-* Distribute your package
+**Hosted app**<br>
+user's browser ↔ network ↔ R on a server
 
 :::
 
-::: {.callout-tip }
-
-## Why
-
-* Documentation informs users of how to use your package 
-* Adopting best practice development workflow will make package development easier 
-* Distributing your package is needed for adoption of your package by others
-
-
-:::
-
-# Recap of package development
-
-## Communicating about your [R package]{.monash-blue}
-
-- What is the [**goal**]{.monash-blue} of the package?
-- [**What**]{.monash-blue} does your function(s) do? 
-- [**How**]{.monash-blue} do we use it?
-- [**Why**]{.monash-blue} should we use it?
-- [**Where**]{.monash-blue} do we find and install it?
-
-. . . 
-
-::: {.center .f-headline}
-
-[**Documentation**]{.monash-ruby2} is vital 
-
-:::
-
-## `random_number()` function
-
-```{r}
-random_number <- function(range) {
-  random_numbers <- data.frame(numbers = runif(n = 100, min = 0, max = range))
-
-  ggplot2::ggplot(data = random_numbers, ggplot2::aes(x = numbers)) +
-    ggplot2::geom_histogram()
-}
-
-random_number(50)
-```
-
-## Using our own data
-
-`data-raw/smartmeter.R`:
-```{r}
-#| eval: false
-smartmeter <- read.csv("data-raw/smartmeter.csv") |>
-  clean_solar_data() |>
-  select(-c(nmi, meter_serial_number))
-
-usethis::use_data(smartmeter, overwrite = TRUE)
-```
-
-::: {.fragment}
-Then in a package function: 
-```{r}
-#| eval: false
-
-last_n_days <- function(n) {
-  smartmeter |>
-    dplyr::filter(date >= (max(date) - n))
-}
-
-```
-:::
-
-## Using data in your package
-
-People have become very used to the pipe syntax, and so actually the above function is better written as:
+## What deployment sends
 
 ```r
-#' @examples
-#' 
-#' smartmeter |> last_n_days(n = 7)
-last_n_days <- function(.data, n) {
-  smartmeter |>
-    dplyr::filter(date >= (max(date) - n))
-}
+rsconnect::deployApp(appDir = "inst/app")
 ```
 
-::: {.fragment .callout-tip}
-Your case may not be as straightforward as this: do not feel like you can _never_ include a data object inside a function. It is still useful!
-:::
+For a typical hosted deployment, the service needs:
 
+* the app files;
+* the R version and package dependencies;
+* data or connections required at runtime; and
+* configuration that is safe for the server environment.
 
+Only files included in the deployment bundle are available to the server.
 
-## Using pipe operator in your package 
+## The clean-computer test
 
-The base pipe (`|>`) is fine for 99% of cases - I recommend just using that.
+Imagine the hosting server has never seen your project.
 
-If you _need_ the `magrittr` pipe (`%>%`) then you can use
+Can it answer each question?
 
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_pipe()
-```
+::: {.incremental}
 
-## Including Shiny apps in your package {.nonincremental}
-
-The process to include a Shiny app is a bit more complicated than data or a function.
-
-Put your app code in `inst/[appname]/app.R`
-
-::: {.fragment}
-In your function to launch your app:    
-```{r}
-#| eval: false
-
-run_app <- function() {
-  app_dir <- system.file("app.R", package = "solardash")
-  shiny::runApp(app_dir, display.mode = "normal")
-}
-
-```
+* Where is every required file?
+* Which packages and versions are needed?
+* Does filename case match exactly?
+* Where do credentials come from?
+* Where should durable data be stored?
+* What happens when the app restarts?
 
 :::
 
-::: {.fragment}
-Files in `inst/` are installed with your package but are considered "internal".
+## Use relative paths within the app bundle
 
-The `system.file` tells R where to look for your shiny app code.
-:::
-
-## Including Shiny apps in your package
-
-::: {.callout-warning}
-Don't include an example for running a shiny app! It will cause R to hang.
-:::
-
-Instead, include your example inside an `if` statement:
+::: columns
+::: {.column width="48%"}
+### Fragile
 
 ```r
-if (interactive()) {
-  run_app()
-}
+read.csv(
+  "/Users/michael/Desktop/wpl.csv"
+)
 ```
+:::
 
-# Demo
-
-
-# Documentation {background-color="#006DAE"}
-
-
-## Documenting R functions with `roxygen2`
-
-- use `#'` above a function to write documentation for that function
-- `roxygen2` uses `@` tags to structure documentation, e.g. 
-  * any text after `@description` is the description
-  * any text after `@param` describes the arguments of the function
-  * `@export` signals that it is an exported function
-  * any text after `@return` describes the return object
-  * the full list of Rd tags are found [here](https://roxygen2.r-lib.org/articles/rd.html)
-- `devtools::document()` converts the Rd tags to appropriate sections of `.Rd` files written in the `man/` folder
-
-## Documenting `solardash` package 
-
-`R/cleaning.R`
-```r
-#' Cleans Solar Data from the Jemema Electricity Portal
-#' 
-#' @param .data A data frame containing raw solar data extracted from the Jemema Electricity Portal.
-#' @return A cleaned data frame with columns: date, datetime, energy_kwh, and other relevant columns.
-#' 
-#' @importFrom tidyr pivot_longer
-#' @importFrom dplyr mutate
-clean_solar_data <- function(.data) {
-  ...
-}
-```
-
-
-## Documenting data
-
-- `usethis::use_data_raw()` to store R code to process raw data, 
-- `usethis::use_data()` to save a binary file in `data/` directory,
-- The data is named `praises`.
-- Documentation is contained in `data.R` or `name-of-data.R`
-
-## Documenting data
-
-`R/data.R`
+::: {.column width="48%"}
+### Portable
 
 ```r
-#' Example Smart Meter Data from the Jemena Electricity Portal
-#' 
-#' A dataset containing example smart meter data extracted from the Jemena Electricity Portal.
-#' @format A data frame with 17520 rows and 4 variables:
-#' \describe{
-#'   \item{date}{Date of the reading (YYYY-MM-DD)}
-#'   \item{datetime}{Date and time of the reading (POSIXct)}
-#'   \item{energy_kwh}{Energy consumption in kilowatt-hours (kWh)}
-#' \item{con_gen}{Whether the reading is consumption or generation}
-#' \item{estimated}{Whether the reading is estimated or actual. In this dataset, all readings are actual.}
-#' }
-#' 
-#' @source \url{https://jemena.com.au/}
-"smartmeter"
-```
-
-## Make package documentation
-
-- Add documentation of the "big picture" of your package
- 
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_package_doc()
-```
-
-- Above creates the file below
-
-. . . 
-
-`R/solardash-package.R`
-```{r}
-#| eval: false
-#' @keywords internal
-"_PACKAGE"
-
-## usethis namespace: start
-## usethis namespace: end
-NULL
-```
-
-
-- Default package documentation is built from your DESCRIPTION file
-
-. . . 
-
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-library(solarash)
-?solardash
-```
-
-
-
-## Vignette: a long-form documentation
-
-- Some documentation doesn't fit as a package or function documentation.
-- You may want to build a vignette (article) for these cases.
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_vignette(name = "my-amazing-package", 
-                      title = "My amazing package")
-```
-
-- Edit the created Rmd file 
-- Knit the vignette to see what it looks like
-- Use `devtools::build()` to build package with vignettes included
-
-## Quarto vignettes
-
-It is possible!
-
-::: {.fragment}
-Add to your DESCRIPTION file:
-
-```
-VignetteBuilder:
-  quarto
+read.csv("data/wpl_batters.csv")
 ```
 :::
-
-::: {.fragment}
-and change your YAML header to:
-
-```
-vignette: >
-  %\VignetteIndexEntry{Vignette's Title}
-  %\VignetteEngine{quarto::html}
-  %\VignetteEncoding{UTF-8}
-```
 :::
 
-## Quarto vignettes
-
-::: {.callout-warning}
-This is still _new_ and there may be some issues with some package checkers. [Our experience is that CRAN has accepted packages even when they've failed tests because of the Quarto engine]{.fragment}
-:::
-
-::: {.fragment}
-I believe it is where things are heading, so it is worth trying out, even if it costs you some pain now.
-:::
-
-
-
-
-# Dependencies {background-color="#006DAE"}
-
-## Adding dependencies
-
-
-- Dependencies are specified in DESCRIPTION file under three categories:
-  - `Depends`: Specify the version of R that the package will work with or package that it is dependent on (e.g. for ggplot2 extension packages, it depends on ggplot2).
-  - `Imports`: External packages that are imported to use in your package. Most external packages are in this category.
-  - `Suggests`: Packages that are not strictly needed but are nice to have, i.e. you use them in examples or vignettes. 
-- You can easily add this via `usethis::use_package()`
-
-# Sharing {background-color="#006DAE"}
-
-## Share and collaborate on your package
-
-
-* Track changes to your code with Git
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_git()
-```
-
-* Collaborate with others via GitHub (or otherwise)
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_github()
-```
-
-. . . 
-
-or for existing repo, run from the terminal:
-
-```{zsh}
-#| eval: false
-#| code-line-numbers: false
-git remote add origin https://github.com/user/repo.git
-```
-
-
-* You can install your R package now using:
-
-. . . 
-
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-devtools::install_github("user/repo")
-```
-
-## Installing `solardash` package
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-devtools::install_github("MikeLydeamore/solardash")
-```
-
-* The package is found at `https://github.com/MikeLydeamore/solardash`.
-* It's a good idea to add a `README` file with installation instructions -- this is displayed in the GitHub repo.
-* You can create a `README.Rmd` file with
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_readme_rmd() 
-# OR usethis::use_readme_md() if you have no code
-```
-* Make sure you knit the `README.Rmd` when you modify its contents.
-
-## Package documentation website with `pkgdown`
-
-- Automatically turns all package documentation into a website.
-- Documentation can now be easily viewable outside of R.
-- Easy to customise appearance of the site using YAML
-
-## Using `pkgdown` 
-
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_pkgdown()
-```
-
-- Build site locally with `pkgdown::build_site()`
-- Site appearance is modified in the `_pkgdown.yml` file
-  - [bootswatch](https://bootswatch.com/) themes for the appearance of the whole site
-  - organising function / vignette documentation with reference
-- See the [vignette](https://pkgdown.r-lib.org/articles/pkgdown.html) for more details
-- Automatically build and deploy your site with GitHub actions
-
-. . . 
-
-```{r}
-#| eval: false
-#| code-line-numbers: false
-usethis::use_pkgdown_github_pages() # if using this, no need for usethis::use_pkgdown()
-```
-
-## Customising `pkgdown` site
-
-First, modify `_pkgdown.yml` file
-
-```yaml
-template:
-  bootstrap: 5
-```
-
-And then the world is your customising oyster:
-
-::: {.fragment}
-
-::: {.panel-tabset}
-## Dark mode
-
-Add dark mode with
-
-```yaml
-template:
-  light-switch: true
-  theme: gruvbox-light
-  theme-dark: gruvbox-dark
-```
-
-## Themes
-
-Choose from [bootswatch themes](https://bootswatch.com/). Strangely `theme` here means syntax highlighting theme, not theme theme. Computer scientists.
-
-```yaml
-template:
-  bootswatch: cyborg
-  theme: arrow-dark
-```
-
-## Complicated equations
-By default maths is rendered with `mathml` which is pretty good but not perfect. You can switch with
-
-```yaml
-template:
-  math-rendering: katex (or mathjax)
-```
-
-## Navbar
-
-You can move your navigation bar around:
-
-```yaml
-navbar:
-  structure:
-    left: [intro, reference, articles]
-    right: [github, search]
-```
-
-Note that `intro` is the packaged-named vignette we made before.
-
-:::
-
-:::
-
-
-## The whole package development workflow
-
-```{r}
-#| eval: false
-available::available("pkgname") # check if package name is available (if planning to publish publicly)
-usethis::create_package("pkgname")
-usethis::use_git() # set up version control
-usethis::use_github() # optional
-usethis::use_r("myfile")
-# write some functions in a script
-usethis::use_data_raw() # if adding data
-devtools::load_all() # try it out in the console
-usethis::use_package("import-pkgname") # add package to import (or depends or suggests)
-usethis::use_package_doc() # add package documentation
-usethis::use_pipe() # if you want to add %>% from `magrittr`
-usethis::use_vignette("vignette-name") # add vignette
-devtools::build() # build vignettes
-devtools::install() # to install package
-devtools::check() # to build and check a package 
-usethis::use_readme_rmd() # to add a README Rmd file
-styler::style_pkg() # optional (commit first, then review changes carefully)
-usethis::use_pkgdown_github_pages() # for setting up pkgdown website on github
-# `usethis::use_pkgdown()` if not using github pages
-```
-
-# So you're ready for CRAN {background-color="#006DAE"}
-
-## Getting ready for CRAN
-
-CRAN has quite the [set](https://cran.r-project.org/web/packages/submission_checklist.html) of [policies](https://cran.r-project.org/web/packages/policies.html) to follow. Some are "optional" but most are mandatory.
-
-::: {.fragment}
-
-Start with:
+## Declare packages; do not install them in the app
 
 ```r
-usethis::use_release_issue(version = NULL)
+library(shiny)
+library(dplyr)
+library(ggplot2)
 ```
 
-:::
-
-::: {.fragment}
-This will create a GitHub issue with a checklist of things to do before submitting to CRAN.
-:::
-
-
-## Extra checks
-
-Some key points:
-
-::: {.incremental style="font-size: xx-large"}
-1. `devtools::check()` must give `0 0 0`. Realistically it will give one note (new submission), but try to avoid all others.
-2. `devtools::run_examples()` must run without error
-3. `checkhelper::find_missing_tags()`: All functions must have `@noRd` or `@export` tag
-4. `urlchecker::url_check()`
-5. `rhub::rhub_check()`
-6. `usethis::use_cran_comments()`: Add a `cran-comments.md` file with responses to common questions
-:::
-
-## Common errors
-
-One of the most common warnings is
-
-`no visible binding for global variable`
-
-::: {.fragment}
-This is a result of using the non-standard evaluation in `dplyr` and `ggplot2` (and other places). Unfortunately the fix is very unsatisfying.
-:::
-
-::: {.fragment}
-Include a `zzz.R` file in your `R` folder with a call to:
+or use qualified calls:
 
 ```r
-utils::globalVariables(c("var1", "var2", "var3"))
+dplyr::filter(...)
 ```
-:::
 
-## Common errors
+. . .
 
-`All declared Imports should be used`
-
-We have packages that are _only_ used in our shiny app but nowhere else.
-
-We handle these like we would examples or tests: `Suggests`.
-
-::: {.fragment}
-But, what would happen now if we tried to launch the shiny app without these suggested packages installed?
-:::
-
-## Error handling is also communication
-
-The `cli` package is a modern way to handle messages, warnings, and errors.
-
-Documentation: https://cli.r-lib.org/
+Do not put this inside `app.R`:
 
 ```r
-run_solar_dashboard <- function() {
-  required_packages <- c("DT", "ggplot2", "readr")
-  for (pkg in required_packages) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      cli::cli_abort("Package '{pkg}' must be installed to run the dashboard.")
-    }
-  }
-  
-  ...
-}
+install.packages("dplyr")
 ```
 
-## Error handling is also communication
+During deployment, `rsconnect` detects dependencies from calls such as
+`library(dplyr)` and `dplyr::filter()`; the hosting service installs them in the
+application environment.
 
-The `cli` package is a modern way to handle messages, warnings, and errors.
+## Current hosting choices answer different needs {.smaller}
 
-Documentation: https://cli.r-lib.org/
+| Route | Useful when |
+|---|---|
+| `shinyapps.io` | You want managed Shiny hosting with a straightforward `rsconnect` workflow |
+| Posit Connect Cloud | You want GitHub-connected cloud publishing for public data products |
+| Posit Connect | An organisation needs authentication, access control and managed publishing |
+| Shiny Server | An organisation will operate its own open-source Linux server |
 
-```r
-run_solar_dashboard <- function() {
-  required_packages <- c("DT", "ggplot2", "readr")
-  for (pkg in required_packages) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      cli::cli_abort(c(
-        "Package {.pkg {pkg}} must be installed to run the dashboard.",
-        "i" = "You can install it with {.code install.packages('{pkg}')}"
-      ))
-    }
-  }
-  
-  ...
-}
-```
+## Choose the route from the constraint
 
+::: {.incremental}
 
+1. **The audience has no R installation.** Host the app.
+2. **Analysts need to call the calculation in their own scripts.** Package it.
+3. **The app uses confidential organisational data.** Choose hosting with the required identity and access controls.
+4. **A colleague needs to inspect and extend the code.** Share the source repository; a URL alone is insufficient.
 
-## Other tips
-
-::: {.incremental style="font-size: xx-large"}
-* All software names _must_ be in single quotes
-* You need a license: `usethis::use_mit_license("Your Name")`
-* The Copyright holder in `LICENSE` and `DESCRIPTION` should match
-* Find functions that don't have an example:  
-```r
-system("grep -c examples man/*Rd", intern = TRUE) |> 
-  grep(":0$", x = _, value = TRUE)
-```
-* Make sure your description doesn't start with "This package ..."
-* Make sure you have a `BugReports` and `URL` with `devtools::use_github_links()`
 :::
 
-# Submit it! {background-color="#006DAE"}
+## Week 11 lesson
 
-Don't be afraid to submit your package to CRAN!
-
-::: {.fragment}
-They are helpful and although they may reject your package, they will give you feedback on what to fix.
-:::
-
-
-## Week 11 Lesson 
-
-
-::: callout-important
-
+::: {.callout-important}
 ## Summary
 
-::: nonincremental
-
-- Package documentation is important to let others know about the goal of the package, what your function does, and how to use your package.
-- Sharing your package by making it easy to install, committing to good documentation, and making the documentation accessible helps to build trust to use your package.
-- You can make package development and distribution easy with `usethis`, `devtools`, `roxygen2`, and `pkgdown`.
-
+* A shared reactive gives several outputs one current source of truth.
+* Ordinary functions own reusable calculations; reactives connect them to a user session.
+* A package asks the user to run R; a hosted app asks a server to run R.
+* Distribution succeeds when files, dependencies, secrets, storage and access work away from the author's computer.
 :::
 
-:::
+## Resources {.smaller}
 
-. . . 
-
-::: callout-tip
-
-## Resources
-
-::: nonincremental
-
-
-- [`roxygen2` documentation tags](https://roxygen2.r-lib.org/articles/rd.html)
-- [Customising your `pkgdown` site](https://pkgdown.r-lib.org/articles/customise.html)
-
-:::
-
-:::
+* [Shiny reactive expressions](https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/)
+* [`reactlog`: Shiny reactivity visualiser](https://rstudio.github.io/reactlog/)
+* [Hosting and deployment options for Shiny](https://shiny.posit.co/r/deploy.html)
+* [`shinyapps.io` getting started guide](https://docs.posit.co/shinyapps.io/guide/getting_started/)
+* [Publishing Shiny applications to Posit Connect](https://docs.posit.co/connect/user/publishing-r/)
+* [R packages: installed files](https://r-pkgs.org/structure.html#sec-data)

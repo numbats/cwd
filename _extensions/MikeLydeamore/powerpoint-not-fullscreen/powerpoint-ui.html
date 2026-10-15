@@ -1,0 +1,99 @@
+<script>
+(function () {
+  function setupPowerPointShell() {
+    const deck = window.Reveal;
+    const slides = deck ? deck.getSlides() : [];
+    const tray = document.getElementById("ppt-thumbnails");
+    const counter = document.getElementById("ppt-slide-count");
+    const documentName = document.querySelector(".document-name b");
+
+    if (!deck || !tray || !counter || tray.dataset.initialized === "true") {
+      return;
+    }
+    tray.dataset.initialized = "true";
+
+    const pageTitle =
+      document.querySelector('meta[name="title"]')?.content ||
+      document.title.split(/[|–—]/)[0].trim();
+
+    if (documentName && pageTitle) documentName.textContent = pageTitle;
+
+    slides.forEach((slide, index) => {
+      const label =
+        slide.dataset.shortTitle ||
+        slide.querySelector("h2, h1")?.textContent ||
+        `Slide ${index + 1}`;
+      const thumb = document.createElement("button");
+
+      thumb.className = "ppt-thumbnail";
+      thumb.dataset.slide = index;
+      const position = deck.getIndices(slide);
+      thumb.dataset.indexH = position.h;
+      thumb.dataset.indexV = position.v ?? 0;
+      thumb.setAttribute(
+        "aria-label",
+        `Go to slide ${index + 1}: ${label}`
+      );
+      thumb.innerHTML = `
+        <span class="thumb-number">${index + 1}</span>
+        <span class="thumb-canvas">
+          <i class="mini-accent"></i>
+          <b>${label}</b>
+          <i class="mini-line wide"></i>
+          <i class="mini-line"></i>
+          <i class="mini-line short"></i>
+          <small>YOUR<br>ORGANISATION</small>
+        </span>`;
+      thumb.addEventListener("click", () => {
+        deck.slide(position.h, position.v);
+      });
+      tray.appendChild(thumb);
+    });
+
+    function syncChrome(event) {
+      const currentSlide = event?.currentSlide || deck.getCurrentSlide();
+      const index = slides.indexOf(currentSlide);
+
+      if (index < 0) return;
+
+      tray.querySelectorAll(".ppt-thumbnail").forEach((thumb, i) => {
+        thumb.classList.toggle("selected", i === index);
+      });
+
+      const selected = tray.children[index];
+      if (selected) {
+        selected.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+
+      counter.textContent = `Slide ${index + 1} of ${slides.length}`;
+    }
+
+    deck.on("slidechanged", syncChrome);
+    document
+      .getElementById("ppt-fit")
+      ?.addEventListener("click", () => deck.layout());
+    document
+      .querySelector(".slideshow-button")
+      ?.addEventListener("click", () => {
+        document.body.classList.toggle("almost-fullscreen");
+        setTimeout(() => deck.layout(), 50);
+      });
+
+    syncChrome();
+  }
+
+  function startWhenRevealIsReady() {
+    if (!window.Reveal) return;
+    if (Reveal.isReady()) setupPowerPointShell();
+    else Reveal.on("ready", setupPowerPointShell);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startWhenRevealIsReady, {
+      once: true,
+    });
+  } else {
+    startWhenRevealIsReady();
+  }
+})();
+</script>
