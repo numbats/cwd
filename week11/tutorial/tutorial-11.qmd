@@ -1,6 +1,6 @@
 ---
 title: 'ETC5523: Communicating with Data'
-subtitle: "Tutorial 10"
+subtitle: "Tutorial 11: Package and audit a Shiny app"
 author: "Michael Lydeamore"
 date: "Week 11"
 format:
@@ -13,56 +13,171 @@ engine: knitr
 
 ## 🎯 Objectives
 
+By the end of this tutorial, you will be able to:
 
-* practice writing long-form documentation vignettes
-* write functions and its documentation using `usethis` and `roxygen2`
-* convert your package documentation into a website with `pkgdown`
+* add a package function that launches a Shiny app; and
+* audit an app before web deployment.
 
 ::: {.callout-note collapse="true"}
 
 ## Preparation
 
-1. `install.packages(c("pkgdown"))`
-2. Clone the github repo below:
+Install the packages used in this tutorial if you do not already have them:
 
-```{zsh}
+```r
+install.packages(c("devtools", "rsconnect", "usethis"))
+```
+
+Bring the `etc5523-wpl-share` project you used in the workshop. If you missed
+the workshop, or would like a clean copy containing everything completed in
+class, clone the `workshop-progress` branch:
+
+```bash
 #| eval: false
 #| echo: true
-git clone git@github.com:MikeLydeamore/solardash.git
+git clone --branch workshop-progress --single-branch \
+  https://github.com/numbats/etc5523-wpl-share.git
+```
+
+Open `wplshare.Rproj`, restart R, then install any dependencies declared by the
+package:
+
+```r
+devtools::install_deps(dependencies = TRUE)
+```
+
+Run the app and confirm that the number, plot and table agree when **Minimum
+runs** is exactly 150 in season 2024/25:
+
+```r
+shiny::runApp("inst/app")
 ```
 
 :::
 
+::: {.callout-important}
+In the workshop, we completed Steps 1--3: running the app, inspecting its
+reactive graph and replacing the repeated filters with `selected_batters()`.
+This tutorial continues from that point with Steps 4 and 5.
+:::
 
+## 4. Make the app launchable from the package
 
-##  Exercise 9A
+The repository already has the structure of an R package. Files under
+`inst/app` will be installed with it.
 
-Open the `solardash` project directory and create a new vignette via `usethis`.
+Create `R/run_app.R`, then add a documented, exported `run_app()` function:
 
-The name of the vignette should be "crops" and the title will be 
-"Our World in Data: Key Crop Yields".
+```r
+usethis::use_r("run_app")
+```
 
-Your vignette should contain the following:
+The function should:
 
-- A description of the data, including it's source, and how to access it with your package.
-- Two `ggplot2` visualisations with short descriptions, giving examples of things you could learn from the `smartmeter` data. Remember that any external packages you use should be added to your DESCRIPTION file under Suggests.
+1. locate the installed `app` directory with `system.file()`; and
+2. pass that directory to `shiny::runApp()`.
 
-Once you have finished your vignette, create a README file via `usethis`
-that describes the intent of the package and how you could install it from your
-github.
+Generate the documentation, install the package and test the launcher:
 
-##  Exercise 9B
+```r
+devtools::document()
+devtools::install()
+wplshare::run_app()
+```
 
-Build a local `pkgdown` website. 
-Modify the `pkgdown` YAML file so your website has the following:
+Why would a path such as `/Users/name/wpl-share/inst/app` fail for another
+package user?
 
-- a customised theme for the website
-- the vignette is available via  "Articles" link in the navbar
+::: {.unilur-solution}
+## Package launcher
 
-## Exercise 9C
+```r
+#' Run the WPL batting explorer
+#'
+#' @return No return value; called for its side effect of launching the app.
+#' @export
+run_app <- function() {
+  app_dir <- system.file("app", package = "wplshare")
+  shiny::runApp(app_dir)
+}
+```
 
-Inspect the `inst` directory. What do you see in there?
+`inst/app` becomes `app` at the top level of the installed package.
+`system.file()` finds that location in the active R library rather than assuming
+where the source repository exists on a particular computer.
+:::
 
-How is that code being used in the package?
+## 5. Audit the web deployment
 
-Write a _new_ shiny app, based on the one in `inst`, that converts the current ggplot to a `plotly` output. Then, write a new function for the package that will run this app.
+Treat the hosting service as a clean Linux computer that receives only the app
+bundle. Mark each item **ready**, **not ready**, or **not applicable**:
+
+* all required files are inside `inst/app`;
+* file paths are relative and match the exact case of the file names;
+* package dependencies can be detected from the app code;
+* there is no `install.packages()` call in the app;
+* no password, token or secret is stored in the repository;
+* every possible input state produces a useful response; and
+* any durable writes use storage outside the app's local filesystem.
+
+Ask `rsconnect` what it detects:
+
+```r
+rsconnect::appDependencies("inst/app")
+```
+
+Which audit item does the current app handle least well? Make one improvement
+and rerun the app.
+
+::: {.unilur-solution}
+## Audit findings
+
+The data are bundled under `inst/app/data`, paths are relative, packages are
+loaded explicitly, and the source contains no installation calls or secrets.
+
+The empty selection is poorly communicated. `req()` prevents an error in the
+leader box but leaves it blank. One possible replacement is:
+
+```r
+output$leading_batter <- renderText({
+  selected <- selected_batters()
+
+  if (nrow(selected) == 0) {
+    return("No batter meets this threshold")
+  }
+
+  selected$striker[which.max(selected$runs)]
+})
+```
+
+A deployed app should use a database, object store or other persistent service
+for durable writes because hosted instances can restart or be replaced.
+:::
+
+## Extra practice: a clean-room handover test
+
+Exchange repositories with a partner. Open your partner's project in a fresh R
+session and test whether the package can be installed and run without relying
+on their source directory or your installed copy of `wplshare`.
+
+Create a temporary package library, install the package into it, then launch the
+app from that installation:
+
+```r
+test_library <- file.path(tempdir(), "wplshare-library")
+dir.create(test_library, showWarnings = FALSE)
+
+devtools::install(lib = test_library)
+
+library(wplshare, lib.loc = test_library)
+wplshare::run_app()
+```
+
+Record any missing dependency, path assumption or unclear setup instruction.
+Fix one issue, restart R and repeat the handover test.
+
+::: {.callout-note}
+Installing into `test_library` prevents your partner's package from replacing
+the usual installed copy of `wplshare`. The temporary installation is removed
+when R clears its temporary directory.
+:::
