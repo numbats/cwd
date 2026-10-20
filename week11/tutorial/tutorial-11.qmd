@@ -7,6 +7,9 @@ format:
     unilur-html:
         output-file: index.html
         embed-resources: true
+    unilur-html+solution:
+        output-file: solution.html
+        embed-resources: true
 engine: knitr
 ---
 
@@ -180,4 +183,30 @@ Fix one issue, restart R and repeat the handover test.
 Installing into `test_library` prevents your partner's package from replacing
 the usual installed copy of `wplshare`. The temporary installation is removed
 when R clears its temporary directory.
+:::
+
+::: {.unilur-solution}
+## Expected result and troubleshooting
+
+A successful handover has three observable results:
+
+1. `devtools::install()` completes without an error;
+2. `system.file("app", package = "wplshare")` returns a path inside the
+   temporary library rather than the source project; and
+3. `wplshare::run_app()` launches an app whose inputs and four outputs work.
+
+Useful diagnoses include:
+
+* an empty result from `system.file()` means the installed package does not
+  contain the expected `app` directory, or the package name is incorrect;
+* `run_app()` not being exported usually means `@export` is missing or
+  `devtools::document()` has not regenerated `NAMESPACE`;
+* an error about a missing package means that dependency needs to be declared
+  in `DESCRIPTION` and installed; and
+* a file-not-found error usually reveals an absolute path, incorrect relative
+  path or mismatch in filename case.
+
+The source repositories do not need to be identical. The test passes when a
+partner can install the package and launch the app without editing paths or
+moving files.
 :::
