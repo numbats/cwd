@@ -228,10 +228,9 @@ Today we will focus on industry careers. If you would like to talk academia, ple
 
 Be pretty broad in your search. Some examples (from today):
 
-- [Business Analyst - Glenvill Housing](https://www.seek.com.au/job/87648860)
-- [Data Scientist - Austin Health](https://www.seek.com.au/job/87599935)
-- [Technical Analyst - CauseIs](https://www.seek.com.au/job/87955579)
-- [Research Data Analyst - Parliament of Victoria](https://www.seek.com.au/job/87850891)
+- [Data Analyst - Broers Group](https://au.seek.com/job/95064188)
+- [Business Improvement Analyst - Royal Melbourne Hospital](https://au.seek.com/job/95337212)
+- [AI Business Analyst - Milestone IT](https://au.seek.com/job/95224637)s
 
 ## Job application tips
 
@@ -275,13 +274,13 @@ Typically add paragraphs under each job and education to describe your _relevant
 ## Resume examples
 
 ::: {.bad}
-Did analysis on Sales Data
+Built a Shiny app for a university assignment
 :::
 
 ::: {.fragment}
 
 ::: {.good}
-Developed a machine learning model analysing 1M+ records, improving forecast accuracy by 15%
+Refactored a Shiny app to share one reactive dataset across four outputs, eliminating inconsistent results at boundary values
 :::
 
 :::
@@ -289,14 +288,14 @@ Developed a machine learning model analysing 1M+ records, improving forecast acc
 ::: {.fragment}
 
 ::: {.bad}
-Built a dashboard for sales data
+Put a Shiny app in an R package
 :::
 
 :::
 
 ::: {.fragment}
 ::: {.good}
-Built an interactive dashboard in Shiny to visualise sales data from a data warehouse. Shared with 20+ stakeholders, accessed hundreds of times per week.
+Packaged a Shiny app with a documented launcher and audited its files, dependencies and empty-data behaviour for web deployment
 :::
 :::
 
@@ -323,7 +322,21 @@ Use formal language, and be gender neutral whenever possible.
 
 :::
 
-## Cover Letter - Example {.scrollable}
+## Cover letter critique
+
+The letter on the next slide is a real application for an academic role. Read
+it as if you were the recruiter.
+
+In pairs, identify:
+
+1. one sentence you would cut;
+2. one claim that needs stronger evidence;
+3. one example that should be more closely tailored to the role; and
+4. how the opening could focus more clearly on the employer's needs.
+
+Be ready to explain one change. You have **six minutes**.
+
+## The original letter {.scrollable}
 
 ::: {style="font-size: large; margin-bottom: 2em;"}
 
@@ -348,9 +361,51 @@ Michael Lydeamore
 
 :::
 
+## A tighter version {.scrollable}
+
+::: {style="font-size: x-large; margin-bottom: 2em;"}
+
+Dear Hiring Manager,
+
+I am applying for the position of Lecturer in Business Analytics. I bring
+experience applying statistical models to public-health problems, explaining
+technical results to non-specialists and leading analysts with varied levels of
+experience.
+
+At Monash University, I created and led the modelling and forecasting team that
+later became the COVID-19 Analytics Team. I coordinated analysts from different
+technical backgrounds and communicated forecasts to audiences who needed to act
+on the results. Across my research in antimicrobial resistance, scabies and
+influenza, I have also worked closely with collaborators in epidemiology,
+public health and bioinformatics.
+
+These experiences would allow me to contribute applied examples to business
+analytics teaching while supporting students with different technical
+backgrounds. I would welcome the opportunity to discuss how my modelling,
+teaching and team-leadership experience could contribute to the role.
+
+Sincerely,
+
+Michael Lydeamore
+
+:::
+
 # Cover Letter Practice {background-color="#006DAE"}
 
-[https://www.seek.com.au/job/87599935](https://www.seek.com.au/job/87599935)
+## Tailor the evidence
+
+Open the [job advertisement](https://au.seek.com/job/95224637), then:
+
+1. identify three skills or requirements the employer emphasises;
+2. choose one experience from study, work or volunteering that demonstrates
+   one of them; and
+3. draft a short paragraph that states the relevant skill, gives specific
+   evidence and explains why it matters for this role.
+
+Exchange paragraphs with a partner. Underline the specific evidence and circle
+any statement that could have been sent to any employer.
+
+You have **ten minutes**.
 
 ## Online presence
 
